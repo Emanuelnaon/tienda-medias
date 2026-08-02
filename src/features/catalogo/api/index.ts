@@ -1,0 +1,2 @@
+// Catalogo API placeholder
+export {};

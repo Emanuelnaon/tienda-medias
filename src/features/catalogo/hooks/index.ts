@@ -1,0 +1,2 @@
+// Catalogo Hooks placeholder
+export {};

@@ -1,0 +1,2 @@
+// Auth hooks placeholder
+export {};

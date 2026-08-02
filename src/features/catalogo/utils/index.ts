@@ -1,0 +1,2 @@
+// Catalogo Utils placeholder
+export {};
