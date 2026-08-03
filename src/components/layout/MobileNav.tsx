@@ -11,13 +11,13 @@ export function MobileNav() {
                 <span className="mt-1">Inicio</span>
             </a>
             <a
-                href="/categorias.tsx"
+                href="/categorias"
                 className="flex flex-col items-center justify-center flex-1 py-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">
                 <Grid className="w-5 h-5" />
                 <span className="mt-1">Categorías</span>
             </a>
             <a
-                href="/carrito.tsx"
+                href="/carrito"
                 className="flex flex-col items-center justify-center flex-1 py-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">
                 <ShoppingCart className="w-5 h-5" />
                 <span className="mt-1">Carrito</span>
