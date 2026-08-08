@@ -1,5 +1,6 @@
 'use client';
 
+import toast from 'react-hot-toast';
 import { useState } from 'react';
 import { useCarritoStore } from '@/src/features/carrito/store';
 import type { Database } from '@/types/supabase';
@@ -15,8 +16,10 @@ export function SelectorProducto({ producto }: Props) {
     const agregarItem = useCarritoStore((state) => state.agregarItem);
 
     const handleAgregar = () => {
-        if (!talleSeleccionado) return alert('Por favor, selecciona un talle');
-
+if (!talleSeleccionado) {
+    toast.error('Por favor, selecciona un talle');
+    return;
+}
         agregarItem({
             id: producto.id,
             nombre: producto.nombre || 'Producto sin nombre',
@@ -24,7 +27,7 @@ export function SelectorProducto({ producto }: Props) {
             cantidad: 1,
             talle_seleccionado: talleSeleccionado,
         });
-        alert('¡Agregado al carrito!');
+        toast.success('¡Agregado al carrito!');
     };
 
     return (

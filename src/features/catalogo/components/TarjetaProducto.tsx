@@ -15,8 +15,13 @@ export function TarjetaProducto({ producto }: { producto: Producto }) {
     // Seleccionamos el primer talle por defecto para agilizar
     const [talleSeleccionado, setTalleSeleccionado] = useState(talles_disponibles?.[0] || '');
 
-    const handleAgregarCarrito = () => {
-        if (!talleSeleccionado) return alert('Selecciona un talle');
+    const handleAgregarCarrito = (e: React.MouseEvent) => {
+        e.preventDefault();
+        if (!talleSeleccionado) {
+            toast.error('Selecciona un talle primero');
+            return;
+        }
+      
         agregarItem({
             id,
             nombre,
@@ -25,7 +30,7 @@ export function TarjetaProducto({ producto }: { producto: Producto }) {
             talle_seleccionado: talleSeleccionado,
         });
         // Podrías cambiar este alert por un Toast más adelante
-        toast.success('¡Agregado al carrito! 🛒');
+        toast.success(`${nombre} agregado 🛒`);
     };
 
     const handleCompartir = async () => {
@@ -34,7 +39,7 @@ export function TarjetaProducto({ producto }: { producto: Producto }) {
             await navigator.share({ title: nombre, url });
         } else {
             navigator.clipboard.writeText(url);
-            alert('¡Enlace copiado!');
+            toast.success('¡Enlace copiado!');
         }
     };
 

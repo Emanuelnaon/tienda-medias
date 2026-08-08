@@ -2,7 +2,7 @@
 
 /* Definición de variables CSS nativas */
 :root {
-  --background: #ffffff;
+  --background: rgb(245, 238, 200);
   --foreground: #09090b;
   --primary: #18181b;
   --border: #e4e4e7;
@@ -10,8 +10,9 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #09090b;
-    --foreground: #fafafa;
+    --background: rgb(245,238,200);
+    /*--background: #09090b;*/
+    --foreground: #020101;
     --primary: #fafafa;
     --border: #27272a;
   }
