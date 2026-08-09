@@ -1,5 +1,6 @@
 import React from 'react';
 import { Home, Grid, ShoppingCart, User } from 'lucide-react';
+import {BotonModoOscuro} from '../BotonModoOscuro';  
 
 export function Sidebar() {
     return (
@@ -35,6 +36,7 @@ export function Sidebar() {
             {/* Footer del Sidebar */}
             <div className="pt-4 border-t border-border text-xs text-muted-foreground">
                 <p>&copy; 2026 Socks Store</p>
+                <BotonModoOscuro />
             </div>
         </aside>
     );

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Home, Grid, ShoppingCart, User } from 'lucide-react';
+import {BotonModoOscuro} from '../BotonModoOscuro';
 
 export function MobileNav() {
     return (
@@ -28,6 +29,9 @@ export function MobileNav() {
                 <User className="w-5 h-5" />
                 <span className="mt-1">Perfil</span>
             </a>
+            <div>
+                <BotonModoOscuro />
+            </div>
         </nav>
     );
 }

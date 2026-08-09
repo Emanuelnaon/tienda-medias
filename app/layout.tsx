@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { Sidebar } from '@/src/components/layout/Sidebar';
 import { MobileNav } from '@/src/components/layout/MobileNav';
+import { ThemeProvider } from '@/src/components/ThemeProvider';
 
 const geistSans = Geist({
     variable: '--font-geist-sans',
@@ -26,9 +27,10 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="es" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+        <html lang="es" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`} suppressHydrationWarning>
             <body className="h-screen overflow-hidden bg-background text-foreground flex flex-col lg:flex-row">
                 {/* Sidebar para desktop - Fijo a la izquierda */}
+                <ThemeProvider>
                 <Sidebar />
 
                 {/* Contenedor del contenido principal - Scrollea de forma independiente */}
@@ -48,6 +50,7 @@ export default function RootLayout({
                         },
                     }}
                 />
+                </ThemeProvider>
             </body>
         </html>
     );
