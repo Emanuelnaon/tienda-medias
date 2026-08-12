@@ -1,0 +1,155 @@
+'use client';
+
+import React, { useState } from 'react';
+import Link from 'next/link';
+import toast from 'react-hot-toast';
+import { createClient } from '@/src/lib/supabase/client';
+import type { Database } from '@/src/types/supabase';
+
+type Producto = Database['public']['Tables']['productos']['Row'];
+
+export function TablaProductos({ productosIniciales }: { productosIniciales: Producto[] }) {
+    const [productos, setProductos] = useState<Producto[]>(productosIniciales);
+    const supabase = createClient();
+
+    const handleEliminar = async (id: string, nombre: string) => {
+        const confirmar = window.confirm(`¿Eliminar permanentemente "${nombre}"?\nEsta acción no se puede deshacer.`);
+        if (!confirmar) return;
+
+        try {
+            const { error } = await supabase.from('productos').delete().eq('id', id);
+
+            if (error) {
+                throw new Error(error.message);
+            }
+
+            // Actualización optimista de la UI
+            setProductos((prev) => prev.filter((p) => p.id !== id));
+            toast.success(`"${nombre}" eliminado del catálogo.`);
+        } catch (error: unknown) {
+            const mensajeError = error instanceof Error ? error.message : String(error);
+            toast.error(`Error al eliminar el producto: ${mensajeError}`);
+        }
+    };
+
+    return (
+        <div className="flex flex-col gap-4 text-foreground bg-background">
+            {/* Barra de herramientas superior */}
+            <div className="flex justify-between items-center bg-background text-foreground">
+                <div className="text-sm text-foreground/70 font-medium">Total: {productos.length} productos</div>
+                <Link
+                    href="/admin/nuevo"
+                    className="flex items-center gap-2 bg-foreground text-background px-4 py-2 rounded-md text-sm font-bold hover:opacity-90 transition-opacity">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Nuevo Producto
+                </Link>
+            </div>
+
+            {/* Contenedor de la Tabla con scroll horizontal para Mobile */}
+            <div className="bg-background border border-border rounded-lg shadow-sm overflow-x-auto text-foreground">
+                <table className="w-full text-left border-collapse min-w-[800px] bg-background">
+                    <thead>
+                        <tr className="bg-background border-b border-border text-sm text-foreground/70 uppercase tracking-wider">
+                            <th className="p-4 font-semibold">Imagen</th>
+                            <th className="p-4 font-semibold">Nombre</th>
+                            <th className="p-4 font-semibold">Precio</th>
+                            <th className="p-4 font-semibold">Stock</th>
+                            <th className="p-4 font-semibold text-right">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border">
+                        {productos.length === 0 ? (
+                            <tr>
+                                <td colSpan={5} className="p-8 text-center text-foreground/60 bg-background">
+                                    No hay productos en el catálogo.
+                                </td>
+                            </tr>
+                        ) : (
+                            productos.map((producto) => (
+                                <tr
+                                    key={producto.id}
+                                    className="hover:bg-foreground/5 transition-colors bg-background">
+                                    <td className="p-4">
+                                        <div className="w-12 h-12 bg-transparent rounded overflow-hidden flex items-center justify-center border border-border">
+                                            {producto.imagen_url ? (
+                                                /* eslint-disable-next-line @next/next/no-img-element */
+                                                <img
+                                                    src={producto.imagen_url}
+                                                    alt={producto.nombre}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            ) : (
+                                                <span className="text-[10px] text-foreground/50">Sin Img</span>
+                                            )}
+                                        </div>
+                                    </td>
+                                    <td className="p-4">
+                                        <div className="font-bold text-foreground">{producto.nombre}</div>
+                                        <div className="text-xs text-foreground/60 truncate max-w-[200px]">
+                                            {producto.talles_disponibles?.join(', ') || 'Sin talles'}
+                                        </div>
+                                    </td>
+                                    <td className="p-4 font-mono font-medium text-foreground">
+                                        ${Number(producto.precio).toLocaleString('es-AR')}
+                                    </td>
+                                    <td className="p-4">
+                                        <span
+                                            className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold border border-border
+                                                ${producto.stock > 5
+                                                    ? 'text-foreground'
+                                                    : producto.stock > 0
+                                                      ? 'text-foreground/80'
+                                                      : 'text-foreground/50'
+                                                }`}>
+                                            {producto.stock} uds
+                                        </span>
+                                    </td>
+                                    <td className="p-4 text-right">
+                                        <div className="flex justify-end gap-2">
+                                            <Link
+                                                href={`/admin/editar/${producto.id}`}
+                                                className="p-2 text-foreground/70 hover:text-foreground bg-transparent border border-border hover:bg-foreground/5 rounded transition-colors"
+                                                title="Editar">
+                                                <svg
+                                                    className="w-4 h-4"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth="2"
+                                                        d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                                                    />
+                                                </svg>
+                                            </Link>
+                                            <button
+                                                onClick={() => handleEliminar(producto.id, producto.nombre)}
+                                                className="p-2 text-foreground/70 hover:text-foreground bg-transparent border border-border hover:bg-foreground/5 rounded transition-colors"
+                                                title="Eliminar">
+                                                <svg
+                                                    className="w-4 h-4"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth="2"
+                                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                                    />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))
+                        )}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    );
+}
