@@ -53,7 +53,7 @@ export function FormularioProducto() {
             }
 
             toast.success('Producto creado con éxito');
-            router.push('/auth/admin');
+            router.push('/admin');
             router.refresh();
         } catch (error: unknown) {
             const mensajeError = error instanceof Error ? error.message : String(error);
