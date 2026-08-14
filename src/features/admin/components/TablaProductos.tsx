@@ -32,6 +32,34 @@ export function TablaProductos({ productosIniciales }: { productosIniciales: Pro
         }
     };
 
+    const handleActualizarStock = async (id: string, stockActual: number, incremento: number) => {
+        const nuevoStock = stockActual + incremento;
+        if (nuevoStock < 0) return;
+
+        // Actualización optimista del estado local
+        setProductos((prev) =>
+            prev.map((p) => (p.id === id ? { ...p, stock: nuevoStock } : p))
+        );
+
+        try {
+            const { error } = await supabase
+                .from('productos')
+                .update({ stock: nuevoStock })
+                .eq('id', id);
+
+            if (error) {
+                throw new Error(error.message);
+            }
+        } catch (error: unknown) {
+            const mensajeError = error instanceof Error ? error.message : String(error);
+            toast.error(`Error al actualizar el stock: ${mensajeError}`);
+            // Revertir el estado local en caso de error
+            setProductos((prev) =>
+                prev.map((p) => (p.id === id ? { ...p, stock: stockActual } : p))
+            );
+        }
+    };
+
     return (
         <div className="flex flex-col gap-4 text-foreground bg-background">
             {/* Barra de herramientas superior */}
@@ -49,7 +77,7 @@ export function TablaProductos({ productosIniciales }: { productosIniciales: Pro
 
             {/* Contenedor de la Tabla con scroll horizontal para Mobile */}
             <div className="bg-background border border-border rounded-lg shadow-sm overflow-x-auto text-foreground">
-                <table className="w-full text-left border-collapse min-w-[800px] bg-background">
+                <table className="w-full text-left border-collapse min-w-800px bg-background">
                     <thead>
                         <tr className="bg-background border-b border-border text-sm text-foreground/70 uppercase tracking-wider">
                             <th className="p-4 font-semibold">Imagen</th>
@@ -87,7 +115,7 @@ export function TablaProductos({ productosIniciales }: { productosIniciales: Pro
                                     </td>
                                     <td className="p-4">
                                         <div className="font-bold text-foreground">{producto.nombre}</div>
-                                        <div className="text-xs text-foreground/60 truncate max-w-[200px]">
+                                        <div className="text-xs text-foreground/60 truncate max-w-200px">
                                             {producto.talles_disponibles?.join(', ') || 'Sin talles'}
                                         </div>
                                     </td>
@@ -95,16 +123,65 @@ export function TablaProductos({ productosIniciales }: { productosIniciales: Pro
                                         ${Number(producto.precio).toLocaleString('es-AR')}
                                     </td>
                                     <td className="p-4">
-                                        <span
-                                            className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold border border-border
-                                                ${producto.stock > 5
-                                                    ? 'text-foreground'
-                                                    : producto.stock > 0
-                                                      ? 'text-foreground/80'
-                                                      : 'text-foreground/50'
-                                                }`}>
-                                            {producto.stock} uds
-                                        </span>
+                                        <div className="flex items-center gap-2">
+                                            <button
+                                                disabled={producto.stock <= 0}
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    handleActualizarStock(producto.id, producto.stock, -1);
+                                                }}
+                                                className="w-8 h-8 flex items-center justify-center rounded-md border border-border bg-background hover:bg-foreground hover:text-background text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                title="Restar 1 unidad"
+                                            >
+                                                <svg
+                                                    className="w-4 h-4"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    viewBox="0 0 24 24"
+                                                >
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth="2"
+                                                        d="M20 12H4"
+                                                    />
+                                                </svg>
+                                            </button>
+                                            <span
+                                                className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold border border-border
+                                                    ${producto.stock > 5
+                                                        ? 'text-foreground'
+                                                        : producto.stock > 0
+                                                          ? 'text-foreground/80'
+                                                          : 'text-foreground/50'
+                                                    }`}>
+                                                {producto.stock} uds
+                                            </span>
+                                            <button
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    handleActualizarStock(producto.id, producto.stock, 1);
+                                                }}
+                                                className="w-8 h-8 flex items-center justify-center rounded-md border border-border bg-background hover:bg-foreground hover:text-background text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                title="Sumar 1 unidad"
+                                            >
+                                                <svg
+                                                    className="w-4 h-4"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    viewBox="0 0 24 24"
+                                                >
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth="2"
+                                                        d="M12 4v16m8-8H4"
+                                                    />
+                                                </svg>
+                                            </button>
+                                        </div>
                                     </td>
                                     <td className="p-4 text-right">
                                         <div className="flex justify-end gap-2">
