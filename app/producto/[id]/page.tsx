@@ -44,7 +44,7 @@ export default async function ProductoPage({ params }: Props) {
                 <p className="text-2xl font-extrabold text-blue-600 mt-4">
                     ${Number(producto.precio).toLocaleString('es-AR', { minimumFractionDigits: 2 })}
                 </p>
-                <p className="text-zinc-600 dark:text-zinc-400 mt-4 flex-1">
+                <p className="text-zinc-800 dark:text-zinc-600 mt-4 flex-1">
                     {producto.descripcion || 'Sin descripción disponible.'}
                 </p>
 
