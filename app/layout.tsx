@@ -5,6 +5,7 @@ import './globals.css';
 import { Sidebar } from '@/src/components/layout/Sidebar';
 import { MobileNav } from '@/src/components/layout/MobileNav';
 import { ThemeProvider } from '@/src/components/ThemeProvider';
+import { GoogleAnalytics } from '@next/third-parties/google';
 
 const geistSans = Geist({
     variable: '--font-geist-sans',
@@ -51,6 +52,9 @@ export default function RootLayout({
                     }}
                 />
                 </ThemeProvider>
+                {process.env.NEXT_PUBLIC_GA_ID && (
+                    <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
+                )}
             </body>
         </html>
     );
