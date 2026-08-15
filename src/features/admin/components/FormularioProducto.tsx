@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '@/src/lib/supabase/client';
 import type { Database } from '@/src/types/supabase';
 import toast from 'react-hot-toast';
+import imageCompression from 'browser-image-compression';
 
 export function FormularioProducto() {
     const router = useRouter();
@@ -14,9 +15,10 @@ export function FormularioProducto() {
     const [descripcion, setDescripcion] = useState('');
     const [precio, setPrecio] = useState('');
     const [stock, setStock] = useState('');
-    const [imagenUrl, setImagenUrl] = useState('');
+    const [archivoImagen, setArchivoImagen] = useState<File | null>(null);
     const [tallesDisponibles, setTallesDisponibles] = useState<string[]>([]);
     const [cargando, setCargando] = useState(false);
+    const [subiendo, setSubiendo] = useState(false);
 
     const opcionesTalles = ['S', 'M', 'L', 'XL', 'Único'];
 
@@ -36,15 +38,42 @@ export function FormularioProducto() {
             return;
         }
 
+        if (!archivoImagen) {
+            toast.error('Debes seleccionar una imagen');
+            return;
+        }
+
         setCargando(true);
+        setSubiendo(true);
 
         try {
+            // Compresión de la imagen
+            const compressedFile = await imageCompression(archivoImagen, { maxSizeMB: 1, maxWidthOrHeight: 1200 });
+
+            // Generar nombre único
+            const fileName = `${Date.now()}-${archivoImagen.name}`;
+
+            // Subir a Supabase
+            const { data: uploadData, error: uploadError } = await supabase.storage
+                .from('productos')
+                .upload(fileName, compressedFile);
+
+            if (uploadError) {
+                throw new Error(`Error al subir la imagen: ${uploadError.message}`);
+            }
+
+            // Obtener URL pública
+            const { data: { publicUrl } } = supabase.storage
+                .from('productos')
+                .getPublicUrl(fileName);
+
+            // Insertar producto en base de datos
             const { error } = await supabase.from('productos').insert({
                 nombre,
                 descripcion: descripcion || null,
                 precio: parseFloat(precio),
                 stock: parseInt(stock, 10),
-                imagen_url: imagenUrl || null,
+                imagen_url: publicUrl,
                 talles_disponibles: tallesDisponibles.length > 0 ? tallesDisponibles : null,
             });
 
@@ -60,6 +89,7 @@ export function FormularioProducto() {
             toast.error(`Error al crear el producto: ${mensajeError}`);
         } finally {
             setCargando(false);
+            setSubiendo(false);
         }
     };
 
@@ -129,15 +159,15 @@ export function FormularioProducto() {
                     </div>
                 </div>
 
-                {/* Campo: Imagen URL */}
-                <div className="flex flex-col gap-1.5">
-                    <label className="text-sm font-bold">URL de la Imagen</label>
-                    <input
-                        type="url"
-                        value={imagenUrl}
-                        onChange={(e) => setImagenUrl(e.target.value)}
-                        placeholder="https://ejemplo.com/imagen.jpg"
-                        className="w-full bg-transparent text-foreground border border-border rounded-lg p-2.5 focus:outline-none focus:border-foreground transition-colors"
+                {/* Campo: Imagen */}
+                <div className="flex flex-col gap-2">
+                    <label className="text-sm font-semibold text-foreground">Imagen del Producto</label>
+                    <input 
+                        type="file" 
+                        accept="image/*"
+                        onChange={(e) => setArchivoImagen(e.target.files?.[0] || null)}
+                        className="w-full text-sm text-foreground file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-foreground file:text-background hover:file:opacity-90 cursor-pointer"
+                        required
                     />
                 </div>
 
@@ -169,9 +199,9 @@ export function FormularioProducto() {
             <div className="flex justify-end pt-4">
                 <button
                     type="submit"
-                    disabled={cargando}
+                    disabled={subiendo}
                     className="w-full sm:w-auto bg-foreground text-background px-6 py-3 rounded-lg font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-50">
-                    {cargando ? 'Creando Producto...' : 'Crear Producto'}
+                    {subiendo ? 'Subiendo y creando...' : 'Crear Producto'}
                 </button>
             </div>
         </form>
