@@ -36,6 +36,23 @@ export interface Database {
           created_at?: string;
         };
       };
+      admin_users: {
+        Row: {
+          id: string;
+          whatsapp: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          whatsapp: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          whatsapp?: string;
+          created_at?: string;
+        };
+      };
     };
   };
 }

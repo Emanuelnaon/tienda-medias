@@ -1,34 +1,38 @@
 'use client';
 
 import Link from 'next/link';
+import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { useCarritoStore } from '../../src/features/carrito/store';
+import { generarLinkWhatsApp } from '../../src/features/carrito/actions/generarCheckout';
 
 export default function CarritoPage() {
     const { items, removerItem, actualizarCantidad, limpiarCarrito, obtenerTotal } = useCarritoStore();
+    const [isPending, setIsPending] = useState(false);
 
-    const handleCheckoutWhatsApp = () => {
-        // REEMPLAZA ESTE NÚMERO POR EL TUYO (Incluye código de país, ej: 54911 para CABA/GBA)
-        const numeroWhatsApp = '5491172396962';
-
+    const handleCheckoutWhatsApp = async () => {
         if (items.length === 0) return;
 
-        let mensaje = '👋 Hola! Quiero realizar el siguiente pedido:\n\n';
+        setIsPending(true);
+        try {
+            const itemsMapeados = items.map((item) => ({
+                id: item.id,
+                cantidad: item.cantidad,
+            }));
 
-        items.forEach((item) => {
-            mensaje += `▪ ${item.cantidad}x ${item.nombre} (Talle: ${item.talle_seleccionado}) - $${item.precio * item.cantidad}\n`;
-        });
+            const url = await generarLinkWhatsApp(itemsMapeados);
+            
+            // Limpiamos el carrito porque la compra ya se procesó
+            limpiarCarrito();
 
-        mensaje += `\n💰 *Total a pagar: $${obtenerTotal()}*`;
-        mensaje += '\n\nPor favor, confirmame cómo avanzamos con el pago y envío. ¡Gracias!';
-
-        // Codificamos el mensaje para que los espacios y saltos de línea funcionen en la URL
-        const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
-
-        // Limpiamos el carrito porque la compra ya se envió
-        limpiarCarrito();
-
-        // Abrimos WhatsApp en una nueva pestaña
-        window.open(url, '_blank');
+            // Redireccionamos a la URL de WhatsApp
+            window.location.href = url;
+        } catch (error) {
+            console.error(error);
+            toast.error(error instanceof Error ? error.message : 'Ocurrió un error al procesar la compra');
+        } finally {
+            setIsPending(false);
+        }
     };
 
     if (items.length === 0) {
@@ -103,8 +107,9 @@ export default function CarritoPage() {
 
                 <button
                     onClick={handleCheckoutWhatsApp}
-                    className="w-full sm:w-auto px-8 py-4 bg-green-600 hover:bg-green-700 text-white font-bold rounded-md transition-colors text-lg shadow-md">
-                    Finalizar Compra por WhatsApp
+                    disabled={isPending}
+                    className="w-full sm:w-auto px-8 py-4 bg-green-600 hover:bg-green-700 text-white font-bold rounded-md transition-colors text-lg shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
+                    {isPending ? 'Procesando...' : 'Finalizar Compra por WhatsApp'}
                 </button>
             </div>
         </div>
