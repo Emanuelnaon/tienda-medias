@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useCarritoStore } from '../../src/features/carrito/store';
 
 export default function CarritoPage() {
-    const { items, removerItem, limpiarCarrito, obtenerTotal } = useCarritoStore();
+    const { items, removerItem, actualizarCantidad, limpiarCarrito, obtenerTotal } = useCarritoStore();
 
     const handleCheckoutWhatsApp = () => {
         // REEMPLAZA ESTE NÚMERO POR EL TUYO (Incluye código de país, ej: 54911 para CABA/GBA)
@@ -35,7 +35,7 @@ export default function CarritoPage() {
         return (
             <div className="flex flex-col items-center justify-center h-[70vh] bg-background text-foreground px-4 text-center">
                 <h1 className="text-3xl font-bold mb-4">Tu carrito está vacío 🛒</h1>
-                <p className="text-zinc-500 mb-8">¡Es un buen momento para buscar unas medias geniales!</p>
+                <p className="text-muted-foreground mb-8">¡Es un buen momento para buscar unas medias geniales!</p>
                 <Link
                     href="/"
                     className="px-6 py-3 bg-foreground text-background font-semibold rounded-md hover:opacity-90 transition-opacity">
@@ -55,18 +55,37 @@ export default function CarritoPage() {
                     <div
                         key={`${item.id}-${item.talle_seleccionado}`}
                         className="flex items-center justify-between p-4 border border-border rounded-lg bg-background">
-                        <div className="flex flex-col">
+                        <div className="flex flex-col gap-1.5">
                             <span className="font-semibold text-foreground text-lg">{item.nombre}</span>
-                            <span className="text-sm text-zinc-500">
-                                Talle: {item.talle_seleccionado} | Cantidad: {item.cantidad}
-                            </span>
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                <span>Talle: {item.talle_seleccionado}</span>
+                                <span className="text-border">|</span>
+                                <div className="flex items-center gap-2 border border-border rounded-md px-2 py-0.5 bg-background">
+                                    <button
+                                        disabled={item.cantidad <= 1}
+                                        onClick={() => actualizarCantidad(item.id, item.talle_seleccionado, item.cantidad - 1)}
+                                        className="text-foreground hover:opacity-80 disabled:opacity-30 px-1 font-bold"
+                                        title="Reducir cantidad"
+                                    >
+                                        -
+                                    </button>
+                                    <span className="font-semibold text-foreground px-1">{item.cantidad}</span>
+                                    <button
+                                        onClick={() => actualizarCantidad(item.id, item.talle_seleccionado, item.cantidad + 1)}
+                                        className="text-foreground hover:opacity-80 px-1 font-bold"
+                                        title="Aumentar cantidad"
+                                    >
+                                        +
+                                    </button>
+                                </div>
+                            </div>
                         </div>
 
                         <div className="flex items-center gap-4">
                             <span className="font-bold text-foreground text-lg">${item.precio * item.cantidad}</span>
                             <button
                                 onClick={() => removerItem(item.id, item.talle_seleccionado)}
-                                className="text-red-500 hover:text-red-700 font-medium text-sm transition-colors p-2"
+                                className="text-destructive hover:opacity-80 font-medium text-sm transition-colors p-2"
                                 title="Eliminar producto">
                                 Eliminar
                             </button>
@@ -76,7 +95,7 @@ export default function CarritoPage() {
             </div>
 
             {/* Resumen Total y Checkout */}
-            <div className="mt-8 p-6 border border-border rounded-lg bg-zinc-50 dark:bg-zinc-900/50 flex flex-col items-end gap-4">
+            <div className="mt-8 p-6 border border-border rounded-lg bg-muted flex flex-col items-end gap-4">
                 <div className="flex items-center gap-4 text-2xl">
                     <span className="text-foreground">Total:</span>
                     <span className="font-extrabold text-blue-600">${obtenerTotal()}</span>
