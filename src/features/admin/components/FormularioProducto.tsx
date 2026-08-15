@@ -55,7 +55,7 @@ export function FormularioProducto() {
 
             // Subir a Supabase
             const { data: uploadData, error: uploadError } = await supabase.storage
-                .from('productos')
+                .from('public_assets')
                 .upload(fileName, compressedFile);
 
             if (uploadError) {
@@ -64,11 +64,11 @@ export function FormularioProducto() {
 
             // Obtener URL pública
             const { data: { publicUrl } } = supabase.storage
-                .from('productos')
+                .from('public_assets')
                 .getPublicUrl(fileName);
 
             // Insertar producto en base de datos
-            const { error } = await supabase.from('productos').insert({
+            const { error } = await supabase.from('public_assets').insert({
                 nombre,
                 descripcion: descripcion || null,
                 precio: parseFloat(precio),
