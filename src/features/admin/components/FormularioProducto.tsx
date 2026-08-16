@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/src/lib/supabase/client';
-import type { Database } from '@/src/types/supabase';
 import toast from 'react-hot-toast';
 import imageCompression from 'browser-image-compression';
 
@@ -19,7 +18,6 @@ export function FormularioProducto() {
     const [categoria, setCategoria] = useState('');
     const [archivoImagen, setArchivoImagen] = useState<File | null>(null);
     const [tallesDisponibles, setTallesDisponibles] = useState<string[]>([]);
-    const [cargando, setCargando] = useState(false);
     const [subiendo, setSubiendo] = useState(false);
 
     const opcionesTalles = ['S', 'M', 'L', 'XL', 'Único'];
@@ -46,8 +44,7 @@ export function FormularioProducto() {
             return;
         }
 
-        setCargando(true);
-        setSubiendo(true);
+        
 
         try {
             // Compresión de la imagen
@@ -57,7 +54,7 @@ export function FormularioProducto() {
             const fileName = `${Date.now()}-${archivoImagen.name}`;
 
             // Subir a Supabase
-            const { data: uploadData, error: uploadError } = await supabase.storage
+            const {  error: uploadError } = await supabase.storage
                 .from('productos')
                 .upload(fileName, compressedFile);
 
@@ -93,7 +90,6 @@ export function FormularioProducto() {
             const mensajeError = error instanceof Error ? error.message : String(error);
             toast.error(`Error al crear el producto: ${mensajeError}`);
         } finally {
-            setCargando(false);
             setSubiendo(false);
         }
     };

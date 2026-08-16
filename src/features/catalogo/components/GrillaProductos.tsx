@@ -5,7 +5,9 @@ import { DrawerFiltros } from './DrawerFiltros'; // <-- Importamos el nuevo comp
 import type { Database } from '@/src/types/supabase';
 
 // Extraemos el tipo exacto de una fila de la tabla productos
-type Producto = Database['public']['Tables']['productos']['Row'];
+type Producto = Database['public']['Tables']['productos']['Row'] & {
+    categoria?: string | null;
+};
 
 interface GrillaProductosProps {
     parametros?: {
@@ -26,7 +28,7 @@ export async function GrillaProductos({ parametros }: GrillaProductosProps) {
     const productos = await getProductos(filtros);
 
     // Obtener la lista de categorías dinámicas únicas de todos los productos de la BD (sin filtros de categoría)
-    const todosLosProductos = await getProductos({ orden: 'recientes' });
+    const todosLosProductos = (await getProductos({ orden: 'recientes' })) as Producto[];
     const categoriasUnicas = Array.from(
         new Set(
             todosLosProductos

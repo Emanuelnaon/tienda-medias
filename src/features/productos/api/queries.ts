@@ -1,5 +1,5 @@
 import { createSupabaseServerClient } from '@/src/lib/supabase/server';
-import type { Database } from '@/types/supabase';
+//import type { Database } from '@/types/supabase';
 
 export async function getProductos(filtros?: { talle?: string; orden?: string; categoria?: string }) {
     const supabase = await createSupabaseServerClient();

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useCarritoStore } from '@/src/features/carrito/store';
-import { useRouter } from 'next/navigation';
+//import { useRouter } from 'next/navigation';
 import { generarLinkWhatsApp } from '@/src/features/carrito/actions/generarCheckout';
 import toast from 'react-hot-toast';
 
@@ -12,7 +12,7 @@ interface DrawerCarritoProps {
 }
 
 export function DrawerCarrito({ isOpen, onClose }: DrawerCarritoProps) {
-    const router = useRouter();
+    
     const { items, removerItem, actualizarCantidad, limpiarCarrito, obtenerTotal } = useCarritoStore();
     const [isPending, setIsPending] = useState(false);
 
@@ -53,14 +53,14 @@ export function DrawerCarrito({ isOpen, onClose }: DrawerCarritoProps) {
             {/* Overlay */}
             {isOpen && (
                 <div
-                    className="fixed inset-0 bg-foreground/60 backdrop-blur-sm z-[99998] transition-opacity duration-300"
+                    className="fixed inset-0 bg-foreground/60 backdrop-blur-sm z-99998 transition-opacity duration-300"
                     onClick={onClose}
                 />
             )}
 
             {/* Bottom Sheet / Side Drawer */}
             <div
-                className={`fixed z-[99999] bg-background text-foreground transition-transform duration-300 ease-in-out flex flex-col
+                className={`fixed z-99999 bg-background text-foreground transition-transform duration-300 ease-in-out flex flex-col
                     bottom-0 left-0 right-0 w-full rounded-t-2xl max-h-[85vh]
                     md:top-0 md:bottom-0 md:left-auto md:right-0 md:w-96 md:rounded-none md:max-h-screen
                     ${isOpen ? 'translate-y-0 md:translate-x-0' : 'translate-y-full md:translate-x-full'}
