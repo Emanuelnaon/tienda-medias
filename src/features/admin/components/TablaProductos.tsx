@@ -5,11 +5,13 @@ import Link from 'next/link';
 import toast from 'react-hot-toast';
 import { createClient } from '@/src/lib/supabase/client';
 import type { Database } from '@/src/types/supabase';
+import { obtenerLinkCompartirAdmin } from '../../carrito/actions/generarCheckout';
 
 type Producto = Database['public']['Tables']['productos']['Row'];
 
 export function TablaProductos({ productosIniciales }: { productosIniciales: Producto[] }) {
     const [productos, setProductos] = useState<Producto[]>(productosIniciales);
+    const [copiandoId, setCopiandoId] = useState<string | null>(null);
     const supabase = createClient();
 
     const handleEliminar = async (id: string, nombre: string) => {
@@ -29,6 +31,21 @@ export function TablaProductos({ productosIniciales }: { productosIniciales: Pro
         } catch (error: unknown) {
             const mensajeError = error instanceof Error ? error.message : String(error);
             toast.error(`Error al eliminar el producto: ${mensajeError}`);
+        }
+    };
+
+    const handleCopiarLink = async (productoId: string) => {
+        setCopiandoId(productoId);
+        try {
+            const url = await obtenerLinkCompartirAdmin(productoId);
+            await navigator.clipboard.writeText(url);
+            toast.success('¡Link copiado!');
+        } catch (error: unknown) {
+            console.error(error);
+            const mensajeError = error instanceof Error ? error.message : String(error);
+            toast.error(`Error al copiar el enlace: ${mensajeError}`);
+        } finally {
+            setCopiandoId(null);
         }
     };
 
@@ -185,6 +202,30 @@ export function TablaProductos({ productosIniciales }: { productosIniciales: Pro
                                     </td>
                                     <td className="p-4 text-right">
                                         <div className="flex justify-end gap-2">
+                                            <button
+                                                disabled={copiandoId === producto.id}
+                                                onClick={() => handleCopiarLink(producto.id)}
+                                                className="p-2 text-foreground/70 hover:text-foreground bg-transparent border border-border hover:bg-foreground/5 rounded transition-colors disabled:opacity-50"
+                                                title="Copiar Link de WhatsApp"
+                                            >
+                                                {copiandoId === producto.id ? (
+                                                    <div className="w-4 h-4 border-2 border-foreground/70 border-t-transparent rounded-full animate-spin" />
+                                                ) : (
+                                                    <svg
+                                                        className="w-4 h-4"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <path
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            strokeWidth="2"
+                                                            d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"
+                                                        />
+                                                    </svg>
+                                                )}
+                                            </button>
                                             <Link
                                                 href={`/admin/editar/${producto.id}`}
                                                 className="p-2 text-foreground/70 hover:text-foreground bg-transparent border border-border hover:bg-foreground/5 rounded transition-colors"

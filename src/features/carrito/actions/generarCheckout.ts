@@ -78,3 +78,49 @@ export async function generarLinkWhatsApp(carrito: CarritoItemInput[]): Promise<
     const textoCodificado = encodeURIComponent(mensaje);
     return `https://wa.me/${numeroAdmin}?text=${textoCodificado}`;
 }
+
+export async function obtenerLinkCompartirAdmin(productoId: string): Promise<string> {
+    if (!productoId) {
+        throw new Error('ID de producto no proporcionado');
+    }
+
+    const supabase = await createSupabaseServerClient();
+
+    // 1. Consulte el whatsapp de la tabla admin_users.
+    const { data: adminRawData, error: adminError } = await supabase
+        .from('admin_users')
+        .select('*')
+        .limit(1)
+        .single();
+
+    const adminData = adminRawData as Database['public']['Tables']['admin_users']['Row'] | null;
+
+    if (adminError || !adminData || !adminData.whatsapp) {
+        console.error('Error al obtener número de WhatsApp de admin:', adminError);
+        throw new Error('Número de administrador no configurado');
+    }
+
+    const numeroAdmin = adminData.whatsapp.replace(/[^\d+]/g, '');
+
+    // 2. Consulte el nombre y codigo_corto del producto en la tabla productos.
+    const { data: prodData, error: prodError } = await supabase
+        .from('productos')
+        .select('*')
+        .eq('id', productoId)
+        .single();
+
+    const producto = prodData as Database['public']['Tables']['productos']['Row'] | null;
+
+    if (prodError || !producto) {
+        console.error('Error al consultar producto:', prodError);
+        throw new Error('Producto no encontrado');
+    }
+
+    // 3. Construya el mensaje: "Hola, quiero consultar el stock de: ${producto.nombre} (Código: ${producto.codigo_corto})"
+    const codigoMostrar = producto.codigo_corto || 'Sin código';
+    const mensaje = `Hola, quiero consultar el stock de: ${producto.nombre} (Código: ${codigoMostrar})`;
+
+    // 4. Devuelva la URL completa armada con la variable dinámica.
+    const textoCodificado = encodeURIComponent(mensaje);
+    return `https://wa.me/${numeroAdmin}?text=${textoCodificado}`;
+}
