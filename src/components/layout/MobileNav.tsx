@@ -79,7 +79,7 @@ export function MobileNav() {
                     </Link>
                     <button
                         onClick={handleSignOut}
-                        className="flex flex-col items-center justify-center flex-1 py-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">
+                        className="flex flex-col items-center justify-center flex-1 py-1 text-xs font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors">
                         <LogOut className="w-5 h-5" />
                         <span className="mt-1">Salir</span>
                     </button>
