@@ -1,5 +1,5 @@
 @import "tailwindcss";
-
+@custom-variant dark (&:is(.dark *));
 /* Definición de variables CSS nativas */
 :root {
   --background: rgb(255, 250, 235);

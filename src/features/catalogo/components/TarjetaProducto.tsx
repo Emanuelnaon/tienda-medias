@@ -116,7 +116,8 @@ export function TarjetaProducto({ producto }: { producto: Producto }) {
                         handleQuickAdd(e);
                     }}
                     disabled={stock <= 0}
-                    className="flex items-center justify-center w-10 h-10 rounded-full dark:bg-zinc-950 text-blue-200 border border-border shadow-[0_0_15px_rgba(255,255,255,0.7)] dark:shadow-[0_0_15px_rgba(0,0,0,0.6)] hover:scale-110 active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex items-center justify-center w-10 h-10 rounded-full dark:bg-zinc-950 text-blue-200 border 
+                    border-border shadow-[0_0_15px_rgba(255,255,255,0.7)] dark:shadow-[0_0_15px_rgba(0,0,0,0.6)] hover:scale-110 active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                     title="Quick Add">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />
