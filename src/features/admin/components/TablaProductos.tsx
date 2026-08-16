@@ -54,15 +54,19 @@ export function TablaProductos({ productosIniciales }: { productosIniciales: Pro
             const codigoMostrar = producto.codigo_corto || 'Sin código';
             const textoGenerado = `🔥 ¡Atención a este ingreso!\n✨ ${producto.nombre}    💰 Precio: $${producto.precio}\n\n🛒 Búscalo súper rápido en nuestra web ingresando el código: #${codigoMostrar}\n🔗 Link directo en nuestra bio.`;
 
+            // Paso A: Escribir al portapapeles
             await navigator.clipboard.writeText(textoGenerado);
-            toast.success('¡Copy guardado! Abriendo Instagram...');
+
+            // Paso B: Toast exitoso
+            toast.success('¡Copy guardado!');
             
-            // Abre Instagram en una nueva pestaña/app
-            window.open('https://www.instagram.com/', '_blank');
+            // Paso C: Retraso artificial para que el navegador termine de procesar el portapapeles antes de perder el foco
+            setTimeout(() => {
+                window.open('https://www.instagram.com/', '_blank');
+            }, 600);
         } catch (error: unknown) {
             console.error(error);
-            const mensajeError = error instanceof Error ? error.message : String(error);
-            toast.error(`Error al preparar publicación: ${mensajeError}`);
+            toast.error('Error al copiar el texto. Verifica los permisos del navegador.');
         }
     };
 
@@ -220,7 +224,7 @@ export function TablaProductos({ productosIniciales }: { productosIniciales: Pro
                                     <td className="p-4 text-right">
                                         <div className="flex justify-end gap-2">
                                             <button
-                                                onClick={() => handlePrepararPublicacion(producto)}
+                                                onClick={async () => await handlePrepararPublicacion(producto)}
                                                 className="p-2 text-foreground/70 hover:text-foreground bg-transparent border border-border hover:bg-foreground/5 rounded transition-colors"
                                                 title="Preparar Publicación (Instagram)"
                                             >
