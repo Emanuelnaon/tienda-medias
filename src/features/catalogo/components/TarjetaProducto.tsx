@@ -110,11 +110,14 @@ export function TarjetaProducto({ producto }: { producto: Producto }) {
             {/* Botón secundario (Quick Add '+') posicionado estratégicamente sobre la imagen */}
             <div className="absolute top-2 right-2 z-10">
                 <button
-                    onClick={handleQuickAdd}
+                    onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleQuickAdd(e);
+                    }}
                     disabled={stock <= 0}
-                    className="flex items-center justify-center w-10 h-10 rounded-full bg-white dark:bg-zinc-950 text-foreground border border-border shadow-[0_0_15px_rgba(255,255,255,0.7)] dark:shadow-[0_0_15px_rgba(0,0,0,0.6)] hover:scale-110 active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                    title="Quick Add"
-                >
+                    className="flex items-center justify-center w-10 h-10 rounded-full bg-white dark:bg-zinc-950 text-primary border border-border shadow-[0_0_15px_rgba(255,255,255,0.7)] dark:shadow-[0_0_15px_rgba(0,0,0,0.6)] hover:scale-110 active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    title="Quick Add">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />
                     </svg>
@@ -149,8 +152,7 @@ export function TarjetaProducto({ producto }: { producto: Producto }) {
                 <button
                     onClick={handleAgregarCarrito}
                     disabled={stock <= 0}
-                    className="w-full flex items-center justify-center gap-2 bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-3 rounded-lg text-sm font-extrabold transition-all duration-300 shadow-md shadow-blue-500/20 hover:shadow-blue-500/40 animate-[pulse_2s_infinite] disabled:opacity-50 disabled:cursor-not-allowed"
-                >
+                    className="w-full flex items-center justify-center gap-2 bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-3 rounded-lg text-sm font-extrabold transition-all duration-300 shadow-md shadow-blue-500/20 hover:shadow-blue-500/40 animate-[pulse_2s_infinite] disabled:opacity-50 disabled:cursor-not-allowed">
                     Comprar
                 </button>
             </div>
