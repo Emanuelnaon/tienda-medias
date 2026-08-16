@@ -49,6 +49,23 @@ export function TablaProductos({ productosIniciales }: { productosIniciales: Pro
         }
     };
 
+    const handlePrepararPublicacion = async (producto: Producto) => {
+        try {
+            const codigoMostrar = producto.codigo_corto || 'Sin código';
+            const textoGenerado = `🔥 ¡Atención a este ingreso!\n✨ ${producto.nombre}    💰 Precio: $${producto.precio}\n\n🛒 Búscalo súper rápido en nuestra web ingresando el código: #${codigoMostrar}\n🔗 Link directo en nuestra bio.`;
+
+            await navigator.clipboard.writeText(textoGenerado);
+            toast.success('¡Copy guardado! Abriendo Instagram...');
+            
+            // Abre Instagram en una nueva pestaña/app
+            window.open('https://www.instagram.com/', '_blank');
+        } catch (error: unknown) {
+            console.error(error);
+            const mensajeError = error instanceof Error ? error.message : String(error);
+            toast.error(`Error al preparar publicación: ${mensajeError}`);
+        }
+    };
+
     const handleActualizarStock = async (id: string, stockActual: number, incremento: number) => {
         const nuevoStock = stockActual + incremento;
         if (nuevoStock < 0) return;
@@ -202,6 +219,25 @@ export function TablaProductos({ productosIniciales }: { productosIniciales: Pro
                                     </td>
                                     <td className="p-4 text-right">
                                         <div className="flex justify-end gap-2">
+                                            <button
+                                                onClick={() => handlePrepararPublicacion(producto)}
+                                                className="p-2 text-foreground/70 hover:text-foreground bg-transparent border border-border hover:bg-foreground/5 rounded transition-colors"
+                                                title="Preparar Publicación (Instagram)"
+                                            >
+                                                <svg
+                                                    className="w-4 h-4"
+                                                    viewBox="0 0 24 24"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    strokeWidth="2"
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                >
+                                                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                                                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                                                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                                                </svg>
+                                            </button>
                                             <button
                                                 disabled={copiandoId === producto.id}
                                                 onClick={() => handleCopiarLink(producto.id)}
