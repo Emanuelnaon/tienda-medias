@@ -25,23 +25,28 @@ export default function EditarProductoPage({ params }: PageProps) {
     const [precio, setPrecio] = useState('');
     const [stock, setStock] = useState('');
     const [categoria, setCategoria] = useState('');
-    const [archivoImagen, setArchivoImagen] = useState<File | null>(null);
+    const [archivosImagenes, setArchivosImagenes] = useState<File[]>([]);
     const [imagenUrlExistente, setImagenUrlExistente] = useState('');
+    const [galeriaExistente, setGaleriaExistente] = useState<string[]>([]);
     const [tallesDisponibles, setTallesDisponibles] = useState<string[]>([]);
     const [cargando, setCargando] = useState(true);
     const [guardando, setGuardando] = useState(false);
 
     const opcionesTalles = ['S', 'M', 'L', 'XL', 'Único'];
-    const opcionesCategorias = ['Medias Invisibles', 'Soketes', 'Medias Cortas', 'Medias ¾', 'Bucaneras', 'Deportivas', 'Otras'];
+    const opcionesCategorias = [
+        'Medias Invisibles',
+        'Soketes',
+        'Medias Cortas',
+        'Medias ¾',
+        'Bucaneras',
+        'Deportivas',
+        'Otras',
+    ];
 
     useEffect(() => {
         const cargarProducto = async () => {
             try {
-                const { data, error } = await supabase
-                    .from('productos')
-                    .select('*')
-                    .eq('id', id)
-                    .single();
+                const { data, error } = await supabase.from('productos').select('*').eq('id', id).single();
 
                 if (error || !data) {
                     throw new Error('No se pudo cargar el producto');
@@ -54,6 +59,7 @@ export default function EditarProductoPage({ params }: PageProps) {
                 setPrecio(String(prod.precio));
                 setStock(String(prod.stock));
                 setImagenUrlExistente(prod.imagen_url || '');
+                setGaleriaExistente(Array.isArray(prod.galeria_imagenes) ? prod.galeria_imagenes.filter(Boolean) : []);
                 setTallesDisponibles(prod.talles_disponibles || []);
             } catch (error) {
                 console.error(error);
@@ -68,11 +74,7 @@ export default function EditarProductoPage({ params }: PageProps) {
     }, [id, router, supabase]);
 
     const toggleTalle = (talle: string) => {
-        setTallesDisponibles((prev) =>
-            prev.includes(talle)
-                ? prev.filter((t) => t !== talle)
-                : [...prev, talle]
-        );
+        setTallesDisponibles((prev) => (prev.includes(talle) ? prev.filter((t) => t !== talle) : [...prev, talle]));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -87,28 +89,34 @@ export default function EditarProductoPage({ params }: PageProps) {
 
         try {
             let finalImageUrl = imagenUrlExistente;
+            let galeriaFinal = galeriaExistente;
 
-            // Si se seleccionó un nuevo archivo de imagen, lo comprimimos y subimos
-            if (archivoImagen) {
-                const compressedFile = await imageCompression(archivoImagen, { maxSizeMB: 1, maxWidthOrHeight: 1200 });
-                const fileName = `${Date.now()}-${archivoImagen.name}`;
+            if (archivosImagenes.length > 0) {
+                const urlsNuevas: string[] = [];
 
-                const { error: uploadError } = await supabase.storage
-                    .from('productos')
-                    .upload(fileName, compressedFile);
+                for (const archivo of archivosImagenes) {
+                    const compressedFile = await imageCompression(archivo, { maxSizeMB: 1, maxWidthOrHeight: 1200 });
+                    const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}-${archivo.name.replace(/\s+/g, '-')}`;
 
-                if (uploadError) {
-                    throw new Error(`Error al subir la nueva imagen: ${uploadError.message}`);
+                    const { error: uploadError } = await supabase.storage
+                        .from('productos')
+                        .upload(fileName, compressedFile);
+
+                    if (uploadError) {
+                        throw new Error(`Error al subir la imagen "${archivo.name}": ${uploadError.message}`);
+                    }
+
+                    const {
+                        data: { publicUrl },
+                    } = supabase.storage.from('productos').getPublicUrl(fileName);
+
+                    urlsNuevas.push(publicUrl);
                 }
 
-                const { data: { publicUrl } } = supabase.storage
-                    .from('productos')
-                    .getPublicUrl(fileName);
-
-                finalImageUrl = publicUrl;
+                galeriaFinal = urlsNuevas;
+                finalImageUrl = urlsNuevas[0] ?? finalImageUrl;
             }
 
-            // Actualizar producto en la base de datos
             const { error } = await supabase
                 .from('productos')
                 .update({
@@ -118,6 +126,7 @@ export default function EditarProductoPage({ params }: PageProps) {
                     precio: parseFloat(precio),
                     stock: parseInt(stock, 10),
                     imagen_url: finalImageUrl,
+                    galeria_imagenes: galeriaFinal.length > 0 ? galeriaFinal : null,
                     talles_disponibles: tallesDisponibles.length > 0 ? tallesDisponibles : null,
                     categoria: categoria || null,
                 })
@@ -153,8 +162,7 @@ export default function EditarProductoPage({ params }: PageProps) {
                 <h1 className="text-3xl font-bold">Editar Producto</h1>
                 <Link
                     href="/admin"
-                    className="text-sm font-medium border border-border hover:border-foreground px-4 py-2 rounded-lg transition-colors"
-                >
+                    className="text-sm font-medium border border-border hover:border-foreground px-4 py-2 rounded-lg transition-colors">
                     Volver
                 </Link>
             </div>
@@ -239,24 +247,35 @@ export default function EditarProductoPage({ params }: PageProps) {
                     {/* Campo: Imagen actual e Imagen nueva */}
                     <div className="flex flex-col gap-3">
                         <label className="text-sm font-semibold">Imagen del Producto</label>
-                        {imagenUrlExistente && (
-                            <div className="flex items-center gap-4 p-3 border border-border rounded-lg max-w-sm">
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img
-                                    src={imagenUrlExistente}
-                                    alt="Actual"
-                                    className="w-16 h-16 object-cover rounded border border-border"
-                                />
-                                <span className="text-xs text-muted-foreground truncate">Imagen actual activa</span>
+                        {(imagenUrlExistente || galeriaExistente.length > 0) && (
+                            <div className="flex flex-wrap gap-3 p-3 border border-border rounded-lg">
+                                {(galeriaExistente.length > 0 ? galeriaExistente : [imagenUrlExistente])
+                                    .filter(Boolean)
+                                    .map((url, index) => (
+                                        <div
+                                            key={`${url}-${index}`}
+                                            className="w-16 h-16 overflow-hidden rounded border border-border bg-zinc-100 dark:bg-zinc-900">
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                                            <img
+                                                src={url}
+                                                alt={`Imagen actual ${index + 1}`}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        </div>
+                                    ))}
                             </div>
                         )}
                         <input
                             type="file"
                             accept="image/*"
-                            onChange={(e) => setArchivoImagen(e.target.files?.[0] || null)}
+                            multiple
+                            onChange={(e) => setArchivosImagenes(Array.from(e.target.files ?? []))}
                             className="w-full text-sm text-foreground file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-foreground file:text-background hover:file:opacity-90 cursor-pointer"
                         />
-                        <p className="text-[11px] text-muted-foreground">Opcional. Selecciónala sólo si deseas cambiar la imagen existente.</p>
+                        <p className="text-[11px] text-muted-foreground">
+                            Opcional. Si seleccionas varias imágenes, la primera será la principal y se guardará la
+                            galería completa.
+                        </p>
                     </div>
 
                     {/* Campo: Categoría */}
@@ -265,8 +284,7 @@ export default function EditarProductoPage({ params }: PageProps) {
                         <select
                             value={categoria}
                             onChange={(e) => setCategoria(e.target.value)}
-                            className="w-full bg-background text-foreground border border-border rounded-lg p-2.5 focus:outline-none focus:border-foreground transition-colors"
-                        >
+                            className="w-full bg-background text-foreground border border-border rounded-lg p-2.5 focus:outline-none focus:border-foreground transition-colors">
                             <option value="">Selecciona una categoría...</option>
                             {opcionesCategorias.map((cat) => (
                                 <option key={cat} value={cat}>
@@ -288,9 +306,10 @@ export default function EditarProductoPage({ params }: PageProps) {
                                         type="button"
                                         onClick={() => toggleTalle(talle)}
                                         className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors
-                                            ${isSelected
-                                                ? 'bg-foreground text-background hover:opacity-90 border border-transparent'
-                                                : 'bg-transparent text-foreground border border-border hover:border-foreground'
+                                            ${
+                                                isSelected
+                                                    ? 'bg-foreground text-background hover:opacity-90 border border-transparent'
+                                                    : 'bg-transparent text-foreground border border-border hover:border-foreground'
                                             }`}>
                                         {talle}
                                     </button>
@@ -305,8 +324,7 @@ export default function EditarProductoPage({ params }: PageProps) {
                     <button
                         type="submit"
                         disabled={guardando}
-                        className="w-full sm:w-auto bg-foreground text-background px-6 py-3 rounded-lg font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-50"
-                    >
+                        className="w-full sm:w-auto bg-foreground text-background px-6 py-3 rounded-lg font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-50">
                         {guardando ? 'Guardando cambios...' : 'Guardar Cambios'}
                     </button>
                 </div>

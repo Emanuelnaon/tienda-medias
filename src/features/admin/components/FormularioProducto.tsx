@@ -16,19 +16,23 @@ export function FormularioProducto() {
     const [precio, setPrecio] = useState('');
     const [stock, setStock] = useState('');
     const [categoria, setCategoria] = useState('');
-    const [archivoImagen, setArchivoImagen] = useState<File | null>(null);
+    const [archivosImagenes, setArchivosImagenes] = useState<File[]>([]);
     const [tallesDisponibles, setTallesDisponibles] = useState<string[]>([]);
     const [subiendo, setSubiendo] = useState(false);
 
     const opcionesTalles = ['S', 'M', 'L', 'XL', 'Único'];
-    const opcionesCategorias = ['Medias Invisibles', 'Soketes', 'Medias Cortas', 'Medias ¾', 'Bucaneras', 'Deportivas', 'Otras'];
+    const opcionesCategorias = [
+        'Medias Invisibles',
+        'Soketes',
+        'Medias Cortas',
+        'Medias ¾',
+        'Bucaneras',
+        'Deportivas',
+        'Otras',
+    ];
 
     const toggleTalle = (talle: string) => {
-        setTallesDisponibles((prev) =>
-            prev.includes(talle)
-                ? prev.filter((t) => t !== talle)
-                : [...prev, talle]
-        );
+        setTallesDisponibles((prev) => (prev.includes(talle) ? prev.filter((t) => t !== talle) : [...prev, talle]));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -39,42 +43,45 @@ export function FormularioProducto() {
             return;
         }
 
-        if (!archivoImagen) {
-            toast.error('Debes seleccionar una imagen');
+        if (archivosImagenes.length === 0) {
+            toast.error('Debes seleccionar al menos una imagen');
             return;
         }
 
-        
+        setSubiendo(true);
 
         try {
-            // Compresión de la imagen
-            const compressedFile = await imageCompression(archivoImagen, { maxSizeMB: 1, maxWidthOrHeight: 1200 });
+            const urlsPublicas: string[] = [];
 
-            // Generar nombre único
-            const fileName = `${Date.now()}-${archivoImagen.name}`;
+            for (const archivo of archivosImagenes) {
+                const archivoComprimido = await imageCompression(archivo, { maxSizeMB: 1, maxWidthOrHeight: 1200 });
+                const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}-${archivo.name.replace(/\s+/g, '-')}`;
 
-            // Subir a Supabase
-            const {  error: uploadError } = await supabase.storage
-                .from('productos')
-                .upload(fileName, compressedFile);
+                const { error: uploadError } = await supabase.storage
+                    .from('productos')
+                    .upload(fileName, archivoComprimido);
 
-            if (uploadError) {
-                throw new Error(`Error al subir la imagen: ${uploadError.message}`);
+                if (uploadError) {
+                    throw new Error(`Error al subir la imagen "${archivo.name}": ${uploadError.message}`);
+                }
+
+                const {
+                    data: { publicUrl },
+                } = supabase.storage.from('productos').getPublicUrl(fileName);
+
+                urlsPublicas.push(publicUrl);
             }
 
-            // Obtener URL pública
-            const { data: { publicUrl } } = supabase.storage
-                .from('productos')
-                .getPublicUrl(fileName);
+            const primeraImagen = urlsPublicas[0] ?? null;
 
-            // Insertar producto en base de datos
             const { error } = await supabase.from('productos').insert({
                 nombre,
                 codigo_corto: codigoCorto || null,
                 descripcion: descripcion || null,
                 precio: parseFloat(precio),
                 stock: parseInt(stock, 10),
-                imagen_url: publicUrl,
+                imagen_url: primeraImagen,
+                galeria_imagenes: urlsPublicas.length > 0 ? urlsPublicas : null,
                 talles_disponibles: tallesDisponibles.length > 0 ? tallesDisponibles : null,
                 categoria: categoria || null,
             });
@@ -174,14 +181,21 @@ export function FormularioProducto() {
 
                 {/* Campo: Imagen */}
                 <div className="flex flex-col gap-2">
-                    <label className="text-sm font-semibold text-foreground">Imagen del Producto</label>
-                    <input 
-                        type="file" 
+                    <label className="text-sm font-semibold text-foreground">Imágenes del Producto</label>
+                    <input
+                        type="file"
                         accept="image/*"
-                        onChange={(e) => setArchivoImagen(e.target.files?.[0] || null)}
+                        multiple
+                        onChange={(e) => setArchivosImagenes(Array.from(e.target.files ?? []))}
                         className="w-full text-sm text-foreground file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-foreground file:text-background hover:file:opacity-90 cursor-pointer"
                         required
                     />
+                    {archivosImagenes.length > 0 && (
+                        <p className="text-xs text-foreground/70">
+                            {archivosImagenes.length} archivo(s) seleccionado(s). La primera imagen será la principal y
+                            la galería se guardará automáticamente.
+                        </p>
+                    )}
                 </div>
 
                 {/* Campo: Categoría */}
@@ -190,8 +204,7 @@ export function FormularioProducto() {
                     <select
                         value={categoria}
                         onChange={(e) => setCategoria(e.target.value)}
-                        className="w-full bg-background text-foreground border border-border rounded-lg p-2.5 focus:outline-none focus:border-foreground transition-colors"
-                    >
+                        className="w-full bg-background text-foreground border border-border rounded-lg p-2.5 focus:outline-none focus:border-foreground transition-colors">
                         <option value="">Selecciona una categoría...</option>
                         {opcionesCategorias.map((cat) => (
                             <option key={cat} value={cat}>
@@ -213,9 +226,10 @@ export function FormularioProducto() {
                                     type="button"
                                     onClick={() => toggleTalle(talle)}
                                     className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors
-                                        ${isSelected
-                                            ? 'bg-foreground text-background hover:opacity-90 border border-transparent'
-                                            : 'bg-transparent text-foreground border border-border hover:border-foreground'
+                                        ${
+                                            isSelected
+                                                ? 'bg-foreground text-background hover:opacity-90 border border-transparent'
+                                                : 'bg-transparent text-foreground border border-border hover:border-foreground'
                                         }`}>
                                     {talle}
                                 </button>

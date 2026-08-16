@@ -1,6 +1,8 @@
-import { createSupabaseServerClient } from '../../../src/lib/supabase/server';
-import { SelectorProducto } from '../../../src/features/productos/components/SelectorProducto';
-import type { Database } from '../../../src/types/supabase';
+import { createSupabaseServerClient } from '@/src/lib/supabase/server';
+import { SelectorProducto } from '@/src/features/productos/components/SelectorProducto';
+import { SliderProducto } from '@/src/features/productos/components/SliderProducto';
+import ProductoSugeridos from '@/src/features/productos/components/ProductoSugeridos';
+import type { Database } from '@/src/types/supabase';
 
 type Producto = Database['public']['Tables']['productos']['Row'];
 
@@ -12,7 +14,6 @@ export default async function ProductoPage({ params }: Props) {
     const { id } = await params;
     const supabase = await createSupabaseServerClient();
 
-    // 1. Llamamos a Supabase dejando la variable como "data"
     const { data, error } = await supabase.from('productos').select('*').eq('id', id).single();
 
     if (error || !data) {
@@ -24,32 +25,27 @@ export default async function ProductoPage({ params }: Props) {
         );
     }
 
-    // 2. MATAMOS EL ERROR 'NEVER': Le decimos a TypeScript exactamente qué es esta data
     const producto = data as Producto;
 
     return (
-        <div className="max-w-4xl mx-auto p-4 md:p-8 flex flex-col md:flex-row gap-8 bg-background flex-1">
-            <div className="w-full md:w-1/2 aspect-square bg-zinc-200 dark:bg-zinc-800 rounded-lg overflow-hidden flex items-center justify-center relative">
-                {producto.imagen_url ? (
-                    /* 3. APAGAMOS ESLINT: Le decimos a Next.js que nos deje usar la etiqueta img normal */
-                    /* eslint-disable-next-line @next/next/no-img-element */
-                    <img src={producto.imagen_url} alt={producto.nombre} className="object-cover w-full h-full" />
-                ) : (
-                    <span className="text-zinc-400">Sin imagen</span>
-                )}
+        <div className="max-w-5xl mx-auto p-4 md:p-8 flex flex-col gap-8 bg-background flex-1">
+            <div className="flex flex-col md:flex-row gap-8">
+                <SliderProducto producto={producto} />
+
+                <div className="w-full md:w-1/2 flex flex-col">
+                    <h1 className="text-3xl font-bold text-foreground">{producto.nombre}</h1>
+                    <p className="text-2xl font-extrabold text-blue-600 mt-4">
+                        ${Number(producto.precio).toLocaleString('es-AR', { minimumFractionDigits: 2 })}
+                    </p>
+                    <p className="text-zinc-800 dark:text-zinc-600 mt-4 flex-1">
+                        {producto.descripcion || 'Sin descripción disponible.'}
+                    </p>
+
+                    <SelectorProducto producto={producto} />
+                </div>
             </div>
 
-            <div className="w-full md:w-1/2 flex flex-col">
-                <h1 className="text-3xl font-bold text-foreground">{producto.nombre}</h1>
-                <p className="text-2xl font-extrabold text-blue-600 mt-4">
-                    ${Number(producto.precio).toLocaleString('es-AR', { minimumFractionDigits: 2 })}
-                </p>
-                <p className="text-zinc-800 dark:text-zinc-600 mt-4 flex-1">
-                    {producto.descripcion || 'Sin descripción disponible.'}
-                </p>
-
-                <SelectorProducto producto={producto} />
-            </div>
+            <ProductoSugeridos categoria={producto.categoria} productoId={producto.id} />
         </div>
     );
 }

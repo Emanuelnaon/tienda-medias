@@ -1,5 +1,7 @@
 import { createSupabaseServerClient } from '@/src/lib/supabase/server';
-//import type { Database } from '@/types/supabase';
+import type { Database } from '@/src/types/supabase';
+
+type Producto = Database['public']['Tables']['productos']['Row'];
 
 export async function getProductos(filtros?: { talle?: string; orden?: string; categoria?: string }) {
     const supabase = await createSupabaseServerClient();
@@ -32,4 +34,30 @@ export async function getProductos(filtros?: { talle?: string; orden?: string; c
 
     if (error) throw new Error(error.message);
     return data;
+}
+
+export async function getProductosRelacionados(
+    categoriaSeleccionada?: string | null,
+    productoIdExcluido?: string,
+    limite = 4,
+): Promise<Producto[]> {
+    if (!categoriaSeleccionada || !productoIdExcluido) {
+        return [];
+    }
+
+    const supabase = await createSupabaseServerClient();
+
+    const { data, error } = await supabase
+        .from('productos')
+        .select('*')
+        .eq('categoria', categoriaSeleccionada)
+        .neq('id', productoIdExcluido)
+        .limit(limite)
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        throw new Error(error.message);
+    }
+
+    return (data as Producto[]) ?? [];
 }
