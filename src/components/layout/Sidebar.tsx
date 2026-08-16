@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Home, Grid, ShoppingCart, User, Settings, LogOut } from 'lucide-react';
 import { BotonModoOscuro } from '../BotonModoOscuro';  
 import { createClient } from '@/src/lib/supabase/client';
+import { BuscadorRedes } from './BuscadorRedes';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 
 export function Sidebar() {
@@ -23,11 +24,16 @@ export function Sidebar() {
     return (
         <aside className="hidden lg:flex flex-col w-64 h-screen fixed left-0 top-0 bg-background border-r border-border p-6 text-foreground">
             {/* Logo o Título */}
-            <div className="mb-8">
+            <div className="mb-6">
                 <h1 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
                     <span className="w-3 h-3 bg-blue-600 rounded-full"></span>
                     Socks Store
                 </h1>
+            </div>
+
+            {/* Buscador de Redes Sociales (Instagram / TikTok) */}
+            <div className="mb-6">
+                <BuscadorRedes />
             </div>
 
             {/* Menú de Navegación */}

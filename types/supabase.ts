@@ -12,6 +12,7 @@ export interface Database {
           imagen_url: string | null;
           user_id: string | null;
           created_at: string;
+          codigo_corto: string | null;
         };
         Insert: {
           id?: string;
@@ -23,6 +24,7 @@ export interface Database {
           imagen_url?: string | null;
           user_id?: string | null;
           created_at?: string;
+          codigo_corto?: string | null;
         };
         Update: {
           id?: string;
@@ -34,6 +36,7 @@ export interface Database {
           imagen_url?: string | null;
           user_id?: string | null;
           created_at?: string;
+          codigo_corto?: string | null;
         };
       };
       admin_users: {

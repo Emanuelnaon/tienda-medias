@@ -12,6 +12,7 @@ export function FormularioProducto() {
     const supabase = createClient();
 
     const [nombre, setNombre] = useState('');
+    const [codigoCorto, setCodigoCorto] = useState('');
     const [descripcion, setDescripcion] = useState('');
     const [precio, setPrecio] = useState('');
     const [stock, setStock] = useState('');
@@ -70,6 +71,7 @@ export function FormularioProducto() {
             // Insertar producto en base de datos
             const { error } = await supabase.from('productos').insert({
                 nombre,
+                codigo_corto: codigoCorto || null,
                 descripcion: descripcion || null,
                 precio: parseFloat(precio),
                 stock: parseInt(stock, 10),
@@ -108,6 +110,18 @@ export function FormularioProducto() {
                         placeholder="Ej. Medias de Algodón Clásicas"
                         className="w-full bg-transparent text-foreground border border-border rounded-lg p-2.5 focus:outline-none focus:border-foreground transition-colors"
                         required
+                    />
+                </div>
+
+                {/* Campo: Código Corto (Instagram / Redes) */}
+                <div className="flex flex-col gap-1.5">
+                    <label className="text-sm font-bold">Código Corto (Redes Sociales)</label>
+                    <input
+                        type="text"
+                        value={codigoCorto}
+                        onChange={(e) => setCodigoCorto(e.target.value)}
+                        placeholder="Ej. 102, OFERTA-1"
+                        className="w-full bg-transparent text-foreground border border-border rounded-lg p-2.5 focus:outline-none focus:border-foreground transition-colors"
                     />
                 </div>
 

@@ -2,9 +2,11 @@ import { Toaster } from 'react-hot-toast';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
+import Link from 'next/link';
 import { Sidebar } from '@/src/components/layout/Sidebar';
 import { MobileNav } from '@/src/components/layout/MobileNav';
 import { ThemeProvider } from '@/src/components/ThemeProvider';
+import { BuscadorRedes } from '@/src/components/layout/BuscadorRedes';
 import { GoogleAnalytics } from '@next/third-parties/google';
 
 const geistSans = Geist({
@@ -36,6 +38,16 @@ export default function RootLayout({
 
                 {/* Contenedor del contenido principal - Scrollea de forma independiente */}
                 <div className="flex-1 h-full overflow-y-auto pb-16 lg:pb-0 lg:pl-64 bg-background">
+                    {/* Header Superior Móvil */}
+                    <header className="lg:hidden flex items-center justify-between p-4 border-b border-border bg-background/95 backdrop-blur sticky top-0 z-45 gap-4">
+                        <Link href="/" className="font-bold text-lg tracking-tight shrink-0 text-foreground">
+                            Socks Store
+                        </Link>
+                        <div className="flex-1 max-w-xs">
+                            <BuscadorRedes />
+                        </div>
+                    </header>
+
                     <main className="w-full max-w-7xl mx-auto p-4 md:p-8">{children}</main>
                 </div>
 
