@@ -28,14 +28,27 @@ export function MobileNav() {
         }
     }, [totalItems]);
 
-    useEffect(() => {
-        supabase.auth.getUser().then(({ data }) => setUsuario(data.user));
-    }, [supabase.auth]);
+  useEffect(() => {
+      // 1. Carga inicial del usuario
+      supabase.auth.getUser().then(({ data }) => setUsuario(data.user));
 
-    const handleSignOut = async () => {
-        await supabase.auth.signOut();
-        window.location.href = '/';
-    };
+      // 2. Escucha de eventos en tiempo real (login / logout)
+      const {
+          data: { subscription },
+      } = supabase.auth.onAuthStateChange((_event, session) => {
+          setUsuario(session?.user ?? null);
+      });
+
+      return () => {
+          subscription.unsubscribe();
+      };
+  }, [supabase.auth]);
+
+  const handleSignOut = async () => {
+      await supabase.auth.signOut();
+      setUsuario(null); // Actualiza la UI inmediatamente
+      window.location.href = '/';
+  };
 
     return (
         <nav className="flex lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-background border-t border-border items-center justify-around text-foreground px-4 z-50">

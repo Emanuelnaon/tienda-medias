@@ -28,14 +28,27 @@ export function Sidebar() {
         }
     }, [totalItems]);
 
-    useEffect(() => {
-        supabase.auth.getUser().then(({ data }) => setUsuario(data.user));
-    }, [supabase.auth]);
+ useEffect(() => {
+     // 1. Carga inicial del usuario
+     supabase.auth.getUser().then(({ data }) => setUsuario(data.user));
 
-    const handleSignOut = async () => {
-        await supabase.auth.signOut();
-        window.location.href = '/';
-    };
+     // 2. Escucha de eventos en tiempo real (login / logout)
+     const {
+         data: { subscription },
+     } = supabase.auth.onAuthStateChange((_event, session) => {
+         setUsuario(session?.user ?? null);
+     });
+
+     return () => {
+         subscription.unsubscribe();
+     };
+ }, [supabase.auth]);
+
+ const handleSignOut = async () => {
+     await supabase.auth.signOut();
+     setUsuario(null); // Actualiza la UI inmediatamente
+     window.location.href = '/';
+ };
 
     return (
         <aside className="hidden lg:flex flex-col w-64 h-screen fixed left-0 top-0 bg-background border-r border-border p-6 text-foreground">
