@@ -2,7 +2,7 @@ import React from 'react';
 import { getProductos } from '../../productos/api/queries';
 import { TarjetaProducto } from './TarjetaProducto';
 import { DrawerFiltros } from './DrawerFiltros'; // <-- Importamos el nuevo componente
-import type { Database } from '@/types/supabase';
+import type { Database } from '@/src/types/supabase';
 
 // Extraemos el tipo exacto de una fila de la tabla productos
 type Producto = Database['public']['Tables']['productos']['Row'];
@@ -13,22 +13,38 @@ interface GrillaProductosProps {
     };
 }
 
+import { MenuCategorias } from './MenuCategorias';
+
 export async function GrillaProductos({ parametros }: GrillaProductosProps) {
     const filtros = {
         talle: typeof parametros?.talle === 'string' ? parametros?.talle : undefined,
         orden: typeof parametros?.orden === 'string' ? parametros?.orden : undefined,
+        categoria: typeof parametros?.categoria === 'string' ? parametros?.categoria : undefined,
     };
 
     // Llamamos a la API para obtener el catálogo
     const productos = await getProductos(filtros);
 
+    // Obtener la lista de categorías dinámicas únicas de todos los productos de la BD (sin filtros de categoría)
+    const todosLosProductos = await getProductos({ orden: 'recientes' });
+    const categoriasUnicas = Array.from(
+        new Set(
+            todosLosProductos
+                ?.map((p) => p.categoria)
+                .filter((c): c is string => typeof c === 'string' && c.trim() !== '')
+        )
+    );
+
     return (
         <div className="flex flex-col gap-4">
             {/* Cabecera: Título y Botón de Filtros */}
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center justify-between mb-1">
                 <h1 className="text-2xl font-extrabold text-foreground">Catálogo</h1>
                 <DrawerFiltros />
             </div>
+
+            {/* Menú de categorías directas */}
+            <MenuCategorias categorias={categoriasUnicas} />
 
             {/* Renderizado condicional: Mensaje de vacío o Grilla */}
             {!productos || productos.length === 0 ? (

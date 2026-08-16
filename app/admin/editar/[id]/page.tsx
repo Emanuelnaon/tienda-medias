@@ -24,6 +24,7 @@ export default function EditarProductoPage({ params }: PageProps) {
     const [descripcion, setDescripcion] = useState('');
     const [precio, setPrecio] = useState('');
     const [stock, setStock] = useState('');
+    const [categoria, setCategoria] = useState('');
     const [archivoImagen, setArchivoImagen] = useState<File | null>(null);
     const [imagenUrlExistente, setImagenUrlExistente] = useState('');
     const [tallesDisponibles, setTallesDisponibles] = useState<string[]>([]);
@@ -31,6 +32,7 @@ export default function EditarProductoPage({ params }: PageProps) {
     const [guardando, setGuardando] = useState(false);
 
     const opcionesTalles = ['S', 'M', 'L', 'XL', 'Único'];
+    const opcionesCategorias = ['Medias Invisibles', 'Soketes', 'Medias Cortas', 'Medias ¾', 'Bucaneras', 'Deportivas', 'Otras'];
 
     useEffect(() => {
         const cargarProducto = async () => {
@@ -117,6 +119,7 @@ export default function EditarProductoPage({ params }: PageProps) {
                     stock: parseInt(stock, 10),
                     imagen_url: finalImageUrl,
                     talles_disponibles: tallesDisponibles.length > 0 ? tallesDisponibles : null,
+                    categoria: categoria || null,
                 })
                 .eq('id', id);
 
@@ -254,6 +257,23 @@ export default function EditarProductoPage({ params }: PageProps) {
                             className="w-full text-sm text-foreground file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-foreground file:text-background hover:file:opacity-90 cursor-pointer"
                         />
                         <p className="text-[11px] text-muted-foreground">Opcional. Selecciónala sólo si deseas cambiar la imagen existente.</p>
+                    </div>
+
+                    {/* Campo: Categoría */}
+                    <div className="flex flex-col gap-1.5">
+                        <label className="text-sm font-bold">Categoría</label>
+                        <select
+                            value={categoria}
+                            onChange={(e) => setCategoria(e.target.value)}
+                            className="w-full bg-background text-foreground border border-border rounded-lg p-2.5 focus:outline-none focus:border-foreground transition-colors"
+                        >
+                            <option value="">Selecciona una categoría...</option>
+                            {opcionesCategorias.map((cat) => (
+                                <option key={cat} value={cat}>
+                                    {cat}
+                                </option>
+                            ))}
+                        </select>
                     </div>
 
                     {/* Selección de Talles */}

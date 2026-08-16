@@ -7,10 +7,26 @@ import { BotonModoOscuro } from '../BotonModoOscuro';
 import { createClient } from '@/src/lib/supabase/client';
 import { BuscadorRedes } from './BuscadorRedes';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
+import { useCarritoStore } from '@/src/features/carrito/store';
 
 export function Sidebar() {
     const [usuario, setUsuario] = useState<SupabaseUser | null>(null);
     const supabase = createClient();
+    const items = useCarritoStore((state) => state.items);
+    const totalItems = items.reduce((acc, item) => acc + item.cantidad, 0);
+
+    const [animateBadge, setAnimateBadge] = useState(false);
+
+    useEffect(() => {
+        if (totalItems > 0) {
+            const timer1 = setTimeout(() => setAnimateBadge(true), 10);
+            const timer2 = setTimeout(() => setAnimateBadge(false), 300);
+            return () => {
+                clearTimeout(timer1);
+                clearTimeout(timer2);
+            };
+        }
+    }, [totalItems]);
 
     useEffect(() => {
         supabase.auth.getUser().then(({ data }) => setUsuario(data.user));
@@ -38,7 +54,7 @@ export function Sidebar() {
 
             {/* Menú de Navegación */}
             <nav className="flex-1 space-y-2">
-                <Link href="/" className="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg bg-muted text-foreground transition-colors">
+                <Link href="/" className="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
                     <Home className="w-5 h-5 text-blue-600" />
                     <span>Inicio</span>
                 </Link>
@@ -46,9 +62,20 @@ export function Sidebar() {
                     <Grid className="w-5 h-5" />
                     <span>Categorías</span>
                 </Link>
-                <Link href="/carrito" className="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
-                    <ShoppingCart className="w-5 h-5" />
-                    <span>Carrito</span>
+                <Link href="/carrito" className="flex items-center justify-between px-4 py-3 text-sm font-medium rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
+                    <div className="flex items-center gap-3">
+                        <ShoppingCart className="w-5 h-5" />
+                        <span>Carrito</span>
+                    </div>
+                    {totalItems > 0 && (
+                        <span
+                            className={`bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center transition-transform duration-200 ${
+                                animateBadge ? 'scale-125' : 'scale-100'
+                            }`}
+                        >
+                            {totalItems}
+                        </span>
+                    )}
                 </Link>
                 {usuario ? (
                     <>

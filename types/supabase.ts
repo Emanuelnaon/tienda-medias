@@ -13,6 +13,7 @@ export interface Database {
           user_id: string | null;
           created_at: string;
           codigo_corto: string | null;
+          categoria: string | null;
         };
         Insert: {
           id?: string;
@@ -25,6 +26,7 @@ export interface Database {
           user_id?: string | null;
           created_at?: string;
           codigo_corto?: string | null;
+          categoria?: string | null;
         };
         Update: {
           id?: string;
@@ -37,6 +39,7 @@ export interface Database {
           user_id?: string | null;
           created_at?: string;
           codigo_corto?: string | null;
+          categoria?: string | null;
         };
       };
       admin_users: {

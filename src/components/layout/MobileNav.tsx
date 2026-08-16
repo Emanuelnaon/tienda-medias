@@ -7,9 +7,26 @@ import { BotonModoOscuro } from '../BotonModoOscuro';
 import { createClient } from '@/src/lib/supabase/client';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 
+import { useCarritoStore } from '@/src/features/carrito/store';
+
 export function MobileNav() {
     const [usuario, setUsuario] = useState<SupabaseUser | null>(null);
     const supabase = createClient();
+    const items = useCarritoStore((state) => state.items);
+    const totalItems = items.reduce((acc, item) => acc + item.cantidad, 0);
+
+    const [animateBadge, setAnimateBadge] = useState(false);
+
+    useEffect(() => {
+        if (totalItems > 0) {
+            const timer1 = setTimeout(() => setAnimateBadge(true), 10);
+            const timer2 = setTimeout(() => setAnimateBadge(false), 300);
+            return () => {
+                clearTimeout(timer1);
+                clearTimeout(timer2);
+            };
+        }
+    }, [totalItems]);
 
     useEffect(() => {
         supabase.auth.getUser().then(({ data }) => setUsuario(data.user));
@@ -36,8 +53,20 @@ export function MobileNav() {
             </Link>
             <Link
                 href="/carrito"
-                className="flex flex-col items-center justify-center flex-1 py-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">
-                <ShoppingCart className="w-5 h-5" />
+                className="flex flex-col items-center justify-center flex-1 py-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors relative"
+            >
+                <div className="relative">
+                    <ShoppingCart className="w-5 h-5" />
+                    {totalItems > 0 && (
+                        <span
+                            className={`absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center transition-transform duration-200 ${
+                                animateBadge ? 'scale-125' : 'scale-100'
+                            }`}
+                        >
+                            {totalItems}
+                        </span>
+                    )}
+                </div>
                 <span className="mt-1">Carrito</span>
             </Link>
             {usuario ? (

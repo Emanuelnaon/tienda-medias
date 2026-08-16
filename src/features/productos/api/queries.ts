@@ -1,13 +1,17 @@
 import { createSupabaseServerClient } from '@/src/lib/supabase/server';
 import type { Database } from '@/types/supabase';
 
-export async function getProductos(filtros?: { talle?: string; orden?: string }) {
+export async function getProductos(filtros?: { talle?: string; orden?: string; categoria?: string }) {
     const supabase = await createSupabaseServerClient();
 
     let query = supabase.from('productos').select('*');
 
     if (filtros?.talle) {
         query = query.contains('talles_disponibles', [filtros.talle]);
+    }
+
+    if (filtros?.categoria) {
+        query = query.eq('categoria', filtros.categoria);
     }
 
     const orden = filtros?.orden;

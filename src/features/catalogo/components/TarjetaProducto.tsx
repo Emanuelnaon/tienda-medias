@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useCarritoStore } from '@/src/features/carrito/store';
+import { useDrawerCarritoStore } from '@/src/features/carrito/drawerStore';
 import type { Database } from '@/src/types/supabase';
 
 type Producto = Database['public']['Tables']['productos']['Row'];
@@ -11,6 +12,7 @@ type Producto = Database['public']['Tables']['productos']['Row'];
 export function TarjetaProducto({ producto }: { producto: Producto }) {
     const { nombre, precio, stock, talles_disponibles, imagen_url, id } = producto;
     const agregarItem = useCarritoStore((state) => state.agregarItem);
+    const openDrawer = useDrawerCarritoStore((state) => state.openDrawer);
 
     // Seleccionamos el primer talle por defecto
     const [talleSeleccionado, setTalleSeleccionado] = useState(talles_disponibles?.[0] || '');
@@ -32,7 +34,27 @@ export function TarjetaProducto({ producto }: { producto: Producto }) {
             talle_seleccionado: talleSeleccionado,
         });
 
-        toast.success(`${nombre} agregado 🛒`);
+        openDrawer();
+    };
+
+    const handleQuickAdd = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!talleSeleccionado) {
+            toast.error('Selecciona un talle');
+            return;
+        }
+
+        agregarItem({
+            id,
+            nombre,
+            precio: Number(precio),
+            cantidad: 1,
+            talle_seleccionado: talleSeleccionado,
+        });
+
+        toast.success(`${nombre} agregado 🛒`, { duration: 1500 });
     };
 
     // Lógica para etiquetas de escasez (FOMO)
@@ -85,6 +107,20 @@ export function TarjetaProducto({ producto }: { producto: Producto }) {
                 </div>
             </Link>
 
+            {/* Botón secundario (Quick Add '+') posicionado estratégicamente sobre la imagen */}
+            <div className="absolute top-2 right-2 z-10">
+                <button
+                    onClick={handleQuickAdd}
+                    disabled={stock <= 0}
+                    className="flex items-center justify-center w-10 h-10 rounded-full bg-white dark:bg-zinc-950 text-foreground border border-border shadow-[0_0_15px_rgba(255,255,255,0.7)] dark:shadow-[0_0_15px_rgba(0,0,0,0.6)] hover:scale-110 active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    title="Quick Add"
+                >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />
+                    </svg>
+                </button>
+            </div>
+
             {/* Zona de Acción (Quick Add CRO) */}
             <div className="p-3 flex flex-col gap-3 mt-auto">
                 {/* Selector de Talles (Píldoras) */}
@@ -109,12 +145,13 @@ export function TarjetaProducto({ producto }: { producto: Producto }) {
                     </div>
                 )}
 
-                {/* CTA Full Width */}
+                {/* CTA Full Width: Botón Comprar destacado con animación de glow/pulse sutil */}
                 <button
                     onClick={handleAgregarCarrito}
                     disabled={stock <= 0}
-                    className="w-full flex items-center justify-center gap-2 bg-foreground hover:bg-zinc-800 text-background py-2.5 rounded-lg text-sm font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                    Agregar al Pedido
+                    className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-3 rounded-lg text-sm font-extrabold transition-all duration-300 shadow-md shadow-blue-500/20 hover:shadow-blue-500/40 animate-[pulse_2s_infinite] disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    Comprar
                 </button>
             </div>
         </div>
