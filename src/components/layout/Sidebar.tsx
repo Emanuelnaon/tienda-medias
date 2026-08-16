@@ -58,7 +58,7 @@ export function Sidebar() {
                     <Home className="w-5 h-5 text-blue-600" />
                     <span>Inicio</span>
                 </Link>
-                <Link href="/categories" className="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
+                <Link href="/categorias" className="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
                     <Grid className="w-5 h-5" />
                     <span>Categorías</span>
                 </Link>
