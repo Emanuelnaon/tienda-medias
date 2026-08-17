@@ -5,6 +5,8 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useCarritoStore } from '@/src/features/carrito/store';
 import { useDrawerCarritoStore } from '@/src/features/carrito/drawerStore';
+import { useFavoritosStore } from '@/src/features/favoritos/store/useFavoritosStore';
+import { Heart } from 'lucide-react';
 import type { Database } from '@/src/types/supabase';
 
 type Producto = Database['public']['Tables']['productos']['Row'];
@@ -13,6 +15,8 @@ export function TarjetaProducto({ producto }: { producto: Producto }) {
     const { nombre, precio, stock, talles_disponibles, imagen_url, id } = producto;
     const agregarItem = useCarritoStore((state) => state.agregarItem);
     const openDrawer = useDrawerCarritoStore((state) => state.openDrawer);
+    const { toggleFavorito, esFavorito } = useFavoritosStore();
+    const isFavorito = esFavorito(id);
 
     // Seleccionamos el primer talle por defecto
     const [talleSeleccionado, setTalleSeleccionado] = useState(talles_disponibles?.[0] || '');
@@ -96,6 +100,22 @@ export function TarjetaProducto({ producto }: { producto: Producto }) {
                     )}
 
                     {renderEtiqueta()}
+
+                    <button
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            toggleFavorito(producto);
+                        }}
+                        className={`absolute top-2 right-2 z-20 p-2 rounded-full transition-all duration-200 active:scale-90 cursor-pointer shadow-sm ${
+                            isFavorito
+                               ? 'bg-white dark:bg-zinc-900 text-red-500 fill-red-500'
+                                : 'bg-white/80 dark:bg-zinc-900/80 text-gray-600 hover:text-red-500'
+                        }`}
+                        title={isFavorito? "Quitar de favoritos" : "Añadir a favoritos"}
+                    >
+                        <Heart className="w-5 h-5" />
+                    </button>
                 </div>
 
                 {/* Info Textual (Título y Precio) */}
