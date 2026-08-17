@@ -161,12 +161,13 @@ export function TablaProductos({ productosIniciales }: { productosIniciales: Pro
                                     <td className="p-4 font-mono font-medium text-foreground">
                                         ${Number(producto.precio).toLocaleString('es-AR')}
                                     </td>
-                                    <td className="p-4">
-                                        <div className="text-sm text-foreground/80">
+                                    <td className="p-4 ">
+                                        <div className="text-sm text-foreground">
                                             {producto.categoria || 'Sin categoría'}
+
                                         </div>
                                     </td>
-                                    <td className="p-4">
+                                    <td className="p-4 ">
                                         <div className="flex items-center gap-2">
                                             <button
                                                 disabled={producto.stock <= 0}
