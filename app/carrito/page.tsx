@@ -21,7 +21,7 @@ export default function CarritoPage() {
             }));
 
             const url = await generarLinkWhatsApp(itemsMapeados);
-            
+
             // Limpiamos el carrito porque la compra ya se procesó
             limpiarCarrito();
 
@@ -67,18 +67,20 @@ export default function CarritoPage() {
                                 <div className="flex items-center gap-2 border border-border rounded-md px-2 py-0.5 bg-background">
                                     <button
                                         disabled={item.cantidad <= 1}
-                                        onClick={() => actualizarCantidad(item.id, item.talle_seleccionado, item.cantidad - 1)}
-                                        className="text-foreground hover:opacity-80 disabled:opacity-30 px-1 font-bold"
-                                        title="Reducir cantidad"
-                                    >
+                                        onClick={() =>
+                                            actualizarCantidad(item.id, item.talle_seleccionado, item.cantidad - 1)
+                                        }
+                                        className="text-foreground hover:opacity-80 disabled:opacity-30 px-1 font-bold cursor-pointer"
+                                        title="Reducir cantidad">
                                         -
                                     </button>
                                     <span className="font-semibold text-foreground px-1">{item.cantidad}</span>
                                     <button
-                                        onClick={() => actualizarCantidad(item.id, item.talle_seleccionado, item.cantidad + 1)}
-                                        className="text-foreground hover:opacity-80 px-1 font-bold"
-                                        title="Aumentar cantidad"
-                                    >
+                                        onClick={() =>
+                                            actualizarCantidad(item.id, item.talle_seleccionado, item.cantidad + 1)
+                                        }
+                                        className="text-foreground hover:opacity-80 px-1 font-bold cursor-pointer"
+                                        title="Aumentar cantidad">
                                         +
                                     </button>
                                 </div>
@@ -86,10 +88,21 @@ export default function CarritoPage() {
                         </div>
 
                         <div className="flex items-center gap-4">
-                            <span className="font-bold text-foreground text-lg">${item.precio * item.cantidad}</span>
+                            {/* Categoría + Precio acumulado */}
+                            <div className="flex flex-col items-end">
+                                {item.categorias && (
+                                    <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
+                                        {item.categorias}
+                                    </span>
+                                )}
+                                <span className="font-bold text-foreground text-lg">
+                                    ${item.precio * item.cantidad}
+                                </span>
+                            </div>
+
                             <button
                                 onClick={() => removerItem(item.id, item.talle_seleccionado)}
-                                className="text-destructive hover:opacity-80 font-medium text-sm transition-colors p-2"
+                                className="text-destructive hover:opacity-80 font-medium text-sm transition-colors p-2 cursor-pointer"
                                 title="Eliminar producto">
                                 Eliminar
                             </button>
@@ -108,7 +121,7 @@ export default function CarritoPage() {
                 <button
                     onClick={handleCheckoutWhatsApp}
                     disabled={isPending}
-                    className="w-full sm:w-auto px-8 py-4 bg-green-600 hover:bg-green-700 text-white font-bold rounded-md transition-colors text-lg shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
+                    className="w-full sm:w-auto px-8 py-4 bg-green-600 hover:bg-green-700 text-white font-bold rounded-md transition-colors text-lg shadow-md disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
                     {isPending ? 'Procesando...' : 'Finalizar Compra por WhatsApp'}
                 </button>
             </div>

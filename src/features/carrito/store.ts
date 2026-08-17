@@ -7,6 +7,7 @@ export interface CartItem {
     precio: number;
     cantidad: number;
     talle_seleccionado: string;
+    categorias?: string; // Nueva propiedad para almacenar la categoría del producto
 }
 
 interface CartStore {
