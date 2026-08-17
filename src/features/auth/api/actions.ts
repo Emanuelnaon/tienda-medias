@@ -1,45 +1,35 @@
 'use server';
 
+import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
 import { createSupabaseServerClient } from '../../../lib/supabase/server';
 
-export async function signInWithMagicLink(email: string): Promise<{ success: boolean; error: string | null }> {
-    try {
-        const supabase = await createSupabaseServerClient();
-        const headersList = await headers();
-        const origin = headersList.get('origin') || 'http://localhost:3000';
-        
-        const { error } = await supabase.auth.signInWithOtp({
-            email,
-            options: {
-                emailRedirectTo: `${origin}/auth/callback`,
-            },
-        });
+export async function signInWithEmailAndPassword(
+    email: string,
+    password: string,
+): Promise<{ success: boolean; error: string | null }> {
+    const supabase = await createSupabaseServerClient();
 
-        if (error) {
-            return { success: false, error: error.message };
-        }
+    const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+    });
 
-        return { success: true, error: null };
-    } catch (err) {
-        return { success: false, error: err instanceof Error ? err.message : 'Error desconocido' };
+    if (error) {
+        return { success: false, error: error.message };
     }
+
+    // Fuerza a Next.js a reevaluar el árbol de componentes (incluidos layouts y navs)
+    revalidatePath('/', 'layout');
+
+    // Redirección del lado del servidor (Next.js actualiza la UI automáticamente)
+    redirect('/');
 }
 
-export async function signInWithEmailAndPassword(email: string, password: string): Promise<{ success: boolean; error: string | null }> {
-    try {
-        const supabase = await createSupabaseServerClient();
-        const { error } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-        });
-
-        if (error) {
-            return { success: false, error: error.message };
-        }
-
-        return { success: true, error: null };
-    } catch (err) {
-        return { success: false, error: err instanceof Error ? err.message : 'Error desconocido' };
-    }
+export async function signOutAction(): Promise<void> {
+    const supabase = await createSupabaseServerClient();
+    await supabase.auth.signOut();
+    revalidatePath('/', 'layout');
+    redirect('/login');
 }
