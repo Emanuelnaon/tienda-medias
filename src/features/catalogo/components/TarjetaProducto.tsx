@@ -109,11 +109,10 @@ export function TarjetaProducto({ producto }: { producto: Producto }) {
                         }}
                         className={`absolute top-2 right-2 z-20 p-2 rounded-full transition-all duration-200 active:scale-90 cursor-pointer shadow-sm ${
                             isFavorito
-                               ? 'bg-white dark:bg-zinc-900 text-red-500 fill-red-500'
+                                ? 'bg-white dark:bg-zinc-900 text-red-500 fill-red-500'
                                 : 'bg-white/80 dark:bg-zinc-900/80 text-gray-600 hover:text-red-500'
                         }`}
-                        title={isFavorito? "Quitar de favoritos" : "Añadir a favoritos"}
-                    >
+                        title={isFavorito ? 'Quitar de favoritos' : 'Añadir a favoritos'}>
                         <Heart className="w-5 h-5" />
                     </button>
                 </div>
@@ -127,47 +126,47 @@ export function TarjetaProducto({ producto }: { producto: Producto }) {
                 </div>
             </Link>
 
-            {/* Botón secundario (Quick Add '+') posicionado estratégicamente sobre la imagen */}
-            <div className="absolute top-2 right-2 z-10">
-                <button
-                    onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        handleQuickAdd(e);
-                    }}
-                    disabled={stock <= 0}
-                    className="flex items-center justify-center w-10 h-10 rounded-full bg-white dark:bg-zinc-950 text-foreground border 
-                    border-border shadow-[0_0_15px_rgba(255,255,255,0.7)] dark:shadow-[0_0_15px_rgba(0,0,0,0.6)] hover:scale-110 active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                    title="Quick Add">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />
-                    </svg>
-                </button>
-            </div>
-
-            {/* Zona de Acción (Quick Add CRO) */}
+            {/* Zona de Acción (Quick Add CRO + Talles) */}
             <div className="p-3 flex flex-col gap-3 mt-auto">
-                {/* Selector de Talles (Píldoras) */}
-                {talles_disponibles && talles_disponibles.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5">
-                        {talles_disponibles.map((talle) => (
-                            <button
-                                key={talle}
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    setTalleSeleccionado(talle);
-                                }}
-                                className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-200 border ${
-                                    talleSeleccionado === talle
-                                        ? 'bg-foreground text-background border-foreground shadow-md'
-                                        : 'bg-transparent text-zinc-500 border-border hover:border-foreground hover:text-foreground'
-                                }`}>
-                                {talle}
-                            </button>
-                        ))}
-                    </div>
-                )}
+                <div className="flex items-center justify-between gap-2">
+                    {/* Selector de Talles (Píldoras) */}
+                    {talles_disponibles && talles_disponibles.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 flex-1">
+                            {talles_disponibles.map((talle) => (
+                                <button
+                                    key={talle}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        setTalleSeleccionado(talle);
+                                    }}
+                                    className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-200 border cursor-pointer ${
+                                        talleSeleccionado === talle
+                                            ? 'bg-foreground text-background border-foreground shadow-md'
+                                            : 'bg-transparent text-zinc-500 border-border hover:border-foreground hover:text-foreground'
+                                    }`}>
+                                    {talle}
+                                </button>
+                            ))}
+                        </div>
+                    )}
+
+                    {/* Botón de Agregar Rápido (+) alineado con los talles */}
+                    <button
+                        type="button"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleQuickAdd(e);
+                        }}
+                        disabled={stock <= 0}
+                        className="shrink-0 flex items-center justify-center w-9 h-9 rounded-full bg-foreground text-white hover:bg-blue-500 hover:scale-105 active:scale-95 transition-all duration-200 animate-[pulse_2s_infinite] disabled:opacity-50 disabled:cursor-not-allowed shadow-sm cursor-pointer"
+                        title="Agregar al carrito">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />
+                        </svg>
+                    </button>
+                </div>
 
                 {/* CTA Full Width: Botón Comprar destacado con animación de glow/pulse sutil */}
                 <button
