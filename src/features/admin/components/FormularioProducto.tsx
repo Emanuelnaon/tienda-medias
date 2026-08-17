@@ -31,8 +31,20 @@ export function FormularioProducto() {
         'Otras',
     ];
 
-    const toggleTalle = (talle: string) => {
-        setTallesDisponibles((prev) => (prev.includes(talle) ? prev.filter((t) => t !== talle) : [...prev, talle]));
+    // Lógica exclusiva: "Único" no puede coexistir con talles numéricos/letras
+    const toggleTalle = (talleSeleccionado: string) => {
+        setTallesDisponibles((prev) => {
+            if (talleSeleccionado === 'Único') {
+                return prev.includes('Único') ? [] : ['Único'];
+            }
+
+            const sinUnico = prev.filter((t) => t !== 'Único');
+            if (sinUnico.includes(talleSeleccionado)) {
+                return sinUnico.filter((t) => t !== talleSeleccionado);
+            }
+
+            return [...sinUnico, talleSeleccionado];
+        });
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -119,7 +131,7 @@ export function FormularioProducto() {
                     />
                 </div>
 
-                {/* Campo: Código Corto (Instagram / Redes) */}
+                {/* Campo: Código Corto */}
                 <div className="flex flex-col gap-1.5">
                     <label className="text-sm font-bold">Código Corto (Redes Sociales)</label>
                     <input
@@ -179,7 +191,7 @@ export function FormularioProducto() {
                     </div>
                 </div>
 
-                {/* Campo: Imagen */}
+                {/* Campo: Imágenes */}
                 <div className="flex flex-col gap-2">
                     <label className="text-sm font-semibold text-foreground">Imágenes del Producto</label>
                     <input
@@ -204,7 +216,7 @@ export function FormularioProducto() {
                     <select
                         value={categoria}
                         onChange={(e) => setCategoria(e.target.value)}
-                        className="w-full bg-background text-foreground border border-border rounded-lg p-2.5 focus:outline-none focus:border-foreground transition-colors">
+                        className="w-full bg-background text-foreground border border-border rounded-lg p-2.5 focus:outline-none focus:border-foreground transition-colors cursor-pointer">
                         <option value="">Selecciona una categoría...</option>
                         {opcionesCategorias.map((cat) => (
                             <option key={cat} value={cat}>
@@ -225,12 +237,11 @@ export function FormularioProducto() {
                                     key={talle}
                                     type="button"
                                     onClick={() => toggleTalle(talle)}
-                                    className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors
-                                        ${
-                                            isSelected
-                                                ? 'bg-foreground text-background hover:opacity-90 border border-transparent'
-                                                : 'bg-transparent text-foreground border border-border hover:border-foreground'
-                                        }`}>
+                                    className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors cursor-pointer ${
+                                        isSelected
+                                            ? 'bg-foreground text-background hover:opacity-90 border border-transparent'
+                                            : 'bg-transparent text-foreground border border-border hover:border-foreground'
+                                    }`}>
                                     {talle}
                                 </button>
                             );
@@ -244,7 +255,7 @@ export function FormularioProducto() {
                 <button
                     type="submit"
                     disabled={subiendo}
-                    className="w-full sm:w-auto bg-foreground text-background px-6 py-3 rounded-lg font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-50">
+                    className="w-full sm:w-auto bg-foreground text-background px-6 py-3 rounded-lg font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-50 cursor-pointer">
                     {subiendo ? 'Subiendo y creando...' : 'Crear Producto'}
                 </button>
             </div>
