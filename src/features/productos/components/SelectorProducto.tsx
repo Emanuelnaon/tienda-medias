@@ -27,6 +27,7 @@ export function SelectorProducto({ producto }: Props) {
             precio: Number(producto.precio) || 0,
             cantidad: 1,
             talle_seleccionado: talleSeleccionado,
+            categoria: producto.categoria || '',
         });
         toast.success('¡Agregado al carrito!');
     };

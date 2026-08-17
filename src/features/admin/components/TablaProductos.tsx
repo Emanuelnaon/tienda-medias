@@ -5,7 +5,7 @@ import Link from 'next/link';
 import toast from 'react-hot-toast';
 import { createClient } from '@/src/lib/supabase/client';
 import type { Database } from '@/src/types/supabase';
-import { obtenerLinkCompartirAdmin } from '../../carrito/actions/generarCheckout';
+import { obtenerLinkCompartirAdmin } from '@/src/features/carrito/actions/generarCheckout';
 
 type Producto = Database['public']['Tables']['productos']['Row'];
 
@@ -86,7 +86,6 @@ export function TablaProductos({ productosIniciales }: { productosIniciales: Pro
 
     return (
         <div className="flex flex-col gap-4 text-foreground bg-background">
-            {/* Barra de herramientas superior */}
             <div className="flex justify-between items-center bg-background text-foreground">
                 <div className="text-sm text-foreground/70 font-medium">Total: {productos.length} productos</div>
                 <Link
@@ -99,9 +98,8 @@ export function TablaProductos({ productosIniciales }: { productosIniciales: Pro
                 </Link>
             </div>
 
-            {/* Contenedor de la Tabla con scroll horizontal para Mobile */}
             <div className="bg-background border border-border rounded-lg shadow-sm overflow-x-auto text-foreground">
-                <table className="w-full text-left border-collapse min-w-800px bg-background">
+                <table className="w-full text-left border-collapse min-w-[800px] bg-background">
                     <thead>
                         <tr className="bg-background border-b border-border text-sm text-foreground/70 uppercase tracking-wider">
                             <th className="p-4 font-semibold">Imagen</th>
@@ -141,7 +139,7 @@ export function TablaProductos({ productosIniciales }: { productosIniciales: Pro
                                     {/* 2. Nombre + Talles */}
                                     <td className="p-4">
                                         <div className="font-bold text-foreground">{producto.nombre}</div>
-                                        <div className="text-xs text-foreground/60 truncate max-w-200px">
+                                        <div className="text-xs text-foreground/60 truncate max-w-[200px]">
                                             {producto.talles_disponibles?.join(', ') || 'Sin talles'}
                                         </div>
                                     </td>
@@ -151,7 +149,7 @@ export function TablaProductos({ productosIniciales }: { productosIniciales: Pro
                                         ${Number(producto.precio).toLocaleString('es-AR')}
                                     </td>
 
-                                    {/* 4. Stock con botones (+ / -) */}
+                                    {/* 4. Stock */}
                                     <td className="p-4">
                                         <div className="flex items-center gap-2">
                                             <button
@@ -211,12 +209,14 @@ export function TablaProductos({ productosIniciales }: { productosIniciales: Pro
                                             </button>
                                         </div>
                                     </td>
-                                    {/* 5. Categoría (¡AHORA EN SU PROPIA COLUMNA!) */}
+
+                                    {/* 5. Categoría */}
                                     <td className="p-4">
                                         <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-muted text-foreground border border-border">
                                             {producto.categoria || 'Sin categoría'}
                                         </span>
                                     </td>
+
                                     {/* 6. Acciones */}
                                     <td className="p-4 text-right">
                                         <div className="flex justify-end gap-2">
