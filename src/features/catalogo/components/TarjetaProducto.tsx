@@ -36,6 +36,7 @@ export function TarjetaProducto({ producto }: { producto: Producto }) {
             precio: Number(precio),
             cantidad: 1,
             talle_seleccionado: talleSeleccionado,
+            categoria: producto.categoria || '', // Asegúrate de que la propiedad 'categoria' exista en tu tipo Producto
         });
 
         openDrawer();
@@ -56,6 +57,7 @@ export function TarjetaProducto({ producto }: { producto: Producto }) {
             precio: Number(precio),
             cantidad: 1,
             talle_seleccionado: talleSeleccionado,
+            categoria: producto.categoria || '',
         });
 
         toast.success(`${nombre} agregado 🛒`, { duration: 1500 });

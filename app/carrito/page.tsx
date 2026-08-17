@@ -90,9 +90,9 @@ export default function CarritoPage() {
                         <div className="flex items-center gap-4">
                             {/* Categoría + Precio acumulado */}
                             <div className="flex flex-col items-end">
-                                {item.categorias && (
+                                {item.categoria && (
                                     <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
-                                        {item.categorias}
+                                        {item.categoria}
                                     </span>
                                 )}
                                 <span className="font-bold text-foreground text-lg">
