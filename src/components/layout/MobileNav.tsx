@@ -3,11 +3,12 @@
 import React, { useState, useEffect, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Home, Grid, ShoppingCart, User, Settings, LogOut } from 'lucide-react';
+import { Home, Grid, ShoppingCart, User, Settings, LogOut, Heart } from 'lucide-react';
 import { BotonModoOscuro } from '../BotonModoOscuro';
 import { createClient } from '@/src/lib/supabase/client';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 import { useCarritoStore } from '@/src/features/carrito/store';
+import { useFavoritosStore } from '@/src/features/favoritos/store/useFavoritosStore';
 
 const emptySubscribe = () => () => {};
 
@@ -24,6 +25,9 @@ export function MobileNav() {
 
     const items = useCarritoStore((state) => state.items);
     const totalItems = items.reduce((acc, item) => acc + item.cantidad, 0);
+
+    const favoritos = useFavoritosStore((state) => state.favoritos);
+    const totalFavoritos = favoritos.length;
 
     const [animateBadge, setAnimateBadge] = useState(false);
 
@@ -100,6 +104,20 @@ export function MobileNav() {
                     )}
                 </div>
                 <span className="mt-1">Carrito</span>
+            </Link>
+
+            <Link
+                href="/favoritos"
+                className="flex flex-col items-center justify-center flex-1 py-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors relative">
+                <div className="relative">
+                    <Heart className="w-5 h-5 text-red-500" />
+                    {totalFavoritos > 0 && (
+                        <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                            {totalFavoritos}
+                        </span>
+                    )}
+                </div>
+                <span className="mt-1">Favoritos</span>
             </Link>
 
             {usuario ? (

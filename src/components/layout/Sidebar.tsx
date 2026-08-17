@@ -3,12 +3,13 @@
 import React, { useState, useEffect, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Home, Grid, ShoppingCart, User, Settings, LogOut } from 'lucide-react';
+import { Home, Grid, ShoppingCart, User, Settings, LogOut, Heart } from 'lucide-react';
 import { BotonModoOscuro } from '../BotonModoOscuro';
 import { createClient } from '@/src/lib/supabase/client';
 import { BuscadorRedes } from './BuscadorRedes';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 import { useCarritoStore } from '@/src/features/carrito/store';
+import { useFavoritosStore } from '@/src/features/favoritos/store/useFavoritosStore';
 
 const emptySubscribe = () => () => {};
 
@@ -25,6 +26,10 @@ export function Sidebar() {
 
     const items = useCarritoStore((state) => state.items);
     const totalItems = items.reduce((acc, item) => acc + item.cantidad, 0);
+    
+    const favoritos = useFavoritosStore((state) => state.favoritos);
+    const totalFavoritos = favoritos.length;
+    
     const [animateBadge, setAnimateBadge] = useState(false);
 
     // Animación del badge del carrito
@@ -97,6 +102,19 @@ export function Sidebar() {
                     className="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
                     <Grid className="w-5 h-5" />
                     <span>Categorías</span>
+                </Link>
+                <Link
+                    href="/favoritos"
+                    className="flex items-center justify-between px-4 py-3 text-sm font-medium rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
+                    <div className="flex items-center gap-3">
+                        <Heart className="w-5 h-5 text-red-500" />
+                        <span>Favoritos</span>
+                    </div>
+                    {totalFavoritos > 0 && (
+                        <span className="bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                            {totalFavoritos}
+                        </span>
+                    )}
                 </Link>
                 <Link
                     href="/carrito"
