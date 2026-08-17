@@ -101,7 +101,7 @@ export function TablaProductos({ productosIniciales }: { productosIniciales: Pro
 
             {/* Contenedor de la Tabla con scroll horizontal para Mobile */}
             <div className="bg-background border border-border rounded-lg shadow-sm overflow-x-auto text-foreground">
-                <table className="w-full text-left border-collapse min-w-[800px] bg-background">
+                <table className="w-full text-left border-collapse min-w-800px bg-background">
                     <thead>
                         <tr className="bg-background border-b border-border text-sm text-foreground/70 uppercase tracking-wider">
                             <th className="p-4 font-semibold">Imagen</th>
@@ -141,7 +141,7 @@ export function TablaProductos({ productosIniciales }: { productosIniciales: Pro
                                     {/* 2. Nombre + Talles */}
                                     <td className="p-4">
                                         <div className="font-bold text-foreground">{producto.nombre}</div>
-                                        <div className="text-xs text-foreground/60 truncate max-w-[200px]">
+                                        <div className="text-xs text-foreground/60 truncate max-w-200px">
                                             {producto.talles_disponibles?.join(', ') || 'Sin talles'}
                                         </div>
                                     </td>
