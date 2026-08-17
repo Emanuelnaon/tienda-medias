@@ -58,9 +58,17 @@ export default function EditarProductoPage({ params }: PageProps) {
                 setDescripcion(prod.descripcion || '');
                 setPrecio(String(prod.precio));
                 setStock(String(prod.stock));
+                setCategoria(prod.categoria || '');
                 setImagenUrlExistente(prod.imagen_url || '');
                 setGaleriaExistente(Array.isArray(prod.galeria_imagenes) ? prod.galeria_imagenes.filter(Boolean) : []);
-                setTallesDisponibles(prod.talles_disponibles || []);
+
+                // Sanitización al cargar: Si el producto tiene 'Único' junto a otros talles, forzamos 'Único'
+                const rawTalles = prod.talles_disponibles || [];
+                if (rawTalles.includes('Único') && rawTalles.length > 1) {
+                    setTallesDisponibles(['Único']);
+                } else {
+                    setTallesDisponibles(rawTalles);
+                }
             } catch (error) {
                 console.error(error);
                 toast.error('Error al cargar el producto para editar');
@@ -73,8 +81,20 @@ export default function EditarProductoPage({ params }: PageProps) {
         cargarProducto();
     }, [id, router, supabase]);
 
-    const toggleTalle = (talle: string) => {
-        setTallesDisponibles((prev) => (prev.includes(talle) ? prev.filter((t) => t !== talle) : [...prev, talle]));
+    // Lógica exclusiva de talles: "Único" desmarca todo y viceversa
+    const toggleTalle = (talleSeleccionado: string) => {
+        setTallesDisponibles((prev) => {
+            if (talleSeleccionado === 'Único') {
+                return prev.includes('Único') ? [] : ['Único'];
+            }
+
+            const sinUnico = prev.filter((t) => t !== 'Único');
+            if (sinUnico.includes(talleSeleccionado)) {
+                return sinUnico.filter((t) => t !== talleSeleccionado);
+            }
+
+            return [...sinUnico, talleSeleccionado];
+        });
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -162,7 +182,8 @@ export default function EditarProductoPage({ params }: PageProps) {
                 <h1 className="text-3xl font-bold">Editar Producto</h1>
                 <Link
                     href="/admin"
-                    className="text-sm font-medium border border-border hover:border-foreground px-4 py-2 rounded-lg transition-colors">
+                    className="text-sm font-medium border border-border hover:border-foreground px-4 py-2 rounded-lg transition-colors cursor-pointer"
+                >
                     Volver
                 </Link>
             </div>
@@ -184,7 +205,7 @@ export default function EditarProductoPage({ params }: PageProps) {
                         />
                     </div>
 
-                    {/* Campo: Código Corto (Instagram / Redes) */}
+                    {/* Campo: Código Corto */}
                     <div className="flex flex-col gap-1.5">
                         <label className="text-sm font-bold">Código Corto (Redes Sociales)</label>
                         <input
@@ -244,7 +265,7 @@ export default function EditarProductoPage({ params }: PageProps) {
                         </div>
                     </div>
 
-                    {/* Campo: Imagen actual e Imagen nueva */}
+                    {/* Campo: Imágenes */}
                     <div className="flex flex-col gap-3">
                         <label className="text-sm font-semibold">Imagen del Producto</label>
                         {(imagenUrlExistente || galeriaExistente.length > 0) && (
@@ -254,7 +275,8 @@ export default function EditarProductoPage({ params }: PageProps) {
                                     .map((url, index) => (
                                         <div
                                             key={`${url}-${index}`}
-                                            className="w-16 h-16 overflow-hidden rounded border border-border bg-zinc-100 dark:bg-zinc-900">
+                                            className="w-16 h-16 overflow-hidden rounded border border-border bg-zinc-100 dark:bg-zinc-900"
+                                        >
                                             {/* eslint-disable-next-line @next/next/no-img-element */}
                                             <img
                                                 src={url}
@@ -284,7 +306,8 @@ export default function EditarProductoPage({ params }: PageProps) {
                         <select
                             value={categoria}
                             onChange={(e) => setCategoria(e.target.value)}
-                            className="w-full bg-background text-foreground border border-border rounded-lg p-2.5 focus:outline-none focus:border-foreground transition-colors">
+                            className="w-full bg-background text-foreground border border-border rounded-lg p-2.5 focus:outline-none focus:border-foreground transition-colors cursor-pointer"
+                        >
                             <option value="">Selecciona una categoría...</option>
                             {opcionesCategorias.map((cat) => (
                                 <option key={cat} value={cat}>
@@ -305,14 +328,15 @@ export default function EditarProductoPage({ params }: PageProps) {
                                         key={talle}
                                         type="button"
                                         onClick={() => toggleTalle(talle)}
-                                        className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors
-                                            ${
-                                                isSelected
-                                                    ? 'bg-foreground text-background hover:opacity-90 border border-transparent'
-                                                    : 'bg-transparent text-foreground border border-border hover:border-foreground'
-                                            }`}>
+                                        className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors cursor-pointer ${
+                                            isSelected
+                                                ? 'bg-foreground text-background hover:opacity-90 border border-transparent'
+                                                : 'bg-transparent text-foreground border border-border hover:border-foreground'
+                                        }`}
+                                    >
                                         {talle}
                                     </button>
+                                
                                 );
                             })}
                         </div>
@@ -324,7 +348,8 @@ export default function EditarProductoPage({ params }: PageProps) {
                     <button
                         type="submit"
                         disabled={guardando}
-                        className="w-full sm:w-auto bg-foreground text-background px-6 py-3 rounded-lg font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-50">
+                        className="w-full sm:w-auto bg-foreground text-background px-6 py-3 rounded-lg font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-50 cursor-pointer"
+                    >
                         {guardando ? 'Guardando cambios...' : 'Guardar Cambios'}
                     </button>
                 </div>
