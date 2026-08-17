@@ -162,6 +162,11 @@ export function TablaProductos({ productosIniciales }: { productosIniciales: Pro
                                         ${Number(producto.precio).toLocaleString('es-AR')}
                                     </td>
                                     <td className="p-4">
+                                        <div className="text-sm text-foreground/80">
+                                            {producto.categoria || 'Sin categoría'}
+                                        </div>
+                                    </td>
+                                    <td className="p-4">
                                         <div className="flex items-center gap-2">
                                             <button
                                                 disabled={producto.stock <= 0}
@@ -170,7 +175,7 @@ export function TablaProductos({ productosIniciales }: { productosIniciales: Pro
                                                     e.stopPropagation();
                                                     handleActualizarStock(producto.id, producto.stock, -1);
                                                 }}
-                                                className="w-8 h-8 flex items-center justify-center rounded-md border border-border bg-background hover:bg-foreground hover:text-background text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                className="w-6 h-6 flex items-center justify-center rounded-md border border-border bg-background hover:bg-foreground hover:text-background text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                                 title="Restar 1 unidad"
                                             >
                                                 <svg
@@ -203,7 +208,7 @@ export function TablaProductos({ productosIniciales }: { productosIniciales: Pro
                                                     e.stopPropagation();
                                                     handleActualizarStock(producto.id, producto.stock, 1);
                                                 }}
-                                                className="w-8 h-8 flex items-center justify-center rounded-md border border-border bg-background hover:bg-foreground hover:text-background text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                className="w-6 h-6 flex items-center justify-center rounded-md border border-border bg-background hover:bg-foreground hover:text-background text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                                 title="Sumar 1 unidad"
                                             >
                                                 <svg
