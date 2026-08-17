@@ -27,12 +27,7 @@ export function FormularioLogin() {
             const result = await signInWithEmailAndPassword(emailVal, passwordVal);
             if (result.success) {
                 toast.success('Sesión iniciada con éxito. Redirigiendo...');
-
-                // 1. Invalida la caché del cliente y obliga a reevaluar layouts/navs con la nueva cookie
-                router.refresh();
-
-                // 2. Si las acciones de servidor ya hacen un redirect('/admin'), no necesitas nada más.
-                // Si la Server Action solo devuelve { success: true }, redirigimos con window.location para forzar el estado global limpio:
+                
                 window.location.href = '/admin';
             } else {
                 toast.error(result.error || 'Error al iniciar sesión. Verifica tus credenciales.');

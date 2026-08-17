@@ -1,14 +1,13 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { redirect } from 'next/navigation';
-import { headers } from 'next/headers';
 import { createSupabaseServerClient } from '../../../lib/supabase/server';
 
 export async function signInWithEmailAndPassword(
     email: string,
     password: string,
 ): Promise<{ success: boolean; error: string | null }> {
+    try {
     const supabase = await createSupabaseServerClient();
 
     const { error } = await supabase.auth.signInWithPassword({
@@ -20,16 +19,17 @@ export async function signInWithEmailAndPassword(
         return { success: false, error: error.message };
     }
 
-    // Fuerza a Next.js a reevaluar el árbol de componentes (incluidos layouts y navs)
-    revalidatePath('/', 'layout');
-
-    // Redirección del lado del servidor (Next.js actualiza la UI automáticamente)
-    redirect('/');
+    // Fuerza a Next.js a reevaluar el árbol de componentes (incluidos layouts )
+    revalidatePath('/', 'layout'); 
+        return { success: true, error: null };
+    } catch (err) {
+        return { success: false, error: err instanceof Error ? err.message : 'Error desconocido' };
+    }
 }
 
-export async function signOutAction(): Promise<void> {
+export async function signOutAction(): Promise<{ success: boolean }> {
     const supabase = await createSupabaseServerClient();
     await supabase.auth.signOut();
     revalidatePath('/', 'layout');
-    redirect('/login');
+    return { success: true };
 }

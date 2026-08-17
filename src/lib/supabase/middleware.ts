@@ -17,11 +17,9 @@ export const updateSession = async (request: NextRequest) => {
                 setAll(cookiesToSet) {
                     // Solución al linter: no extraemos 'options' aquí si no lo usamos
                     cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
-
                     supabaseResponse = NextResponse.next({
                         request,
                     });
-
                     cookiesToSet.forEach(({ name, value, options }) =>
                         supabaseResponse.cookies.set(name, value, options),
                     );
@@ -30,9 +28,6 @@ export const updateSession = async (request: NextRequest) => {
         },
     );
 
-    // ESTA ES LA CLAVE: Llamar a getUser() fuerza a Supabase a validar el token.
-    // Si está expirado o necesita refrescarse, las funciones 'setAll' de arriba
-    // se dispararán automáticamente y actualizarán las cookies del navegador.
     await supabase.auth.getUser();
 
     return supabaseResponse;
