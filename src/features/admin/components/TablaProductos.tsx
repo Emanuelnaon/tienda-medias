@@ -151,14 +151,7 @@ export function TablaProductos({ productosIniciales }: { productosIniciales: Pro
                                         ${Number(producto.precio).toLocaleString('es-AR')}
                                     </td>
 
-                                    {/* 4. Categoría (¡AHORA EN SU PROPIA COLUMNA!) */}
-                                    <td className="p-4">
-                                        <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-muted text-foreground border border-border">
-                                            {producto.categoria || 'Sin categoría'}
-                                        </span>
-                                    </td>
-
-                                    {/* 5. Stock con botones (+ / -) */}
+                                    {/* 4. Stock con botones (+ / -) */}
                                     <td className="p-4">
                                         <div className="flex items-center gap-2">
                                             <button
@@ -218,7 +211,12 @@ export function TablaProductos({ productosIniciales }: { productosIniciales: Pro
                                             </button>
                                         </div>
                                     </td>
-
+                                    {/* 5. Categoría (¡AHORA EN SU PROPIA COLUMNA!) */}
+                                    <td className="p-4">
+                                        <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-muted text-foreground border border-border">
+                                            {producto.categoria || 'Sin categoría'}
+                                        </span>
+                                    </td>
                                     {/* 6. Acciones */}
                                     <td className="p-4 text-right">
                                         <div className="flex justify-end gap-2">
