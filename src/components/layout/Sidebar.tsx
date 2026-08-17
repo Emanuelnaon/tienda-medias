@@ -56,7 +56,7 @@ export function Sidebar() {
             data: { subscription },
         } = supabase.auth.onAuthStateChange((_event, session) => {
             setUsuario(session?.user ?? null);
-            router.refresh();
+            
         });
 
         return () => {

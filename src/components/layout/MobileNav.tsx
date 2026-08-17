@@ -55,7 +55,7 @@ export function MobileNav() {
             data: { subscription },
         } = supabase.auth.onAuthStateChange((_event, session) => {
             setUsuario(session?.user ?? null);
-            router.refresh();
+            
         });
 
         return () => {
