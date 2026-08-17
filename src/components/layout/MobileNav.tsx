@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { Home, Grid, ShoppingCart, User, Settings, LogOut } from 'lucide-react';
 import { BotonModoOscuro } from '../BotonModoOscuro';
 import { createClient } from '@/src/lib/supabase/client';
-import { useRouter } from 'next/navigation';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 
 import { useCarritoStore } from '@/src/features/carrito/store';
