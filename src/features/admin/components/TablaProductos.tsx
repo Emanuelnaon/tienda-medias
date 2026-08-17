@@ -122,6 +122,7 @@ export function TablaProductos({ productosIniciales }: { productosIniciales: Pro
                             <th className="p-4 font-semibold">Nombre</th>
                             <th className="p-4 font-semibold">Precio</th>
                             <th className="p-4 font-semibold">Stock</th>
+                            <th className="p-4 font-semibold">Categoría</th>
                             <th className="p-4 font-semibold text-right">Acciones</th>
                         </tr>
                     </thead>
