@@ -13,7 +13,15 @@ export async function middleware(request: NextRequest) {
 
     response.headers.set(
         'Content-Security-Policy',
-        "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://adauxoedgfvaadkvvifu.supabase.co; connect-src 'self' https://adauxoedgfvaadkvvifu.supabase.co wss://adauxoedgfvaadkvvifu.supabase.co https://wa.me; font-src 'self' data:; object-src 'none';",
+        [
+            "default-src 'self'",
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com",
+            "style-src 'self' 'unsafe-inline'",
+            "img-src 'self' data: blob: https://adauxoedgfvaadkvvifu.supabase.co https://www.google-analytics.com https://*.googletagmanager.com",
+            "connect-src 'self' https://adauxoedgfvaadkvvifu.supabase.co wss://adauxoedgfvaadkvvifu.supabase.co https://wa.me https://www.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com",
+            "font-src 'self' data:",
+            "object-src 'none'",
+        ].join('; '),
     );
 
     return response;
