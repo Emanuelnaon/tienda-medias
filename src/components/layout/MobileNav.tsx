@@ -10,6 +10,7 @@ import type { User as SupabaseUser } from '@supabase/supabase-js';
 import { useCarritoStore } from '@/src/features/carrito/store';
 import { useFavoritosStore } from '@/src/features/favoritos/store/useFavoritosStore';
 
+
 const emptySubscribe = () => () => {};
 
 export function MobileNav() {
