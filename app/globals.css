@@ -6,7 +6,7 @@
   --foreground: #09090b;
   --primary: #18181b;
   --secondary: #131342;
-  --border: #e4e4e7;
+  --border: #272728;
 }
 
 /* ELIMINA o comenta el bloque @media (...) antiguo y reemplázalo por este: */
@@ -15,7 +15,7 @@
   --foreground: #fffffa;
   --primary: #fafafa;
   --secondary: #131342;
-  --border: #27272a;
+  --border: #919192;
 }
 
 /* Inyección de variables en el tema de Tailwind v4 */
@@ -23,6 +23,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
   --color-border: var(--border);
 }
 
