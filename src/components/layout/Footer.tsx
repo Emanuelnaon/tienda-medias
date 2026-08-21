@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { WHATSAPP_SUPPORT_NUMBER } from '@/src/lib/constants';
 
 export function Footer() {
     return (
@@ -44,7 +45,7 @@ export function Footer() {
                     <ul className="flex flex-col gap-2.5 text-sm font-medium">
                         <li>
                             <a
-                                href="https://wa.me/5491100000000"
+                                href={`https://wa.me/${WHATSAPP_SUPPORT_NUMBER}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="flex items-center gap-2 hover:text-green-500 transition-colors">

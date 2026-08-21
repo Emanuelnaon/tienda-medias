@@ -77,7 +77,7 @@ export function MenuCategorias({ categorias }: MenuCategoriasProps) {
                 {/* Categoría Todos */}
                 <button
                     onClick={() => handleCategoriaClick('Todos')}
-                    className={`whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-bold transition-all border
+                    className={`whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-bold cursor-pointer transition-all border hover:active:scale-95
                         ${categoriaActiva === 'Todos'
                             ? 'bg-foreground text-background border-foreground'
                             : 'bg-transparent text-foreground border-border hover:border-foreground'
@@ -91,7 +91,7 @@ export function MenuCategorias({ categorias }: MenuCategoriasProps) {
                     <button
                         key={cat}
                         onClick={() => handleCategoriaClick(cat)}
-                        className={`whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-bold transition-all border
+                        className={`whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-bold cursor-pointer transition-all border hover:active:scale-95
                             ${categoriaActiva === cat
                                 ? 'bg-foreground text-background border-foreground'
                                 : 'bg-transparent text-foreground border-border hover:border-foreground'

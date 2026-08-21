@@ -75,7 +75,7 @@ export default function CatalogoPage() {
                         className={`px-4 py-2 rounded-full text-sm font-medium cursor-pointer transition-all duration-200 active:scale-95 ${
                             categoriaSeleccionada === cat
                                 ? 'bg-foreground text-background border-foreground'
-                                : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+                                : 'bg-secondary text-primary hover:bg-secondary/80'
                         }`}>
                         {cat}
                     </button>

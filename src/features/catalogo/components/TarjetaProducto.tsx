@@ -162,7 +162,7 @@ export function TarjetaProducto({ producto }: { producto: Producto }) {
                             handleQuickAdd(e);
                         }}
                         disabled={stock <= 0}
-                        className="shrink-0 flex items-center justify-center w-9 h-9 rounded-full bg-foreground text-white hover:bg-blue-500 hover:scale-105 active:scale-95 transition-all duration-200 animate-[pulse_2s_infinite] disabled:opacity-50 disabled:cursor-not-allowed shadow-sm cursor-pointer"
+                        className="shrink-0 flex items-center justify-center w-9 h-9 rounded-full bg-foreground text-secondary font-bold hover:bg-blue-500 hover:scale-105 active:scale-95 transition-all duration-200 animate-[pulse_2s_infinite] disabled:cursor-not-allowed cursor-pointer"
                         title="Agregar al carrito">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />

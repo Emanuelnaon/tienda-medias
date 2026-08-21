@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { WHATSAPP_SUPPORT_NUMBER } from '@/src/lib/constants';
 
 interface BotonComprarWhatsAppProps {
     nombreProducto: string;
@@ -10,7 +11,7 @@ interface BotonComprarWhatsAppProps {
 export function BotonComprarWhatsApp({ nombreProducto, precio }: BotonComprarWhatsAppProps) {
     const handleComprar = () => {
         const mensaje = encodeURIComponent(`Hola, quiero comprar ${nombreProducto} por $${precio}`);
-        const url = `https://wa.me/+5491172396962?text=${mensaje}`;
+        const url = `https://wa.me/${WHATSAPP_SUPPORT_NUMBER}?text=${mensaje}`;
         window.open(url, '_blank', 'noopener,noreferrer');
     };
 
