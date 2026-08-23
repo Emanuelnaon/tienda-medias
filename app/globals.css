@@ -2,7 +2,7 @@
 @custom-variant dark (&:is(.dark *));
 /* Definición de variables CSS nativas */
 :root {
-  --background: rgb(255, 250, 235);
+  --background: #fffaeb;
   --foreground: #09090b;
   --primary: #18181b;
   --secondary: #1d8756;

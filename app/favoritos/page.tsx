@@ -33,7 +33,7 @@ export default function FavoritosPage() {
                     </p>
                     <Link 
                         href="/catalogo" 
-                        className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-all"
+                        className="inline-flex items-center gap-2 bg-foreground text-background px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-all"
                     >
                         <ShoppingBag className="w-5 h-5" />
                         Explorar catálogo
