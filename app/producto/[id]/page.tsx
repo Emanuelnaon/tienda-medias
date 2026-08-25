@@ -37,6 +37,11 @@ export default async function ProductoPage({ params }: Props) {
                     <p className="text-2xl font-extrabold text-blue-600 mt-4">
                         ${Number(producto.precio).toLocaleString('es-AR', { minimumFractionDigits: 2 })}
                     </p>
+                    {producto.stock > 0 && producto.stock < 5 && (
+                        <span className="mt-3 w-fit rounded-sm bg-red-600 px-2 py-1 text-xs font-bold uppercase tracking-wider text-white">
+                            ¡Últimas unidades!
+                        </span>
+                    )}
                     <p className="text-zinc-800 dark:text-zinc-600 mt-4 flex-1">
                         {producto.descripcion || 'Sin descripción disponible.'}
                     </p>

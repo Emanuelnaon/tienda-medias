@@ -19,3 +19,4 @@ Si el usuario te pide ejecutar una de las siguientes tareas, DEBES pedirle que a
 - Si requiere interactuar con datos o crear tablas: Solicita `#file:.clinerules/09-skill-migracion.md` (o la ruta de tu Skill de Migración RLS y Server Action[cite: 9]).
 
 NUNCA inventes la lógica de estas skills. Si no se te provee el archivo en el chat, aplica las reglas globales de arriba.
+Refer to AGENTS.md at the root for full architectural context and skill triggers.

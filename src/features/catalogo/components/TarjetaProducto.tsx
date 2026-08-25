@@ -71,10 +71,10 @@ export function TarjetaProducto({ producto }: { producto: Producto }) {
                     Agotado
                 </div>
             );
-        if (stock <= 3)
+        if (stock > 0 && stock < 5)
             return (
                 <div className="absolute top-2 left-2 bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded-sm uppercase tracking-wider animate-pulse">
-                    ¡Últimos {stock}!
+                    ¡Últimas unidades!
                 </div>
             );
         return (
@@ -163,7 +163,7 @@ export function TarjetaProducto({ producto }: { producto: Producto }) {
                         }}
                         disabled={stock <= 0}
                         className="shrink-0 flex items-center justify-center w-9 h-9 rounded-full bg-foreground text-secondary font-bold hover:bg-blue-500 hover:scale-105 active:scale-95 transition-all duration-200 animate-[pulse_2s_infinite] disabled:cursor-not-allowed cursor-pointer"
-                        title="Agregar al carrito">
+                        title={stock <= 0 ? 'Producto agotado' : 'Agregar al carrito'}>
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />
                         </svg>
@@ -175,7 +175,7 @@ export function TarjetaProducto({ producto }: { producto: Producto }) {
                     onClick={handleAgregarCarrito}
                     disabled={stock <= 0}
                     className="w-full flex items-center justify-center gap-2 bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-3 rounded-lg text-sm font-extrabold transition-all duration-300 shadow-md shadow-blue-500/20 hover:shadow-blue-500/40 animate-[pulse_2s_infinite] disabled:opacity-50 disabled:cursor-not-allowed">
-                    Comprar
+                    {stock <= 0 ? 'Agotado' : 'Comprar'}
                 </button>
             </div>
         </div>

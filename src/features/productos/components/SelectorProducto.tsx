@@ -17,6 +17,10 @@ export function SelectorProducto({ producto }: Props) {
     const agregarItem = useCarritoStore((state) => state.agregarItem);
 
     const handleAgregar = () => {
+        if (producto.stock <= 0) {
+            return;
+        }
+
         if (!talleSeleccionado) {
             toast.error('Por favor, selecciona un talle');
             return;
@@ -56,8 +60,7 @@ export function SelectorProducto({ producto }: Props) {
             <div className="flex justify-between items-center">
                 <button
                     onClick={handleCompartir}
-                    className="flex items-center gap-2 text-sm text-foreground border border-border px-3 py-1.5 rounded-full hover:bg-foreground hover:text-background transition-colors"
-                >
+                    className="flex items-center gap-2 text-sm text-foreground border border-border px-3 py-1.5 rounded-full hover:bg-foreground hover:text-background transition-colors">
                     <Share2 className="w-4 h-4" />
                     <span>Compartir</span>
                 </button>
@@ -83,8 +86,9 @@ export function SelectorProducto({ producto }: Props) {
 
             <button
                 onClick={handleAgregar}
-                className="w-full py-4 bg-foreground text-background font-semibold rounded-md hover:opacity-90 transition-opacity">
-                Agregar al Carrito
+                disabled={producto.stock <= 0}
+                className="w-full py-4 bg-foreground text-background font-semibold rounded-md hover:opacity-90 transition-opacity disabled:cursor-not-allowed disabled:opacity-50">
+                {producto.stock <= 0 ? 'Agotado' : 'Agregar al Carrito'}
             </button>
         </div>
     );
