@@ -17,15 +17,22 @@ export async function middleware(request: NextRequest) {
         'Content-Security-Policy',
         [
             "default-src 'self'",
-            "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com",
+            "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://vercel.live",
             "style-src 'self' 'unsafe-inline'",
             "img-src 'self' data: blob: https://adauxoedgfvaadkvvifu.supabase.co https://www.google-analytics.com https://*.googletagmanager.com",
-            "connect-src 'self' https://adauxoedgfvaadkvvifu.supabase.co wss://adauxoedgfvaadkvvifu.supabase.co https://wa.me https://www.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com",
+
+            // Agregamos https://vercel.live aquí para los WebSockets de telemetría y hot-reload
+            "connect-src 'self' https://adauxoedgfvaadkvvifu.supabase.co wss://adauxoedgfvaadkvvifu.supabase.co https://wa.me https://www.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://vercel.live",
+
             "font-src 'self' data:",
             "object-src 'none'",
             "base-uri 'self'",
             "form-action 'self'",
             "frame-ancestors 'none'",
+
+            // NUEVO: Permite que Vercel inyecte el iframe de su barra de herramientas
+            "frame-src 'self' https://vercel.live",
+
             'upgrade-insecure-requests',
         ].join('; '),
     );
