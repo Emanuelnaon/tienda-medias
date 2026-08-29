@@ -38,7 +38,7 @@ export default async function ProductoPage({ params }: Props) {
                         ${Number(producto.precio).toLocaleString('es-AR', { minimumFractionDigits: 2 })}
                     </p>
                     {producto.stock > 0 && producto.stock < 5 && (
-                        <span className="mt-3 w-fit rounded-sm bg-red-600 px-2 py-1 text-xs font-bold uppercase tracking-wider text-white">
+                        <span className="mt-3 w-fit rounded-full bg-red-600 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.15em] text-white shadow-sm">
                             ¡Últimas unidades!
                         </span>
                     )}

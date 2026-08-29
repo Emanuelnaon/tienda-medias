@@ -56,15 +56,21 @@ export function SelectorProducto({ producto }: Props) {
     };
 
     return (
-        <div className="flex flex-col gap-6 mt-6">
-            <div className="flex justify-between items-center">
+        <div className="mt-6 flex flex-col gap-6">
+            <div className="flex items-center justify-between">
                 <button
                     onClick={handleCompartir}
-                    className="flex items-center gap-2 text-sm text-foreground border border-border px-3 py-1.5 rounded-full hover:bg-foreground hover:text-background transition-colors">
-                    <Share2 className="w-4 h-4" />
+                    className="flex items-center gap-2 rounded-full border border-border px-3 py-1.5 text-sm text-foreground transition-colors hover:bg-foreground hover:text-background">
+                    <Share2 className="h-4 w-4" />
                     <span>Compartir</span>
                 </button>
             </div>
+
+            {producto.stock > 0 && producto.stock < 5 && (
+                <span className="w-fit rounded-full bg-red-600 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.15em] text-white shadow-sm">
+                    ¡Últimas unidades!
+                </span>
+            )}
 
             <div className="flex flex-col gap-2">
                 <span className="font-medium text-foreground">Selecciona tu talle</span>
@@ -73,10 +79,10 @@ export function SelectorProducto({ producto }: Props) {
                         <button
                             key={talle}
                             onClick={() => setTalleSeleccionado(talle)}
-                            className={`px-4 py-2 border rounded-md transition-colors ${
+                            className={`rounded-md border px-4 py-2 transition-colors ${
                                 talleSeleccionado === talle
-                                    ? 'bg-foreground text-background border-foreground'
-                                    : 'bg-background text-foreground border-border hover:border-foreground'
+                                    ? 'border-foreground bg-foreground text-background'
+                                    : 'border-border bg-background text-foreground hover:border-foreground'
                             }`}>
                             {talle}
                         </button>
@@ -87,7 +93,7 @@ export function SelectorProducto({ producto }: Props) {
             <button
                 onClick={handleAgregar}
                 disabled={producto.stock <= 0}
-                className="w-full py-4 bg-foreground text-background font-semibold rounded-md hover:opacity-90 transition-opacity disabled:cursor-not-allowed disabled:opacity-50">
+                className="w-full rounded-md bg-foreground py-4 font-semibold text-background transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50">
                 {producto.stock <= 0 ? 'Agotado' : 'Agregar al Carrito'}
             </button>
         </div>

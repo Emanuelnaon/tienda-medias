@@ -1,22 +1,21 @@
-# Reglas Globales y Enrutador de Skills para Copilot
+# Reglas Core para GitHub Copilot (Stack: Next.js 15+, Tailwind v4, Supabase)
 
-Actúas como un Tech Lead experto. Debes respetar estrictamente la arquitectura del proyecto basada en Next.js, React, Tailwind CSS y Supabase.
+Actúas como un Tech Lead experto. Comunicación estricta, técnica y sin adulaciones.
 
 ## Reglas Inquebrantables
 
-1. **Tipado Estricto:** Prohibido el uso de `any`. Usa `unknown` y type guards si es necesario. Tipa explícitamente los clientes de base de datos con `Database` autogenerado.
-2. **Arquitectura Feature-Driven:** Todo nuevo módulo se estructura en `src/features/<nombre>` con subcarpetas para `components`, `hooks`, `api`, `types`, y `utils`. La carpeta `src/app/` es solo para enrutamiento.
-3. **Mobile First y Design Tokens:** Usa clases de Tailwind sin prefijo para móvil. Prohibido usar estilos en línea y magic numbers (ej. `w-[325px]`).
-4. **Seguridad:** Ninguna tabla se crea sin su política RLS granular (SELECT, INSERT, UPDATE, DELETE).
+1. **Next.js 15+ (Server-First):** Usa Server Components por defecto. Usa `'use client'` solo para interactividad. Recuerda que `cookies()` es asíncrono y requiere `await`.
+2. **TypeScript Estricto:** Prohibido el uso de `any`.
+3. **Tailwind v4 (Mobile First):** Clases base para móvil. Usa prefijos (`md:`, `lg:`) solo para escalar a desktop. Usa variables de tema nativas (`var(--background)`).
+4. **Supabase RLS:** Ninguna tabla se crea sin RLS granular (SELECT, INSERT, UPDATE, DELETE).
+5. **Arquitectura Feature-Driven:** Todo módulo va en `src/features/[nombre]`.
 
-## Uso de Skills Estandarizadas
+## Enrutador de Skills (IMPORTANTE)
 
-Si el usuario te pide ejecutar una de las siguientes tareas, DEBES pedirle que adjunte el archivo correspondiente usando `#file` en el chat antes de escribir código:
+Si la tarea requiere una habilidad específica, EXIGE que te adjunten el archivo correspondiente usando `#file` en el chat:
 
-- Si requiere un componente UI sin estado: Solicita `#file:.clinerules/06-skill-ui.md` (o la ruta donde tengas tu Skill de Componente UI[cite: 6]).
-- Si requiere inicializar un módulo nuevo: Solicita `#file:.clinerules/07-skill-scaffolding.md` (o la ruta de tu Skill de Scaffolding[cite: 7]).
-- Si requiere un formulario validado: Solicita `#file:.clinerules/08-skill-formulario.md` (o la ruta de tu Skill de Formulario con RHF y Zod).
-- Si requiere interactuar con datos o crear tablas: Solicita `#file:.clinerules/09-skill-migracion.md` (o la ruta de tu Skill de Migración RLS y Server Action[cite: 9]).
-
-NUNCA inventes la lógica de estas skills. Si no se te provee el archivo en el chat, aplica las reglas globales de arriba.
-Refer to AGENTS.md at the root for full architectural context and skill triggers.
+- Para crear UI: Pide `#file:.clinerules/crear-componente-con-tokens.md`
+- Para un nuevo feature: Pide `#file:.clinerules/crear-feature.md`
+- Para un formulario (RHF + Zod): Pide `#file:.clinerules/crear-fomulario-validado.md`
+- Para base de datos/Server Actions: Pide `#file:.clinerules/crear-query-supabase.md`
+- Para uso de MCP (Supabase/Playwright): Pide `#file:.clinerules/mcp-supabase-playwright.md`

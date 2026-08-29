@@ -67,18 +67,18 @@ export function TarjetaProducto({ producto }: { producto: Producto }) {
     const renderEtiqueta = () => {
         if (stock <= 0)
             return (
-                <div className="absolute top-2 left-2 bg-zinc-900 text-white text-[10px] font-bold px-2 py-1 rounded-sm uppercase tracking-wider">
+                <div className="absolute left-2 top-2 rounded-full bg-zinc-900 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.15em] text-white shadow-sm">
                     Agotado
                 </div>
             );
         if (stock > 0 && stock < 5)
             return (
-                <div className="absolute top-2 left-2 bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded-sm uppercase tracking-wider animate-pulse">
+                <div className="absolute left-2 top-2 animate-pulse rounded-full bg-red-600 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.15em] text-white shadow-sm">
                     ¡Últimas unidades!
                 </div>
             );
         return (
-            <div className="absolute top-2 left-2 bg-background text-foreground text-[10px] font-bold px-2 py-1 rounded-sm border border-border uppercase tracking-wider shadow-sm">
+            <div className="absolute left-2 top-2 rounded-full border border-border bg-background px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.15em] text-foreground shadow-sm">
                 Nuevo
             </div>
         );
@@ -174,7 +174,7 @@ export function TarjetaProducto({ producto }: { producto: Producto }) {
                 <button
                     onClick={handleAgregarCarrito}
                     disabled={stock <= 0}
-                    className="w-full flex items-center justify-center gap-2 bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-3 rounded-lg text-sm font-extrabold transition-all duration-300 shadow-md shadow-blue-500/20 hover:shadow-blue-500/40 animate-[pulse_2s_infinite] disabled:opacity-50 disabled:cursor-not-allowed">
+                    className="w-full flex items-center justify-center gap-2 rounded-lg bg-linear-to-r from-blue-600 to-indigo-600 px-4 py-3 text-sm font-extrabold text-white shadow-md shadow-blue-500/20 transition-all duration-300 hover:from-blue-700 hover:to-indigo-700 hover:shadow-blue-500/40 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none">
                     {stock <= 0 ? 'Agotado' : 'Comprar'}
                 </button>
             </div>
