@@ -2,10 +2,27 @@
 
 import { createSupabaseServerClient } from '@/src/lib/supabase/server';
 import type { Database } from '@/types/supabase';
+import { WHATSAPP_SUPPORT_NUMBER } from '@/src/lib/constants';
 
 interface CarritoItemInput {
     id: string;
     cantidad: number;
+}
+
+async function obtenerNumeroWhatsAppAdmin(): Promise<string> {
+    const supabase = await createSupabaseServerClient();
+    const { data: adminData, error: adminError } = await supabase
+        .from('admin_users')
+        .select('whatsapp')
+        .limit(1)
+        .single();
+    const adminWhatsapp = adminData as Pick<Database['public']['Tables']['admin_users']['Row'], 'whatsapp'> | null;
+
+    if (adminError) {
+        console.error('Error al obtener número de WhatsApp de admin:', adminError);
+    }
+
+    return adminWhatsapp?.whatsapp?.replace(/[^\d+]/g, '') || WHATSAPP_SUPPORT_NUMBER;
 }
 
 export async function generarLinkWhatsApp(carrito: CarritoItemInput[]): Promise<string> {
@@ -14,30 +31,11 @@ export async function generarLinkWhatsApp(carrito: CarritoItemInput[]): Promise<
     }
 
     const supabase = await createSupabaseServerClient();
-
-    // 1. Teléfono: Haz un select('whatsapp') a la tabla admin_users. Usa .limit(1).single().
-    // Guarda el resultado en una variable numeroAdmin. Si no existe, lanza un error "Número de administrador no configurado".
-    const { data: adminRawData, error: adminError } = await supabase
-        .from('admin_users')
-        .select('*')
-        .limit(1)
-        .single();
-
-    const adminData = adminRawData as Database['public']['Tables']['admin_users']['Row'] | null;
-
-    if (adminError || !adminData || !adminData.whatsapp) {
-        console.error('Error al obtener número de WhatsApp de admin:', adminError);
-        throw new Error('Número de administrador no configurado');
-    }
-
-    const numeroAdmin = adminData.whatsapp.replace(/[^\d+]/g, '');
+    const numeroAdmin = await obtenerNumeroWhatsAppAdmin();
 
     // 2. Precios Seguros: Extrae los IDs del carrito y haz un select a la tabla productos filtrando con .in('id', arrayDeIds).
-    const ids = carrito.map(item => item.id);
-    const { data, error: prodError } = await supabase
-        .from('productos')
-        .select('*')
-        .in('id', ids);
+    const ids = carrito.map((item) => item.id);
+    const { data, error: prodError } = await supabase.from('productos').select('*').in('id', ids);
 
     if (prodError) {
         console.error('Error al consultar productos:', prodError);
@@ -52,7 +50,7 @@ export async function generarLinkWhatsApp(carrito: CarritoItemInput[]): Promise<
 
     // Mapear productos por ID para acceso rápido O(1)
     const productosMap = new Map<string, Database['public']['Tables']['productos']['Row']>();
-    productos.forEach(p => {
+    productos.forEach((p) => {
         productosMap.set(p.id, p);
     });
 
@@ -85,22 +83,7 @@ export async function obtenerLinkCompartirAdmin(productoId: string): Promise<str
     }
 
     const supabase = await createSupabaseServerClient();
-
-    // 1. Consulte el whatsapp de la tabla admin_users.
-    const { data: adminRawData, error: adminError } = await supabase
-        .from('admin_users')
-        .select('*')
-        .limit(1)
-        .single();
-
-    const adminData = adminRawData as Database['public']['Tables']['admin_users']['Row'] | null;
-
-    if (adminError || !adminData || !adminData.whatsapp) {
-        console.error('Error al obtener número de WhatsApp de admin:', adminError);
-        throw new Error('Número de administrador no configurado');
-    }
-
-    const numeroAdmin = adminData.whatsapp.replace(/[^\d+]/g, '');
+    const numeroAdmin = await obtenerNumeroWhatsAppAdmin();
 
     // 2. Consulte el nombre y codigo_corto del producto en la tabla productos.
     const { data: prodData, error: prodError } = await supabase
