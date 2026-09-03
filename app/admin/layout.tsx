@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation';
 import { createSupabaseServerClient } from '@/src/lib/supabase/server';
 import { AdminNavigation } from '@/src/components/admin/AdminNavigation';
 
-export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+export default async function AdminLayout({ children }: Readonly<{ children: React.ReactNode }>) {
     const supabase = await createSupabaseServerClient();
 
     // 1. Verificar si hay una sesión activa

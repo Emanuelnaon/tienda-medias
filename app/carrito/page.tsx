@@ -1,40 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
-import toast from 'react-hot-toast';
 import { useCarritoStore } from '../../src/features/carrito/store';
-import { generarLinkWhatsApp } from '../../src/features/carrito/actions/generarCheckout';
+import { FormularioCheckout } from '@/src/features/carrito/components/FormularioCheckout';
 
 export default function CarritoPage() {
-    const { items, removerItem, actualizarCantidad, limpiarCarrito, obtenerTotal } = useCarritoStore();
-    const [isPending, setIsPending] = useState(false);
-
-    const handleCheckoutWhatsApp = async () => {
-        if (items.length === 0) return;
-
-        setIsPending(true);
-        try {
-            const itemsMapeados = items.map((item) => ({
-                id: item.id,
-                cantidad: item.cantidad,
-            }));
-
-            const url = await generarLinkWhatsApp(itemsMapeados);
-
-            // Limpiamos el carrito porque la compra ya se procesó
-            limpiarCarrito();
-
-            // Redireccionamos a la URL de WhatsApp
-            window.location.href = url;
-        } catch (error) {
-            console.error(error);
-            toast.error(error instanceof Error ? error.message : 'Ocurrió un error al procesar la compra');
-        } finally {
-            setIsPending(false);
-        }
-    };
-
+    const { items, removerItem, actualizarCantidad, obtenerTotal } = useCarritoStore();
     if (items.length === 0) {
         return (
             <div className="flex flex-col items-center justify-center h-[70vh] bg-background text-foreground px-4 text-center">
@@ -118,12 +89,7 @@ export default function CarritoPage() {
                     <span className="font-extrabold text-blue-600">${obtenerTotal()}</span>
                 </div>
 
-                <button
-                    onClick={handleCheckoutWhatsApp}
-                    disabled={isPending}
-                    className="w-full sm:w-auto px-8 py-4 bg-green-600 hover:bg-green-700 text-white font-bold rounded-md transition-colors text-lg shadow-md disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
-                    {isPending ? 'Procesando...' : 'Finalizar Compra por WhatsApp'}
-                </button>
+                <FormularioCheckout />
             </div>
         </div>
     );

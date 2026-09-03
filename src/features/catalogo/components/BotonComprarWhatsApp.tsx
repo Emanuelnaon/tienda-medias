@@ -8,7 +8,7 @@ import type { Database } from '@/src/types/supabase';
 type ProductoRow = Database['public']['Tables']['productos']['Row'];
 
 interface BotonComprarRapidaProps {
-    producto: ProductoRow;
+    readonly producto: ProductoRow;
 }
 
 export function BotonComprarWhatsApp({ producto }: BotonComprarRapidaProps) {

@@ -26,7 +26,7 @@ export const useCarritoStore = create<CartStore>()(
             items: [],
             agregarItem: (nuevoItem) =>
                 set((state) => {
-                    const itemExistente = state.items.find(
+                    const itemExistente = state.items.some(
                         (i) => i.id === nuevoItem.id && i.talle_seleccionado === nuevoItem.talle_seleccionado,
                     );
                     if (itemExistente) {
@@ -47,9 +47,7 @@ export const useCarritoStore = create<CartStore>()(
             actualizarCantidad: (id, talle, cantidad) =>
                 set((state) => ({
                     items: state.items.map((i) =>
-                        i.id === id && i.talle_seleccionado === talle
-                            ? { ...i, cantidad: Math.max(1, cantidad) }
-                            : i,
+                        i.id === id && i.talle_seleccionado === talle ? { ...i, cantidad: Math.max(1, cantidad) } : i,
                     ),
                 })),
             limpiarCarrito: () => set({ items: [] }),

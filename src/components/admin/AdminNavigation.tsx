@@ -5,10 +5,10 @@ import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { LayoutDashboard, Menu, Package, Settings, ShoppingCart, Users, X, type LucideIcon } from 'lucide-react';
 
-type AdminNavigationProps = {
+type AdminNavigationProps = Readonly<{
     email: string;
     mobileOnly?: boolean;
-};
+}>;
 
 type NavigationItem = {
     href: string;
@@ -105,7 +105,7 @@ export function AdminNavigation({ email, mobileOnly = false }: AdminNavigationPr
     );
 }
 
-function NavigationLinks({ pathname, onNavigate }: { pathname: string; onNavigate?: () => void }) {
+function NavigationLinks({ pathname, onNavigate }: Readonly<{ pathname: string; onNavigate?: () => void }>) {
     return (
         <div className="space-y-1">
             {navigationItems.map(({ href, label, description, icon: Icon }) => {

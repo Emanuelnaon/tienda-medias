@@ -1,12 +1,18 @@
 'use server';
 
 import { createSupabaseServerClient } from '@/src/lib/supabase/server';
-import type { Database } from '@/types/supabase';
+import type { Database } from '@/src/types/supabase';
 import { WHATSAPP_SUPPORT_NUMBER } from '@/src/lib/constants';
 
-interface CarritoItemInput {
+export interface CarritoItemInput {
     id: string;
     cantidad: number;
+    talle: string;
+}
+
+export interface ClienteCheckoutInput {
+    nombre_completo: string;
+    telefono: string;
 }
 
 async function obtenerNumeroWhatsAppAdmin(): Promise<string> {
@@ -25,9 +31,12 @@ async function obtenerNumeroWhatsAppAdmin(): Promise<string> {
     return adminWhatsapp?.whatsapp?.replace(/[^\d+]/g, '') || WHATSAPP_SUPPORT_NUMBER;
 }
 
-export async function generarLinkWhatsApp(carrito: CarritoItemInput[]): Promise<string> {
+export async function generarLinkWhatsApp(carrito: CarritoItemInput[], cliente: ClienteCheckoutInput): Promise<string> {
     if (!carrito || carrito.length === 0) {
         throw new Error('El carrito está vacío');
+    }
+    if (!cliente.nombre_completo.trim() || !cliente.telefono.trim()) {
+        throw new Error('Nombre y teléfono son obligatorios');
     }
 
     const supabase = await createSupabaseServerClient();
@@ -42,7 +51,7 @@ export async function generarLinkWhatsApp(carrito: CarritoItemInput[]): Promise<
         throw new Error('Error al validar el carrito con la base de datos');
     }
 
-    if (!data || data.length === 0) {
+    if (!data || data.length === 0 || data.length !== new Set(ids).size) {
         throw new Error('No se encontraron los productos seleccionados');
     }
 
@@ -54,23 +63,73 @@ export async function generarLinkWhatsApp(carrito: CarritoItemInput[]): Promise<
         productosMap.set(p.id, p);
     });
 
-    // 3. Cálculo: Itera sobre el carrito, busca el producto correspondiente en los datos de la BD,
-    // multiplica la cantidad por el precio real del servidor y suma el totalReal.
-    // 4. Mensaje: Construye un string con el resumen del pedido.
     let totalReal = 0;
-    let mensaje = '¡Hola! Quiero hacer el siguiente pedido:\n';
+    const itemsPedido: Database['public']['Tables']['pedidos_items']['Insert'][] = [];
+    let mensaje = '¡Hola! Quiero confirmar mi pedido.\n';
 
     carrito.forEach((item) => {
         const prodBD = productosMap.get(item.id);
-        if (!prodBD) return; // Si un ID no existe en la BD, se ignora
+        if (!prodBD || !Number.isInteger(item.cantidad) || item.cantidad <= 0) {
+            throw new Error('El carrito contiene un producto o cantidad inválida');
+        }
 
         const subtotal = prodBD.precio * item.cantidad;
         totalReal += subtotal;
+        itemsPedido.push({
+            pedido_id: '',
+            producto_id: prodBD.id,
+            nombre_producto: prodBD.nombre,
+            talle: item.talle,
+            cantidad: item.cantidad,
+            precio_unitario: prodBD.precio,
+        });
 
         mensaje += `- ${item.cantidad}x ${prodBD.nombre} ($${prodBD.precio})\n`;
     });
 
-    mensaje += `Total a pagar: $${totalReal}`;
+    const clientePayload: Pick<Database['public']['Tables']['clientes']['Row'], 'nombre_completo' | 'telefono'> = {
+        nombre_completo: cliente.nombre_completo.trim(),
+        telefono: cliente.telefono.trim(),
+    };
+    const { data: clienteRawData, error: clienteError } = await supabase
+        .from('clientes')
+        .upsert(clientePayload as never, { onConflict: 'telefono' })
+        .select('id')
+        .single();
+    const clienteData = clienteRawData as Pick<Database['public']['Tables']['clientes']['Row'], 'id'> | null;
+
+    if (clienteError || !clienteData) {
+        console.error('Error al guardar cliente:', clienteError);
+        throw new Error('No se pudo guardar la información del cliente');
+    }
+
+    const pedidoPayload: Pick<Database['public']['Tables']['pedidos']['Row'], 'cliente_id' | 'total' | 'estado'> = {
+        cliente_id: clienteData.id,
+        total: totalReal,
+        estado: 'pendiente',
+    };
+    const { data: pedidoRawData, error: pedidoError } = await supabase
+        .from('pedidos')
+        .insert(pedidoPayload as never)
+        .select('id')
+        .single();
+    const pedidoData = pedidoRawData as Pick<Database['public']['Tables']['pedidos']['Row'], 'id'> | null;
+
+    if (pedidoError || !pedidoData) {
+        console.error('Error al guardar pedido:', pedidoError);
+        throw new Error('No se pudo registrar el pedido');
+    }
+
+    const itemsConPedido = itemsPedido.map((item) => ({ ...item, pedido_id: pedidoData.id }));
+    const { error: itemsError } = await supabase.from('pedidos_items').insert(itemsConPedido as never[]);
+
+    if (itemsError) {
+        console.error('Error al guardar items del pedido:', itemsError);
+        throw new Error('No se pudo registrar el detalle del pedido');
+    }
+
+    mensaje += `Total a pagar: $${totalReal}\n`;
+    mensaje += `*Número de Orden: ${pedidoData.id.split('-')[0]}*`;
 
     // 5. Retorno: Codifica el string con encodeURIComponent y devuelve exactamente la estructura requerida.
     const textoCodificado = encodeURIComponent(mensaje);
