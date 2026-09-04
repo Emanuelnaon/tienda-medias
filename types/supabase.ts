@@ -103,6 +103,32 @@ export interface Database {
                 Insert: Partial<Database['public']['Tables']['pedidos_items']['Row']>;
                 Update: Partial<Database['public']['Tables']['pedidos_items']['Row']>;
             };
+            producto_variantes: {
+                Row: {
+                    id: string;
+                    producto_id: string;
+                    talle: string;
+                    stock: number;
+                    created_at: string;
+                    updated_at: string;
+                };
+                Insert: {
+                    id?: string;
+                    producto_id: string;
+                    talle: string;
+                    stock?: number;
+                    created_at?: string;
+                    updated_at?: string;
+                };
+                Update: {
+                    id?: string;
+                    producto_id?: string;
+                    talle?: string;
+                    stock?: number;
+                    created_at?: string;
+                    updated_at?: string;
+                };
+            };
         };
         Functions: {
             confirmar_venta_y_actualizar_crm: {
