@@ -67,7 +67,7 @@ export async function guardarProductoConVariantes(
 
         // PASO 1: Guardar el producto en la tabla `productos`
         const productoData: Database['public']['Tables']['productos']['Insert'] = {
-            id: datos.id,
+            ...(datos.id ? { id: datos.id } : {}),
             nombre: datos.nombre,
             codigo_corto: datos.codigoCorto ?? undefined,
             descripcion: datos.descripcion ?? undefined,
