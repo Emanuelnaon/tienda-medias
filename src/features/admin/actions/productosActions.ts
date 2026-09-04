@@ -1,23 +1,29 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
 import { revalidatePath } from 'next/cache';
 import { createSupabaseServerClient } from '@/src/lib/supabase/server';
 import type { Database } from '@/types/supabase';
+
 export type DatosProductoConVariantes = {
-    id?: string;
-    nombre: string;
-    codigoCorto: string | null;
-    descripcion: string | null;
-    precio: number;
-    imagenUrl: string | null;
-    galeriaImagenes: string[] | null;
-    categoria: string | null;
-    tallesDisponibles: string[];
-    variantes: Array<{
-        talle: string;
-        stock: number;
+    readonly id?: string;
+    readonly nombre: string;
+    readonly codigoCorto: string | null;
+    readonly descripcion: string | null;
+    readonly precio: number;
+    readonly imagenUrl: string | null;
+    readonly galeriaImagenes: ReadonlyArray<string> | null;
+    readonly categoria: string | null;
+    readonly tallesDisponibles: ReadonlyArray<string>;
+    readonly variantes: ReadonlyArray<{
+        readonly talle: string;
+        readonly stock: number;
     }>;
+};
+
+type VarianteInsert = {
+    producto_id: string;
+    talle: string;
+    stock: number;
 };
 
 /**
@@ -44,16 +50,10 @@ async function verificarAdministrador() {
 
 /**
  * Guardar producto con variantes por talle (Sprint 6)
- *
- * Ejecuta:
- * 1. INSERT/UPDATE en tabla `productos`
- * 2. DELETE + INSERT en tabla `producto_variantes` (upsert de variantes)
- * 3. Revalidar rutas
  */
 export async function guardarProductoConVariantes(
     datos: DatosProductoConVariantes,
 ): Promise<{ success: boolean; productoId: string; mensaje: string }> {
-    // Validaciones básicas
     if (!datos.nombre || datos.precio < 0) {
         throw new Error('Nombre y precio son requeridos y válidos.');
     }
@@ -73,10 +73,9 @@ export async function guardarProductoConVariantes(
             descripcion: datos.descripcion ?? undefined,
             precio: datos.precio,
             imagen_url: datos.imagenUrl ?? undefined,
-            galeria_imagenes: datos.galeriaImagenes ?? undefined,
+            galeria_imagenes: datos.galeriaImagenes ? [...datos.galeriaImagenes] : undefined,
             categoria: datos.categoria ?? undefined,
-            talles_disponibles: datos.tallesDisponibles.length > 0 ? datos.tallesDisponibles : undefined,
-            // El stock total se calcula como suma de variantes (opcional, pero mantener para compatibilidad)
+            talles_disponibles: datos.tallesDisponibles.length > 0 ? [...datos.tallesDisponibles] : undefined,
             stock: datos.variantes.reduce((sum, v) => sum + v.stock, 0),
         };
 
@@ -84,21 +83,33 @@ export async function guardarProductoConVariantes(
 
         if (datos.id) {
             // UPDATE: Producto existente
-            const updateResult: any = await (supabase.from('productos') as any).update(productoData).eq('id', datos.id);
-
-            const { error: updateError } = updateResult;
+            const { error: updateError } = await (
+                supabase.from('productos') as unknown as {
+                    update: (data: typeof productoData) => {
+                        eq: (column: string, val: string) => Promise<{ error: Error | null }>;
+                    };
+                }
+            )
+                .update(productoData)
+                .eq('id', datos.id);
 
             if (updateError) {
                 throw new Error(`Error al actualizar producto: ${updateError.message}`);
             }
         } else {
             // INSERT: Nuevo producto
-            const insertResult: any = await (supabase.from('productos') as any)
+            const { data: productoInserido, error: insertError } = await (
+                supabase.from('productos') as unknown as {
+                    insert: (data: (typeof productoData)[]) => {
+                        select: (cols: string) => {
+                            single: () => Promise<{ data: { id: string } | null; error: Error | null }>;
+                        };
+                    };
+                }
+            )
                 .insert([productoData])
                 .select('id')
                 .single();
-
-            const { data: productoInserido, error: insertError } = insertResult;
 
             if (insertError || !productoInserido) {
                 throw new Error(`Error al crear producto: ${insertError?.message || 'ID no retornado'}`);
@@ -108,23 +119,24 @@ export async function guardarProductoConVariantes(
         }
 
         // PASO 2: Limpiar variantes existentes y crear nuevas
-        // Primero, eliminar todas las variantes actuales del producto
         const { error: deleteError } = await supabase.from('producto_variantes').delete().eq('producto_id', productoId);
 
         if (deleteError) {
             throw new Error(`Error al limpiar variantes: ${deleteError.message}`);
         }
 
-        // Ahora insertar las nuevas variantes
-        const variantesData: Database['public']['Tables']['producto_variantes']['Insert'][] = datos.variantes.map(
-            (v) => ({
-                producto_id: productoId,
-                talle: v.talle,
-                stock: v.stock,
-            }),
-        );
+        const variantesData: VarianteInsert[] = datos.variantes.map((v) => ({
+            producto_id: productoId,
+            talle: v.talle,
+            stock: v.stock,
+        }));
 
-        const { error: insertVariantesError } = await supabase.from('producto_variantes').insert(variantesData);
+        // Cast explicito para evitar el error 'never[]'
+        const { error: insertVariantesError } = await (
+            supabase.from('producto_variantes') as unknown as {
+                insert: (data: VarianteInsert[]) => Promise<{ error: Error | null }>;
+            }
+        ).insert(variantesData);
 
         if (insertVariantesError) {
             throw new Error(`Error al crear variantes: ${insertVariantesError.message}`);
