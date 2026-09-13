@@ -7,7 +7,9 @@ export interface CartItem {
     precio: number;
     cantidad: number;
     talle_seleccionado: string;
-    categoria: string; // Nueva propiedad para almacenar la categoría del producto
+    categoria: string;
+    imagenUrl: string | null; // ◄ Agregado para mostrar la foto
+    stockMaximo: number; // ◄ Agregado para controlar el límite de stock
 }
 
 interface CartStore {
@@ -19,7 +21,6 @@ interface CartStore {
     obtenerTotal: () => number;
 }
 
-// Envolvemos nuestra lógica con persist()
 export const useCarritoStore = create<CartStore>()(
     persist(
         (set, get) => ({
@@ -29,13 +30,20 @@ export const useCarritoStore = create<CartStore>()(
                     const itemExistente = state.items.some(
                         (i) => i.id === nuevoItem.id && i.talle_seleccionado === nuevoItem.talle_seleccionado,
                     );
+
                     if (itemExistente) {
                         return {
-                            items: state.items.map((i) =>
-                                i.id === nuevoItem.id && i.talle_seleccionado === nuevoItem.talle_seleccionado
-                                    ? { ...i, cantidad: i.cantidad + nuevoItem.cantidad }
-                                    : i,
-                            ),
+                            items: state.items.map((i) => {
+                                if (i.id === nuevoItem.id && i.talle_seleccionado === nuevoItem.talle_seleccionado) {
+                                    // ◄ Validamos que la suma no supere el stock máximo disponible
+                                    const nuevaCantidad = i.cantidad + nuevoItem.cantidad;
+                                    return {
+                                        ...i,
+                                        cantidad: Math.min(nuevaCantidad, i.stockMaximo),
+                                    };
+                                }
+                                return i;
+                            }),
                         };
                     }
                     return { items: [...state.items, nuevoItem] };
@@ -46,9 +54,14 @@ export const useCarritoStore = create<CartStore>()(
                 })),
             actualizarCantidad: (id, talle, cantidad) =>
                 set((state) => ({
-                    items: state.items.map((i) =>
-                        i.id === id && i.talle_seleccionado === talle ? { ...i, cantidad: Math.max(1, cantidad) } : i,
-                    ),
+                    items: state.items.map((i) => {
+                        if (i.id === id && i.talle_seleccionado === talle) {
+                            // ◄ Validamos que al escribir/cambiar manualmente no se pase del stockMaximo
+                            const cantidadValidada = Math.min(Math.max(1, cantidad), i.stockMaximo);
+                            return { ...i, cantidad: cantidadValidada };
+                        }
+                        return i;
+                    }),
                 })),
             limpiarCarrito: () => set({ items: [] }),
             obtenerTotal: () => {
@@ -56,7 +69,7 @@ export const useCarritoStore = create<CartStore>()(
             },
         }),
         {
-            name: 'carrito-almacenamiento', // El nombre con el que se guarda en el navegador
+            name: 'carrito-almacenamiento',
         },
     ),
 );
