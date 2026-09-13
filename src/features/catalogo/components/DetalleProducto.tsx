@@ -9,6 +9,7 @@ export type DetalleProductoProps = Readonly<{
         id: string;
         nombre: string;
         precio: number;
+        categoria?: string | null;
         imagenUrl: string | null;
         variantes: ReadonlyArray<Variante>;
     }>;
@@ -17,11 +18,9 @@ export type DetalleProductoProps = Readonly<{
 export function DetalleProducto({ producto }: DetalleProductoProps) {
     // Determinar si el producto es único (solo una variante disponible)
     const esUnico = producto.variantes.length === 1 && producto.variantes[0].talle.toLowerCase() === 'único';
-    
+
     // Estado para el talle seleccionado, inicializado a 'Único' si es único, o null si hay varias opciones.
-    const [talleSeleccionado, setTalleSeleccionado] = useState<string | null>(
-        esUnico ? 'Único' : null
-    );
+    const [talleSeleccionado, setTalleSeleccionado] = useState<string | null>(esUnico ? 'Único' : null);
 
     // Acceso al store de carrito
     const agregarAlCarrito = useCarritoStore((state) => state.agregarItem);
@@ -31,19 +30,27 @@ export function DetalleProducto({ producto }: DetalleProductoProps) {
     const estaAgotado = !varianteActual || varianteActual.stock <= 0;
 
     const handleAgregar = () => {
-        // Solo agregar si hay un talle seleccionado y el stock es mayor a 0
-        if (!talleSeleccionado || estaAgotado) return;
+        // Si no hay talle seleccionado o la variante está agotada, no hacemos nada
+        if (!talleSeleccionado || !varianteActual || varianteActual.stock <= 0) return;
 
         agregarAlCarrito({
-            productoId: producto.id,
+            id: producto.id,
             nombre: producto.nombre,
             precio: producto.precio,
-            imagenUrl: producto.imagenUrl,
-            talle: talleSeleccionado,
+            imagenUrl: producto.imagenUrl ?? null,
+            talle_seleccionado: talleSeleccionado,
             cantidad: 1,
+            categoria: producto.categoria ?? 'General',
             stockMaximo: varianteActual.stock,
         });
     };
+
+    let textoBoton = 'Agregar al Carrito';
+    if (!talleSeleccionado) {
+        textoBoton = 'Seleccioná un talle';
+    } else if (estaAgotado) {
+        textoBoton = 'Sin Stock Disponible';
+    }
 
     return (
         <div className="flex flex-col space-y-4 max-w-md">
@@ -51,9 +58,9 @@ export function DetalleProducto({ producto }: DetalleProductoProps) {
             <p className="text-xl font-semibold text-gray-800">${producto.precio.toLocaleString('es-AR')}</p>
 
             {/* Componente Selector de Talles */}
-            <SelectorTalles 
-                variantes={producto.variantes} 
-                talleSeleccionado={talleSeleccionado} 
+            <SelectorTalles
+                variantes={producto.variantes}
+                talleSeleccionado={talleSeleccionado}
                 onSeleccionarTalle={setTalleSeleccionado}
             />
 
@@ -62,13 +69,8 @@ export function DetalleProducto({ producto }: DetalleProductoProps) {
                 type="button"
                 onClick={handleAgregar}
                 disabled={!talleSeleccionado || estaAgotado}
-                className="w-full rounded-md bg-black py-3 px-4 text-white font-semibold transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-                {!talleSeleccionado
-                    ? 'Seleccioná un talle'
-                    : estaAgotado
-                    ? 'Sin Stock Disponible'
-                    : 'Agregar al Carrito'}
+                className="w-full rounded-md bg-black py-3 px-4 text-white font-semibold transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50">
+                {textoBoton}
             </button>
         </div>
     );

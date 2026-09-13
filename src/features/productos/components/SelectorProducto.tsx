@@ -32,6 +32,8 @@ export function SelectorProducto({ producto }: Props) {
             cantidad: 1,
             talle_seleccionado: talleSeleccionado,
             categoria: producto.categoria || '',
+            imagenUrl: producto.imagen_url ?? null,
+            stockMaximo: producto.stock ?? 99,
         });
         toast.success('¡Agregado al carrito!');
     };

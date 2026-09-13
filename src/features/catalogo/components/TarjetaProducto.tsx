@@ -31,12 +31,14 @@ export function TarjetaProducto({ producto }: { producto: Producto }) {
         }
 
         agregarItem({
-            id,
-            nombre,
-            precio: Number(precio),
+            id: producto.id,
+            nombre: producto.nombre,
+            precio: producto.precio,
             cantidad: 1,
-            talle_seleccionado: talleSeleccionado,
-            categoria: producto.categoria || '', // Asegúrate de que la propiedad 'categoria' exista en tu tipo Producto
+            talle_seleccionado: 'Único',
+            categoria: producto.categoria ?? 'General',
+            imagenUrl: producto.imagen_url ?? null,
+            stockMaximo: producto.stock ?? 99,
         });
 
         openDrawer();
@@ -52,12 +54,14 @@ export function TarjetaProducto({ producto }: { producto: Producto }) {
         }
 
         agregarItem({
-            id,
-            nombre,
-            precio: Number(precio),
+            id: producto.id,
+            nombre: producto.nombre,
+            precio: producto.precio,
             cantidad: 1,
-            talle_seleccionado: talleSeleccionado,
-            categoria: producto.categoria || '',
+            talle_seleccionado: 'Único',
+            categoria: producto.categoria ?? 'General',
+            imagenUrl: producto.imagen_url ?? null,
+            stockMaximo: producto.stock ?? 99,
         });
 
         toast.success(`${nombre} agregado 🛒`, { duration: 1500 });

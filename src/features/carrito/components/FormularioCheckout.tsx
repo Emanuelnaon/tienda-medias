@@ -40,7 +40,7 @@ export function FormularioCheckout({ onCompleted }: FormularioCheckoutProps) {
             );
             limpiarCarrito();
             onCompleted?.();
-            window.location.href = url;
+            window.location.assign(url);
         } catch (error) {
             toast.error(error instanceof Error ? error.message : 'Ocurrió un error al procesar la compra');
         } finally {

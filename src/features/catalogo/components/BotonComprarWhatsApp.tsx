@@ -24,7 +24,9 @@ export function BotonComprarWhatsApp({ producto }: BotonComprarRapidaProps) {
             cantidad: 1,
             // Si el producto no tiene talle, asignamos uno genérico para que no falle la validación
             talle_seleccionado: producto.talles_disponibles?.[0] || 'Único',
-            categoria: producto.categoria || 'General',
+            categoria: producto.categoria ?? 'General',
+            imagenUrl: producto.imagen_url ?? null,
+            stockMaximo: producto.stock ?? 99,
         });
 
         // 2. Disparamos al usuario directo al checkout
