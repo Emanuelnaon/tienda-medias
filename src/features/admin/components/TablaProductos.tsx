@@ -3,28 +3,32 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
-import { createClient } from '@/src/lib/supabase/client';
 import type { Database } from '@/src/types/supabase';
 import { obtenerLinkCompartirAdmin } from '@/src/features/carrito/actions/generarCheckout';
+import { eliminarProductoAction } from '@/src/features/admin/actions/productosActions';
 
 type Producto = Database['public']['Tables']['productos']['Row'];
 
-export function TablaProductos({ productosIniciales }: { productosIniciales: Producto[] }) {
-    const [productos, setProductos] = useState<Producto[]>(productosIniciales);
+export type TablaProductosProps = Readonly<{
+    productosIniciales: ReadonlyArray<Producto>;
+}>;
+
+function obtenerColorBadgeStock(stock: number): string {
+    if (stock > 5) return 'text-foreground';
+    if (stock > 0) return 'text-foreground/80';
+    return 'text-foreground/50';
+}
+
+export function TablaProductos({ productosIniciales }: TablaProductosProps) {
+    const [productos, setProductos] = useState<ReadonlyArray<Producto>>(productosIniciales);
     const [copiandoId, setCopiandoId] = useState<string | null>(null);
-    const supabase = createClient();
 
     const handleEliminar = async (id: string, nombre: string) => {
         const confirmar = window.confirm(`¿Eliminar permanentemente "${nombre}"?\nEsta acción no se puede deshacer.`);
         if (!confirmar) return;
 
         try {
-            const { error } = await supabase.from('productos').delete().eq('id', id);
-
-            if (error) {
-                throw new Error(error.message);
-            }
-
+            await eliminarProductoAction(id);
             setProductos((prev) => prev.filter((p) => p.id !== id));
             toast.success(`"${nombre}" eliminado del catálogo.`);
         } catch (error: unknown) {
@@ -57,30 +61,11 @@ export function TablaProductos({ productosIniciales }: { productosIniciales: Pro
             toast.success('¡Copy guardado!');
 
             setTimeout(() => {
-                window.open('https://www.instagram.com/', '_blank');
+                window.open('https://www.instagram.com/', '_blank', 'noopener,noreferrer');
             }, 600);
         } catch (error: unknown) {
             console.error(error);
             toast.error('Error al copiar el texto. Verifica los permisos del navegador.');
-        }
-    };
-
-    const handleActualizarStock = async (id: string, stockActual: number, incremento: number) => {
-        const nuevoStock = stockActual + incremento;
-        if (nuevoStock < 0) return;
-
-        setProductos((prev) => prev.map((p) => (p.id === id ? { ...p, stock: nuevoStock } : p)));
-
-        try {
-            const { error } = await supabase.from('productos').update({ stock: nuevoStock }).eq('id', id);
-
-            if (error) {
-                throw new Error(error.message);
-            }
-        } catch (error: unknown) {
-            const mensajeError = error instanceof Error ? error.message : String(error);
-            toast.error(`Error al actualizar el stock: ${mensajeError}`);
-            setProductos((prev) => prev.map((p) => (p.id === id ? { ...p, stock: stockActual } : p)));
         }
     };
 
@@ -105,7 +90,7 @@ export function TablaProductos({ productosIniciales }: { productosIniciales: Pro
                             <th className="p-4 font-semibold">Imagen</th>
                             <th className="p-4 font-semibold">Nombre</th>
                             <th className="p-4 font-semibold">Precio</th>
-                            <th className="p-4 font-semibold">Stock</th>
+                            <th className="p-4 font-semibold">Stock Total</th>
                             <th className="p-4 font-semibold">Categoría</th>
                             <th className="p-4 font-semibold text-right">Acciones</th>
                         </tr>
@@ -120,7 +105,7 @@ export function TablaProductos({ productosIniciales }: { productosIniciales: Pro
                         ) : (
                             productos.map((producto) => (
                                 <tr key={producto.id} className="hover:bg-foreground/5 transition-colors bg-background">
-                                    {/* 1. Imagen */}
+                                    {/* Imagen */}
                                     <td className="p-4">
                                         <div className="w-12 h-12 bg-transparent rounded overflow-hidden flex items-center justify-center border border-border">
                                             {producto.imagen_url ? (
@@ -136,7 +121,7 @@ export function TablaProductos({ productosIniciales }: { productosIniciales: Pro
                                         </div>
                                     </td>
 
-                                    {/* 2. Nombre + Talles */}
+                                    {/* Nombre + Talles */}
                                     <td className="p-4">
                                         <div className="font-bold text-foreground">{producto.nombre}</div>
                                         <div className="text-xs text-foreground/60 truncate max-w-200px">
@@ -144,84 +129,32 @@ export function TablaProductos({ productosIniciales }: { productosIniciales: Pro
                                         </div>
                                     </td>
 
-                                    {/* 3. Precio */}
+                                    {/* Precio */}
                                     <td className="p-4 font-mono font-medium text-foreground">
                                         ${Number(producto.precio).toLocaleString('es-AR')}
                                     </td>
 
-                                    {/* 4. Stock */}
+                                    {/* Stock Total */}
                                     <td className="p-4">
-                                        <div className="flex items-center gap-2">
-                                            <button
-                                                disabled={producto.stock <= 0}
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    e.stopPropagation();
-                                                    handleActualizarStock(producto.id, producto.stock, -1);
-                                                }}
-                                                className="w-6 h-6 flex items-center justify-center rounded-md border border-border bg-background hover:bg-foreground hover:text-background text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                                                title="Restar 1 unidad">
-                                                <svg
-                                                    className="w-4 h-4"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    viewBox="0 0 24 24">
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        strokeWidth="2"
-                                                        d="M20 12H4"
-                                                    />
-                                                </svg>
-                                            </button>
-
-                                            <span
-                                                className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold border border-border ${
-                                                    producto.stock > 5
-                                                        ? 'text-foreground'
-                                                        : producto.stock > 0
-                                                          ? 'text-foreground/80'
-                                                          : 'text-foreground/50'
-                                                }`}>
-                                                {producto.stock} uds
-                                            </span>
-
-                                            <button
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    e.stopPropagation();
-                                                    handleActualizarStock(producto.id, producto.stock, 1);
-                                                }}
-                                                className="w-6 h-6 flex items-center justify-center rounded-md border border-border bg-background hover:bg-foreground hover:text-background text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                                                title="Sumar 1 unidad">
-                                                <svg
-                                                    className="w-4 h-4"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    viewBox="0 0 24 24">
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        strokeWidth="2"
-                                                        d="M12 4v16m8-8H4"
-                                                    />
-                                                </svg>
-                                            </button>
-                                        </div>
+                                        <span
+                                            className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold border border-border ${obtenerColorBadgeStock(producto.stock)}`}>
+                                            {producto.stock} uds
+                                        </span>
                                     </td>
 
-                                    {/* 5. Categoría */}
+                                    {/* Categoría */}
                                     <td className="p-4">
                                         <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-muted text-foreground border border-border">
                                             {producto.categoria || 'Sin categoría'}
                                         </span>
                                     </td>
 
-                                    {/* 6. Acciones */}
+                                    {/* Acciones */}
                                     <td className="p-4 text-right">
                                         <div className="flex justify-end gap-2">
                                             <button
-                                                onClick={async () => await handlePrepararPublicacion(producto)}
+                                                type="button"
+                                                onClick={() => handlePrepararPublicacion(producto)}
                                                 className="p-2 text-foreground/70 hover:text-foreground bg-transparent border border-border hover:bg-foreground/5 rounded transition-colors cursor-pointer"
                                                 title="Preparar Publicación (Instagram)">
                                                 <svg
@@ -237,7 +170,9 @@ export function TablaProductos({ productosIniciales }: { productosIniciales: Pro
                                                     <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
                                                 </svg>
                                             </button>
+
                                             <button
+                                                type="button"
                                                 disabled={copiandoId === producto.id}
                                                 onClick={() => handleCopiarLink(producto.id)}
                                                 className="p-2 text-foreground/70 hover:text-foreground bg-transparent border border-border hover:bg-foreground/5 rounded transition-colors disabled:opacity-50 cursor-pointer"
@@ -259,10 +194,11 @@ export function TablaProductos({ productosIniciales }: { productosIniciales: Pro
                                                     </svg>
                                                 )}
                                             </button>
+
                                             <Link
                                                 href={`/admin/editar/${producto.id}`}
                                                 className="p-2 text-foreground/70 hover:text-foreground bg-transparent border border-border hover:bg-foreground/5 rounded transition-colors cursor-pointer"
-                                                title="Editar">
+                                                title="Editar variantes y datos">
                                                 <svg
                                                     className="w-4 h-4"
                                                     fill="none"
@@ -276,7 +212,9 @@ export function TablaProductos({ productosIniciales }: { productosIniciales: Pro
                                                     />
                                                 </svg>
                                             </Link>
+
                                             <button
+                                                type="button"
                                                 onClick={() => handleEliminar(producto.id, producto.nombre)}
                                                 className="p-2 text-foreground/70 hover:text-foreground bg-transparent border border-border hover:bg-foreground/5 rounded transition-colors cursor-pointer"
                                                 title="Eliminar">

@@ -1,6 +1,6 @@
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
-import type { Database } from '@/types/supabase';
+import type { Database } from '@/src/types/supabase';
 
 // Plantilla base para inicializar Supabase en Server Actions y Route Handlers
 export async function createSupabaseServerClient() {

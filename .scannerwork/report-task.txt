@@ -1,0 +1,7 @@
+organization=emanuelnaon
+projectKey=tienda-medias-nextjs
+serverUrl=https://sonarcloud.io
+serverVersion=8.0.0.106333
+dashboardUrl=https://sonarcloud.io/dashboard?id=tienda-medias-nextjs
+ceTaskId=AaCn_MYPkniaErWP8qYQ
+ceTaskUrl=https://sonarcloud.io/api/ce/task?id=AaCn_MYPkniaErWP8qYQ

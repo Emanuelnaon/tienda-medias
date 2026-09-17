@@ -44,6 +44,58 @@ export interface Database {
                     codigo_corto?: string | null;
                     categoria?: string | null;
                 };
+                Relationships: [];
+            };
+            producto_variantes: {
+                Row: {
+                    id: string;
+                    producto_id: string;
+                    talle: string;
+                    stock: number;
+                    created_at: string;
+                };
+                Insert: {
+                    id?: string;
+                    producto_id: string;
+                    talle: string;
+                    stock?: number;
+                    created_at?: string;
+                };
+                Update: {
+                    id?: string;
+                    producto_id?: string;
+                    talle?: string;
+                    stock?: number;
+                    created_at?: string;
+                };
+                Relationships: [];
+            };
+            categorias: {
+                Row: {
+                    id: string;
+                    nombre: string;
+                    slug: string;
+                    tenant_id: string;
+                    es_preset: boolean;
+                    created_at: string;
+                };
+                Insert: {
+                    id?: string;
+                    nombre: string;
+                    slug: string;
+                    tenant_id?: string;
+                    es_preset?: boolean;
+                    created_at?: string;
+                };
+                Update: {
+                    id?: string;
+                    nombre?: string;
+                    slug?: string;
+                    tenant_id?: string;
+                    es_preset?: boolean;
+                    created_at?: string;
+                };
+                Relationships: [];
             };
             admin_users: {
                 Row: {
@@ -61,6 +113,7 @@ export interface Database {
                     email?: string;
                     whatsapp?: string | null;
                 };
+                Relationships: [];
             };
             clientes: {
                 Row: {
@@ -76,6 +129,7 @@ export interface Database {
                 };
                 Insert: Omit<Database['public']['Tables']['clientes']['Row'], 'id'> & { id?: string };
                 Update: Partial<Database['public']['Tables']['clientes']['Insert']>;
+                Relationships: [];
             };
             pedidos: {
                 Row: {
@@ -89,6 +143,7 @@ export interface Database {
                 };
                 Insert: Partial<Database['public']['Tables']['pedidos']['Row']>;
                 Update: Partial<Database['public']['Tables']['pedidos']['Row']>;
+                Relationships: [];
             };
             pedidos_items: {
                 Row: {
@@ -102,8 +157,10 @@ export interface Database {
                 };
                 Insert: Partial<Database['public']['Tables']['pedidos_items']['Row']>;
                 Update: Partial<Database['public']['Tables']['pedidos_items']['Row']>;
+                Relationships: [];
             };
         };
+        Views: Record<string, never>;
         Functions: {
             confirmar_venta_y_actualizar_crm: {
                 Args: { pedido_id: string };

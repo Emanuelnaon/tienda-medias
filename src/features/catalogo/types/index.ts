@@ -1,4 +1,4 @@
-import type { Database } from '@/types/supabase';
+import type { Database } from '@/src/types/supabase';
 
 export type CatalogProducto = Database['public']['Tables']['productos']['Row'];
 

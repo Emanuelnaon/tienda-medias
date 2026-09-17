@@ -104,7 +104,7 @@ export function FormularioProducto() {
             // Subir imágenes
             for (const archivo of archivosImagenes) {
                 const archivoComprimido = await imageCompression(archivo, { maxSizeMB: 1, maxWidthOrHeight: 1200 });
-                const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}-${archivo.name.replace(/\s+/g, '-')}`;
+                const fileName = `${Date.now()}-${crypto.randomUUID()}-${archivo.name.replace(/\s+/g, '-')}`;
 
                 const { error: uploadError } = await supabase.storage
                     .from('productos')
@@ -134,7 +134,7 @@ export function FormularioProducto() {
                 nombre,
                 codigoCorto: codigoCorto || null,
                 descripcion: descripcion || null,
-                precio: parseFloat(precio),
+                precio: Number.parseFloat(precio),
                 imagenUrl: primeraImagen,
                 galeriaImagenes: urlsPublicas.length > 0 ? urlsPublicas : null,
                 categoria: categoria || null,
@@ -161,10 +161,11 @@ export function FormularioProducto() {
             <div className="space-y-4">
                 {/* Campo: Nombre */}
                 <div className="flex flex-col gap-1.5">
-                    <label className="text-sm font-bold">
+                    <label htmlFor="nombre" className="text-sm font-bold">
                         Nombre <span className="text-red-500">*</span>
                     </label>
                     <input
+                        id="nombre"
                         type="text"
                         value={nombre}
                         onChange={(e) => setNombre(e.target.value)}
@@ -176,8 +177,9 @@ export function FormularioProducto() {
 
                 {/* Campo: Código Corto */}
                 <div className="flex flex-col gap-1.5">
-                    <label className="text-sm font-bold">Código Corto (Redes Sociales)</label>
+                    <label htmlFor="codigoCorto" className="text-sm font-bold">Código Corto (Redes Sociales)</label>
                     <input
+                        id="codigoCorto"
                         type="text"
                         value={codigoCorto}
                         onChange={(e) => setCodigoCorto(e.target.value)}
@@ -188,8 +190,9 @@ export function FormularioProducto() {
 
                 {/* Campo: Descripción */}
                 <div className="flex flex-col gap-1.5">
-                    <label className="text-sm font-bold">Descripción</label>
+                    <label htmlFor="descripcion" className="text-sm font-bold">Descripción</label>
                     <textarea
+                        id="descripcion"
                         value={descripcion}
                         onChange={(e) => setDescripcion(e.target.value)}
                         placeholder="Escribe una breve descripción del producto..."
@@ -201,10 +204,11 @@ export function FormularioProducto() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {/* Campo: Precio */}
                     <div className="flex flex-col gap-1.5">
-                        <label className="text-sm font-bold">
+                        <label htmlFor="precio" className="text-sm font-bold">
                             Precio ($) <span className="text-red-500">*</span>
                         </label>
                         <input
+                            id="precio"
                             type="number"
                             value={precio}
                             onChange={(e) => setPrecio(e.target.value)}
@@ -219,8 +223,9 @@ export function FormularioProducto() {
 
                 {/* Campo: Imágenes */}
                 <div className="flex flex-col gap-2">
-                    <label className="text-sm font-semibold text-foreground">Imágenes del Producto</label>
+                    <label htmlFor="imagen" className="text-sm font-semibold text-foreground">Imágenes del Producto</label>
                     <input
+                        id="imagen"
                         type="file"
                         accept="image/*"
                         multiple
@@ -237,8 +242,9 @@ export function FormularioProducto() {
 
                 {/* Campo: Categoría */}
                 <div className="flex flex-col gap-1.5">
-                    <label className="text-sm font-bold">Categoría</label>
+                    <label htmlFor="categoria" className="text-sm font-bold">Categoría</label>
                     <select
+                        id="categoria"
                         value={categoria}
                         onChange={(e) => setCategoria(e.target.value)}
                         className="w-full bg-background text-foreground border border-border rounded-lg p-2.5 focus:outline-none focus:border-foreground transition-colors cursor-pointer">
@@ -252,10 +258,10 @@ export function FormularioProducto() {
                 </div>
 
                 {/* Selección de Talles */}
-                <div className="flex flex-col gap-3">
-                    <label className="text-sm font-bold">
+                <fieldset className="border-0 p-0 m-0 flex flex-col gap-3">
+                    <legend className="text-sm font-bold">
                         Talles Disponibles <span className="text-red-500">*</span>
-                    </label>
+                    </legend>
                     <div className="flex flex-wrap gap-2">
                         {opcionesTalles.map((talle) => {
                             const isSelected = tallesDisponibles.includes(talle);
@@ -283,14 +289,15 @@ export function FormularioProducto() {
                                 className={`grid gap-3 ${tallesDisponibles.includes('Único') ? 'grid-cols-1' : 'grid-cols-2 md:grid-cols-3'}`}>
                                 {tallesDisponibles.map((talle) => (
                                     <div key={talle} className="flex flex-col gap-1.5">
-                                        <label className="text-xs font-semibold text-foreground">
+                                        <label htmlFor={`stock-${talle}`} className="text-xs font-semibold text-foreground">
                                             Talle <span className="font-bold">{talle}</span>
                                         </label>
                                         <input
+                                            id={`stock-${talle}`}
                                             type="number"
                                             value={stockPorTalle[talle] ?? 0}
                                             onChange={(e) =>
-                                                actualizarStockTalle(talle, parseInt(e.target.value, 10) || 0)
+                                                actualizarStockTalle(talle, Number.parseInt(e.target.value, 10) || 0)
                                             }
                                             placeholder="0"
                                             min="0"
@@ -302,7 +309,7 @@ export function FormularioProducto() {
                             </div>
                         </div>
                     )}
-                </div>
+                </fieldset>
             </div>
 
             {/* Botón de Enviar */}

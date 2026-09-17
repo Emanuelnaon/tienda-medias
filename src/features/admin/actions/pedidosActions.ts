@@ -58,8 +58,8 @@ export async function listarPedidosPendientes(): Promise<PedidoPendiente[]> {
 }
 
 /**
- * Confirmar Acreditación del Pedido (Tickets 6.1 y 6.2)
- * Ejecuta la RPC transaccional 'confirmar_pedido_transaccion' en PostgreSQL.
+ * Confirmar Acreditación del Pedido
+ * Ejecuta la RPC transaccional en PostgreSQL.
  */
 export async function confirmarPedido(pedidoId: string): Promise<{ success: boolean; mensaje: string }> {
     if (!pedidoId || typeof pedidoId !== 'string') {
@@ -67,25 +67,22 @@ export async function confirmarPedido(pedidoId: string): Promise<{ success: bool
     }
 
     try {
-        const supabase = await verificarAdministrador();
+        const clienteBase = await verificarAdministrador();
 
-        // Se define explícitamente el tipo de parámetros para la RPC creada
-        const { data, error } = await (
-            supabase.rpc as unknown as (fn: string, args: { p_pedido_id: string }) => ReturnType<typeof supabase.rpc>
-        )('confirmar_pedido_transaccion', {
-            p_pedido_id: pedidoId,
+        const { error } = await clienteBase.rpc('confirmar_venta_y_actualizar_crm', {
+            pedido_id: pedidoId,
         });
 
         if (error) {
             throw new Error(`Error en base de datos: ${error.message}`);
         }
 
-        const respuesta = data as { success: boolean; mensaje: string };
-
         revalidatePath('/admin/pedidos');
         revalidatePath('/admin/clientes');
+        revalidatePath('/admin/crm');
+        revalidatePath('/catalogo');
 
-        return respuesta;
+        return { success: true, mensaje: 'Venta confirmada y CRM actualizado.' };
     } catch (error) {
         const mensajeError = error instanceof Error ? error.message : 'Error desconocido al confirmar el pedido.';
         console.error('Error en confirmarPedido:', mensajeError);

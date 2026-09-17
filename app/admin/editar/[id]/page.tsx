@@ -11,7 +11,7 @@ import Link from 'next/link';
 type Producto = Database['public']['Tables']['productos']['Row'];
 
 interface PageProps {
-    params: Promise<{ id: string }>;
+    readonly params: Promise<{ id: string }>;
 }
 
 export default function EditarProductoPage({ params }: PageProps) {
@@ -97,7 +97,7 @@ export default function EditarProductoPage({ params }: PageProps) {
         });
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         if (!nombre || !precio || !stock) {
@@ -116,7 +116,7 @@ export default function EditarProductoPage({ params }: PageProps) {
 
                 for (const archivo of archivosImagenes) {
                     const compressedFile = await imageCompression(archivo, { maxSizeMB: 1, maxWidthOrHeight: 1200 });
-                    const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}-${archivo.name.replace(/\s+/g, '-')}`;
+                    const fileName = `${Date.now()}-${crypto.randomUUID()}-${archivo.name.replace(/\s+/g, '-')}`;
 
                     const { error: uploadError } = await supabase.storage
                         .from('productos')
@@ -143,8 +143,8 @@ export default function EditarProductoPage({ params }: PageProps) {
                     nombre,
                     codigo_corto: codigoCorto || null,
                     descripcion: descripcion || null,
-                    precio: parseFloat(precio),
-                    stock: parseInt(stock, 10),
+                    precio: Number.parseFloat(precio),
+                    stock: Number.parseInt(stock, 10),
                     imagen_url: finalImageUrl,
                     galeria_imagenes: galeriaFinal.length > 0 ? galeriaFinal : null,
                     talles_disponibles: tallesDisponibles.length > 0 ? tallesDisponibles : null,
@@ -182,8 +182,7 @@ export default function EditarProductoPage({ params }: PageProps) {
                 <h1 className="text-3xl font-bold">Editar Producto</h1>
                 <Link
                     href="/admin"
-                    className="text-sm font-medium border border-border hover:border-foreground px-4 py-2 rounded-lg transition-colors cursor-pointer"
-                >
+                    className="text-sm font-medium border border-border hover:border-foreground px-4 py-2 rounded-lg transition-colors cursor-pointer">
                     Volver
                 </Link>
             </div>
@@ -192,10 +191,11 @@ export default function EditarProductoPage({ params }: PageProps) {
                 <div className="space-y-4">
                     {/* Campo: Nombre */}
                     <div className="flex flex-col gap-1.5">
-                        <label className="text-sm font-bold">
+                        <label htmlFor="nombre" className="text-sm font-bold">
                             Nombre <span className="text-red-500">*</span>
                         </label>
                         <input
+                            id="nombre"
                             type="text"
                             value={nombre}
                             onChange={(e) => setNombre(e.target.value)}
@@ -207,8 +207,9 @@ export default function EditarProductoPage({ params }: PageProps) {
 
                     {/* Campo: Código Corto */}
                     <div className="flex flex-col gap-1.5">
-                        <label className="text-sm font-bold">Código Corto (Redes Sociales)</label>
+                        <label htmlFor="codigoCorto" className="text-sm font-bold">Código Corto (Redes Sociales)</label>
                         <input
+                            id="codigoCorto"
                             type="text"
                             value={codigoCorto}
                             onChange={(e) => setCodigoCorto(e.target.value)}
@@ -219,8 +220,9 @@ export default function EditarProductoPage({ params }: PageProps) {
 
                     {/* Campo: Descripción */}
                     <div className="flex flex-col gap-1.5">
-                        <label className="text-sm font-bold">Descripción</label>
+                        <label htmlFor="descripcion" className="text-sm font-bold">Descripción</label>
                         <textarea
+                            id="descripcion"
                             value={descripcion}
                             onChange={(e) => setDescripcion(e.target.value)}
                             placeholder="Escribe una breve descripción del producto..."
@@ -232,10 +234,11 @@ export default function EditarProductoPage({ params }: PageProps) {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {/* Campo: Precio */}
                         <div className="flex flex-col gap-1.5">
-                            <label className="text-sm font-bold">
+                            <label htmlFor="precio" className="text-sm font-bold">
                                 Precio ($) <span className="text-red-500">*</span>
                             </label>
                             <input
+                                id="precio"
                                 type="number"
                                 value={precio}
                                 onChange={(e) => setPrecio(e.target.value)}
@@ -249,10 +252,11 @@ export default function EditarProductoPage({ params }: PageProps) {
 
                         {/* Campo: Stock */}
                         <div className="flex flex-col gap-1.5">
-                            <label className="text-sm font-bold">
+                            <label htmlFor="stock" className="text-sm font-bold">
                                 Stock <span className="text-red-500">*</span>
                             </label>
                             <input
+                                id="stock"
                                 type="number"
                                 value={stock}
                                 onChange={(e) => setStock(e.target.value)}
@@ -267,7 +271,7 @@ export default function EditarProductoPage({ params }: PageProps) {
 
                     {/* Campo: Imágenes */}
                     <div className="flex flex-col gap-3">
-                        <label className="text-sm font-semibold">Imagen del Producto</label>
+                        <label htmlFor="imagen" className="text-sm font-semibold">Imagen del Producto</label>
                         {(imagenUrlExistente || galeriaExistente.length > 0) && (
                             <div className="flex flex-wrap gap-3 p-3 border border-border rounded-lg">
                                 {(galeriaExistente.length > 0 ? galeriaExistente : [imagenUrlExistente])
@@ -275,8 +279,7 @@ export default function EditarProductoPage({ params }: PageProps) {
                                     .map((url, index) => (
                                         <div
                                             key={`${url}-${index}`}
-                                            className="w-16 h-16 overflow-hidden rounded border border-border bg-zinc-100 dark:bg-zinc-900"
-                                        >
+                                            className="w-16 h-16 overflow-hidden rounded border border-border bg-zinc-100 dark:bg-zinc-900">
                                             {/* eslint-disable-next-line @next/next/no-img-element */}
                                             <img
                                                 src={url}
@@ -288,6 +291,7 @@ export default function EditarProductoPage({ params }: PageProps) {
                             </div>
                         )}
                         <input
+                            id="imagen"
                             type="file"
                             accept="image/*"
                             multiple
@@ -302,12 +306,12 @@ export default function EditarProductoPage({ params }: PageProps) {
 
                     {/* Campo: Categoría */}
                     <div className="flex flex-col gap-1.5">
-                        <label className="text-sm font-bold">Categoría</label>
+                        <label htmlFor="categoria" className="text-sm font-bold">Categoría</label>
                         <select
+                            id="categoria"
                             value={categoria}
                             onChange={(e) => setCategoria(e.target.value)}
-                            className="w-full bg-background text-foreground border border-border rounded-lg p-2.5 focus:outline-none focus:border-foreground transition-colors cursor-pointer"
-                        >
+                            className="w-full bg-background text-foreground border border-border rounded-lg p-2.5 focus:outline-none focus:border-foreground transition-colors cursor-pointer">
                             <option value="">Selecciona una categoría...</option>
                             {opcionesCategorias.map((cat) => (
                                 <option key={cat} value={cat}>
@@ -318,8 +322,8 @@ export default function EditarProductoPage({ params }: PageProps) {
                     </div>
 
                     {/* Selección de Talles */}
-                    <div className="flex flex-col gap-2">
-                        <label className="text-sm font-bold">Talles Disponibles</label>
+                    <fieldset className="border-0 p-0 m-0 flex flex-col gap-2">
+                        <legend className="text-sm font-bold">Talles Disponibles</legend>
                         <div className="flex flex-wrap gap-2">
                             {opcionesTalles.map((talle) => {
                                 const isSelected = tallesDisponibles.includes(talle);
@@ -332,15 +336,13 @@ export default function EditarProductoPage({ params }: PageProps) {
                                             isSelected
                                                 ? 'bg-foreground text-background hover:opacity-90 border border-transparent'
                                                 : 'bg-transparent text-foreground border border-border hover:border-foreground'
-                                        }`}
-                                    >
+                                        }`}>
                                         {talle}
                                     </button>
-                                
                                 );
                             })}
                         </div>
-                    </div>
+                    </fieldset>
                 </div>
 
                 {/* Botón de Enviar */}
@@ -348,8 +350,7 @@ export default function EditarProductoPage({ params }: PageProps) {
                     <button
                         type="submit"
                         disabled={guardando}
-                        className="w-full sm:w-auto bg-foreground text-background px-6 py-3 rounded-lg font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-50 cursor-pointer"
-                    >
+                        className="w-full sm:w-auto bg-foreground text-background px-6 py-3 rounded-lg font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-50 cursor-pointer">
                         {guardando ? 'Guardando cambios...' : 'Guardar Cambios'}
                     </button>
                 </div>

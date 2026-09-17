@@ -1,6 +1,6 @@
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
-import type { Database } from '@/types/supabase';
+import type { Database } from '@/src/types/supabase';
 
 export async function createSupabaseServerClient() {
     // NEXT.JS 15+: cookies() ahora es una Promesa y REQUIERE el await
