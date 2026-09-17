@@ -13,7 +13,7 @@ export default function CatalogoPage() {
                     </p>
                 </div>
                 <Link
-                    href="/admin/catalogo"
+                    href="/admin"
                     className="px-4 py-2 text-sm font-semibold text-foreground bg-transparent border border-border rounded-lg hover:border-foreground transition-colors"
                 >
                     Volver al Dashboard
