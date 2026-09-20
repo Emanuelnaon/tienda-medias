@@ -6,19 +6,5 @@
     "model": "mistralai/mistral-embed-2312"
   },
   "mcp": {
-    "postgrest": {
-      "type": "local",
-      "command": [
-        "npx",
-        "-y",
-        "@supabase/mcp-server-postgrest@0.0.11",
-        "--apiUrl",
-        "https://tienda-medias.supabase.co/rest/v1",
-        "--apiKey",
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkYXV4b2VkZ2Z2YWFka3Z2aWZ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1OTg5NTIsImV4cCI6MjEwMTE3NDk1Mn0.Bhgq0en5TtKyiCA_iBtNZ1rYOyDCgx56dC2KhfHZ8ZE",
-        "--schema",
-        "public"
-      ]
-    }
   }
 }
