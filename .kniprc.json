@@ -1,0 +1,1 @@
+{"entry": ["src/**/*.{ts,tsx}", "app/**/*.{ts,tsx}"], "nodeTypes": ["node:module"], "namespace": ["node:process"], "keywords": ["use server"], "tsConfig": "./tsconfig.json", "project": ["./tsconfig.json"]}

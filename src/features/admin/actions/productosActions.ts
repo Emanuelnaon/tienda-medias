@@ -1,7 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { createSupabaseServerClient } from '@/src/lib/supabase/server';
+import { verificarAdministrador } from '@/src/lib/auth/admin';
 import type { Database } from '@/src/types/supabase';
 
 export type DatosProductoConVariantes = Readonly<{
@@ -29,28 +29,6 @@ export type VarianteInsert = {
     talle: string;
     stock: number;
 };
-
-/**
- * Validar autenticación y permisos de administrador
- */
-async function verificarAdministrador() {
-    const supabase = await createSupabaseServerClient();
-    const {
-        data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-        throw new Error('Debes iniciar sesión para realizar esta operación.');
-    }
-
-    const { data: administrador, error } = await supabase.from('admin_users').select('id').eq('id', user.id).single();
-
-    if (error || !administrador) {
-        throw new Error('No tienes permisos suficientes de administración.');
-    }
-
-    return supabase;
-}
 
 /**
  * Revalidación centralizada de rutas
@@ -151,7 +129,7 @@ export async function guardarProductoConVariantes(
     }
 
     try {
-        const supabase = await verificarAdministrador();
+        const supabase = await verificarAdministrador('realizar esta operación');
 
         // 1. Guardar/Actualizar cabecera del producto
         const productoId = await upsertProductoBase(supabase, datos);
@@ -183,7 +161,7 @@ export async function eliminarProductoAction(id: string): Promise<{ success: boo
     }
 
     try {
-        const supabase = await verificarAdministrador();
+        const supabase = await verificarAdministrador('realizar esta operación');
 
         const { error } = await supabase.from('productos').delete().eq('id', id);
 

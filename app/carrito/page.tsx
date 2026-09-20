@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useCarritoStore } from '../../src/features/carrito/store';
+import { useCarritoStore } from '@/src/features/carrito/store';
 import { FormularioCheckout } from '@/src/features/carrito/components/FormularioCheckout';
 
 export default function CarritoPage() {

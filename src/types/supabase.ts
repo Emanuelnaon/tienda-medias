@@ -102,16 +102,22 @@ export interface Database {
                     id: string;
                     email: string;
                     whatsapp: string | null;
+                    tenant_id: string | null;
+                    role: string;
                 };
                 Insert: {
                     id?: string;
                     email: string;
                     whatsapp?: string | null;
+                    tenant_id?: string | null;
+                    role?: string;
                 };
                 Update: {
                     id?: string;
                     email?: string;
                     whatsapp?: string | null;
+                    tenant_id?: string | null;
+                    role?: string;
                 };
                 Relationships: [];
             };
@@ -162,9 +168,14 @@ export interface Database {
         };
         Views: Record<string, never>;
         Functions: {
-            confirmar_venta_y_actualizar_crm: {
+            confirmar_pedido_transaccion: {
                 Args: { pedido_id: string };
-                Returns: unknown;
+                Returns: { success: boolean; mensaje: string };
+            };
+
+            get_my_tenant_id: {
+                Args: Record<string, never>;
+                Returns: string;
             };
         };
     };

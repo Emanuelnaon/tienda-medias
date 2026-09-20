@@ -1,7 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { createSupabaseServerClient } from '@/src/lib/supabase/server';
+import { verificarAdministrador, obtenerTenantIdAdmin } from '@/src/lib/auth/admin';
 
 export type PedidoPendiente = {
     readonly id: string;
@@ -22,31 +22,15 @@ export type PedidoPendiente = {
     }>;
 };
 
-async function verificarAdministrador() {
-    const supabase = await createSupabaseServerClient();
-    const {
-        data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-        throw new Error('Debes iniciar sesión para gestionar pedidos.');
-    }
-
-    const { data: administrador, error } = await supabase.from('admin_users').select('id').eq('id', user.id).single();
-    if (error || !administrador) {
-        throw new Error('No tienes permisos para gestionar pedidos.');
-    }
-
-    return supabase;
-}
-
 export async function listarPedidosPendientes(): Promise<PedidoPendiente[]> {
-    const supabase = await verificarAdministrador();
+    const supabase = await verificarAdministrador('gestionar pedidos');
+    const tenantId = await obtenerTenantIdAdmin();
     const { data, error } = await supabase
         .from('pedidos')
         .select(
             'id, created_at, total, comprobante_url, cliente:clientes(nombre_completo, telefono, estado), items:pedidos_items(id, nombre_producto, talle, cantidad, precio_unitario)',
         )
+        .eq('tenant_id', tenantId)
         .eq('estado', 'pendiente')
         .order('created_at', { ascending: true });
 
@@ -67,9 +51,9 @@ export async function confirmarPedido(pedidoId: string): Promise<{ success: bool
     }
 
     try {
-        const clienteBase = await verificarAdministrador();
+        const clienteBase = await verificarAdministrador('gestionar pedidos');
 
-        const { error } = await clienteBase.rpc('confirmar_venta_y_actualizar_crm', {
+        const { error } = await clienteBase.rpc('confirmar_pedido_transaccion', {
             pedido_id: pedidoId,
         });
 

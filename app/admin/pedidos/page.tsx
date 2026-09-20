@@ -1,3 +1,4 @@
+import { cn } from '@/src/lib/utils/cn';
 import { confirmarVentaYActualizarCrm, listarPedidosPendientes } from '@/src/features/admin/actions/pedidosActions';
 
 function formatearFecha(fecha: string | null) {
@@ -55,7 +56,7 @@ export default async function PedidosPage() {
                                                 {pedido.cliente?.nombre_completo ?? 'Cliente sin nombre'}
                                             </h3>
                                             <span
-                                                className={`rounded-full border px-2 py-0.5 text-xs font-semibold ${cliente.estilos}`}>
+                                                className={cn('rounded-full border px-2 py-0.5 text-xs font-semibold', cliente.estilos)}>
                                                 {cliente.texto}
                                             </span>
                                         </div>

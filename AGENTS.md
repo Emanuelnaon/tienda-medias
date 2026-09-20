@@ -53,7 +53,7 @@ Actúas como un Senior Fullstack Developer & Architect. Tu misión es mantener l
   - Cliente de Servidor: `src/lib/supabase/server.ts`
   - Cliente de Navegador: `src/lib/supabase/client.ts`
   - Middleware: `src/middleware.ts`
-- **Patrones de Diseño:** `src/supabase-client-pattern.ts`
+- **Patrones de Diseño:** `src/lib/auth/admin.ts`
 
 ## 🛠️ Skills Disponibles (Triggers)
 **REGLA CERO:** Antes de ejecutar cualquier código, es OBLIGATORIO invocar y leer el archivo de la skill correspondiente si la tarea encaja en estas categorías:

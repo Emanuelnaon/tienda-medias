@@ -1,76 +1,20 @@
 'use client';
 
-import React, { useState, useEffect, useSyncExternalStore } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useAuthState } from '@/src/hooks/useAuthState';
 import { Home, Grid, ShoppingCart, User, Settings, LogOut, Heart } from 'lucide-react';
 import { BotonModoOscuro } from '../BotonModoOscuro';
-import { createClient } from '@/src/lib/supabase/client';
 import { BuscadorRedes } from './BuscadorRedes';
-import type { User as SupabaseUser } from '@supabase/supabase-js';
-import { useCarritoStore } from '@/src/features/carrito/store';
-import { useFavoritosStore } from '@/src/features/favoritos/store/useFavoritosStore';
-
-const emptySubscribe = () => () => {};
 
 export function Sidebar() {
-    const router = useRouter();
-    const [usuario, setUsuario] = useState<SupabaseUser | null>(null);
-
-    // Detecta si estamos en el cliente de forma nativa sin setMounted en useEffect
-    const mounted = useSyncExternalStore(
-        emptySubscribe,
-        () => true,
-        () => false,
-    );
-
-    const items = useCarritoStore((state) => state.items);
-    const totalItems = items.reduce((acc, item) => acc + item.cantidad, 0);
-    
-    const favoritos = useFavoritosStore((state) => state.favoritos);
-    const totalFavoritos = favoritos.length;
-    
-    const [animateBadge, setAnimateBadge] = useState(false);
-
-    // Animación del badge del carrito
-    useEffect(() => {
-        if (totalItems > 0) {
-            const timer1 = setTimeout(() => setAnimateBadge(true), 10);
-            const timer2 = setTimeout(() => setAnimateBadge(false), 300);
-            return () => {
-                clearTimeout(timer1);
-                clearTimeout(timer2);
-            };
-        }
-    }, [totalItems]);
-
-    // Gestión de Autenticación en tiempo real
-    useEffect(() => {
-        const supabase = createClient();
-
-        // 1. Carga inicial del usuario
-        supabase.auth.getUser().then(({ data }) => setUsuario(data.user));
-
-        // 2. Escucha de eventos en tiempo real (login / logout)
-        const {
-            data: { subscription },
-        } = supabase.auth.onAuthStateChange((_event, session) => {
-            setUsuario(session?.user ?? null);
-            
-        });
-
-        return () => {
-            subscription.unsubscribe();
-        };
-    }, [router]);
-
-    const handleSignOut = async () => {
-        const supabase = createClient();
-        await supabase.auth.signOut();
-        setUsuario(null);
-        router.refresh();
-        window.location.href = '/';
-    };
+    const {
+        usuario,
+        mounted,
+        totalItems,
+        totalFavoritos,
+        animateBadge,
+        handleSignOut,
+    } = useAuthState();
 
     if (!mounted) return null;
 

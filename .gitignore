@@ -42,3 +42,19 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Supabase Backups
+backup-*/
+generar-backup.ps1
+
+# ia rules
+AGENTS.MD
+CLAUDE.MD
+.continue
+.clinerules
+.kilo
+.github
+
+# Pruebas e informes de Playwright
+/app/playwright-report/
+/app/test-results/

@@ -3,7 +3,7 @@
 import toast from 'react-hot-toast';
 import { useState } from 'react';
 import { useCarritoStore } from '@/src/features/carrito/store';
-import type { Database } from '@/types/supabase';
+import type { Database } from '@/src/types/supabase';
 import { Share2 } from 'lucide-react';
 
 type Producto = Database['public']['Tables']['productos']['Row'];
