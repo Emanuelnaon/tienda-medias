@@ -6,7 +6,13 @@ import { useCarritoStore } from '@/src/features/carrito/store';
 import type { Database } from '@/src/types/supabase';
 import { Share2 } from 'lucide-react';
 
-type Producto = Database['public']['Tables']['productos']['Row'];
+type CategoriaResumen = Pick<
+    Database['public']['Tables']['categorias']['Row'],
+    'id' | 'nombre' | 'slug'
+>;
+type Producto = Database['public']['Tables']['productos']['Row'] & {
+    categorias?: CategoriaResumen | null;
+};
 
 interface Props {
     producto: Producto;
@@ -31,7 +37,7 @@ export function SelectorProducto({ producto }: Props) {
             precio: Number(producto.precio) || 0,
             cantidad: 1,
             talle_seleccionado: talleSeleccionado,
-            categoria: producto.categoria || '',
+            categoria: producto.categorias?.nombre || '',
             imagenUrl: producto.imagen_url ?? null,
             stockMaximo: producto.stock ?? 99,
         });

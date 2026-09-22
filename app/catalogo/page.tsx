@@ -6,10 +6,16 @@ import { TarjetaProducto } from '@/src/features/catalogo/components/TarjetaProdu
 import { Grid, Filter } from 'lucide-react';
 import type { Database } from '@/src/types/supabase';
 
-type Producto = Database['public']['Tables']['productos']['Row'];
+type CategoriaResumen = Pick<
+    Database['public']['Tables']['categorias']['Row'],
+    'id' | 'nombre' | 'slug'
+>;
+type ProductoConCategoria = Database['public']['Tables']['productos']['Row'] & {
+    categorias: CategoriaResumen | null;
+};
 
 export default function CatalogoPage() {
-    const [productos, setProductos] = useState<Producto[]>([]);
+    const [productos, setProductos] = useState<ProductoConCategoria[]>([]);
     const [categorias, setCategorias] = useState<string[]>(['Todas']);
     const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<string>('Todas');
     const [loading, setLoading] = useState<boolean>(true);
@@ -18,17 +24,17 @@ export default function CatalogoPage() {
         const supabase = createClient();
         const fetchProductos = async () => {
             try {
-                const { data, error } = await supabase.from('productos').select('*');
+                const { data, error } = await supabase.from('productos').select('*, categorias:categorias(id,nombre,slug)');
 
                 if (error) throw error;
 
                 if (data) {
-                    const productosData = data as Producto[];
+                    const productosData = data as ProductoConCategoria[];
                     setProductos(productosData);
 
                     // Extraer categorías únicas
                     const categoriasUnicas = Array.from(
-                        new Set(productosData.map((p) => p.categoria).filter((cat): cat is string => Boolean(cat))),
+                        new Set(productosData.map((p) => p.categorias?.nombre).filter((cat): cat is string => Boolean(cat))),
                     );
                     setCategorias(['Todas', ...categoriasUnicas]);
                 }
@@ -47,10 +53,10 @@ export default function CatalogoPage() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    const productosFiltrados: Producto[] =
+    const productosFiltrados: ProductoConCategoria[] =
         categoriaSeleccionada === 'Todas'
             ? productos
-            : productos.filter((p: Producto) => p.categoria === categoriaSeleccionada);
+            : productos.filter((p: ProductoConCategoria) => p.categorias?.nombre === categoriaSeleccionada);
 
     return (
         <div className="container mx-auto px-4 py-8 min-h-screen">
@@ -91,7 +97,7 @@ export default function CatalogoPage() {
                 </div>
             ) : productosFiltrados.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    {productosFiltrados.map((producto: Producto) => (
+                    {productosFiltrados.map((producto: ProductoConCategoria) => (
                         <TarjetaProducto key={producto.id} producto={producto} />
                     ))}
                 </div>

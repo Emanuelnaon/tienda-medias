@@ -1,8 +1,10 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { verificarAdministrador } from '@/src/lib/auth/admin';
+import { obtenerTenantIdAdmin, verificarAdministrador } from '@/src/lib/auth/admin';
 import type { Database } from '@/src/types/supabase';
+
+type SupabaseAdminClient = Awaited<ReturnType<typeof verificarAdministrador>>;
 
 export type DatosProductoConVariantes = Readonly<{
     id?: string;
@@ -12,7 +14,7 @@ export type DatosProductoConVariantes = Readonly<{
     precio: number;
     imagenUrl: string | null;
     galeriaImagenes: ReadonlyArray<string> | null;
-    categoria: string | null;
+    categoriaId: string | null;
     tallesDisponibles: ReadonlyArray<string>;
     variantes: ReadonlyArray<{
         readonly talle: string;
@@ -50,6 +52,7 @@ async function upsertProductoBase(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     supabase: any,
     datos: DatosProductoConVariantes,
+    tenantId: string,
 ): Promise<string> {
     const productoData: ProductoInsert = {
         ...(datos.id ? { id: datos.id } : {}),
@@ -59,9 +62,10 @@ async function upsertProductoBase(
         precio: datos.precio,
         imagen_url: datos.imagenUrl ?? undefined,
         galeria_imagenes: datos.galeriaImagenes ? [...datos.galeriaImagenes] : undefined,
-        categoria: datos.categoria ?? undefined,
+        categoria_id: datos.categoriaId ?? undefined,
         talles_disponibles: datos.tallesDisponibles.length > 0 ? [...datos.tallesDisponibles] : undefined,
         stock: datos.variantes.reduce((sum, v) => sum + v.stock, 0),
+        tenant_id: tenantId,
     };
 
     if (datos.id) {
@@ -130,9 +134,10 @@ export async function guardarProductoConVariantes(
 
     try {
         const supabase = await verificarAdministrador('realizar esta operación');
+        const tenantId = await obtenerTenantIdAdmin();
 
         // 1. Guardar/Actualizar cabecera del producto
-        const productoId = await upsertProductoBase(supabase, datos);
+        const productoId = await upsertProductoBase(supabase, datos, tenantId);
 
         // 2. Reemplazar variantes por talle
         await reemplazarVariantesProducto(supabase, productoId, datos.variantes);

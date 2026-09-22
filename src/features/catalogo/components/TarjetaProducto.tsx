@@ -9,7 +9,13 @@ import { useFavoritosStore } from '@/src/features/favoritos/store/useFavoritosSt
 import { Heart } from 'lucide-react';
 import type { Database } from '@/src/types/supabase';
 
-type Producto = Database['public']['Tables']['productos']['Row'];
+type CategoriaResumen = Pick<
+    Database['public']['Tables']['categorias']['Row'],
+    'id' | 'nombre' | 'slug'
+>;
+type Producto = Database['public']['Tables']['productos']['Row'] & {
+    categorias?: CategoriaResumen | null;
+};
 
 export function TarjetaProducto({ producto }: { producto: Producto }) {
     const { nombre, precio, stock, talles_disponibles, imagen_url, id } = producto;
@@ -36,7 +42,7 @@ export function TarjetaProducto({ producto }: { producto: Producto }) {
             precio: producto.precio,
             cantidad: 1,
             talle_seleccionado: 'Único',
-            categoria: producto.categoria ?? 'General',
+            categoria: producto.categorias?.nombre ?? 'General',
             imagenUrl: producto.imagen_url ?? null,
             stockMaximo: producto.stock ?? 99,
         });
@@ -59,7 +65,7 @@ export function TarjetaProducto({ producto }: { producto: Producto }) {
             precio: producto.precio,
             cantidad: 1,
             talle_seleccionado: 'Único',
-            categoria: producto.categoria ?? 'General',
+            categoria: producto.categorias?.nombre ?? 'General',
             imagenUrl: producto.imagen_url ?? null,
             stockMaximo: producto.stock ?? 99,
         });

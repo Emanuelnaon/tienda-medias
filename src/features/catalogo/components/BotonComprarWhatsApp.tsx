@@ -5,7 +5,13 @@ import { useRouter } from 'next/navigation';
 import { useCarritoStore } from '@/src/features/carrito/store';
 import type { Database } from '@/src/types/supabase';
 
-type ProductoRow = Database['public']['Tables']['productos']['Row'];
+type CategoriaResumen = Pick<
+    Database['public']['Tables']['categorias']['Row'],
+    'id' | 'nombre' | 'slug'
+>;
+type ProductoRow = Database['public']['Tables']['productos']['Row'] & {
+    categorias?: CategoriaResumen | null;
+};
 
 interface BotonComprarRapidaProps {
     readonly producto: ProductoRow;
@@ -24,7 +30,7 @@ export function BotonComprarWhatsApp({ producto }: BotonComprarRapidaProps) {
             cantidad: 1,
             // Si el producto no tiene talle, asignamos uno genérico para que no falle la validación
             talle_seleccionado: producto.talles_disponibles?.[0] || 'Único',
-            categoria: producto.categoria ?? 'General',
+            categoria: producto.categorias?.nombre ?? 'General',
             imagenUrl: producto.imagen_url ?? null,
             stockMaximo: producto.stock ?? 99,
         });

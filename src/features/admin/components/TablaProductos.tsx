@@ -7,7 +7,13 @@ import type { Database } from '@/src/types/supabase';
 import { obtenerLinkCompartirAdmin } from '@/src/features/carrito/actions/generarCheckout';
 import { eliminarProductoAction } from '@/src/features/admin/actions/productosActions';
 
-type Producto = Database['public']['Tables']['productos']['Row'];
+type CategoriaResumen = Pick<
+    Database['public']['Tables']['categorias']['Row'],
+    'id' | 'nombre' | 'slug'
+>;
+type Producto = Database['public']['Tables']['productos']['Row'] & {
+    categorias?: CategoriaResumen | null;
+};
 
 export type TablaProductosProps = Readonly<{
     productosIniciales: ReadonlyArray<Producto>;
@@ -145,7 +151,7 @@ export function TablaProductos({ productosIniciales }: TablaProductosProps) {
                                     {/* Categoría */}
                                     <td className="p-4">
                                         <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-muted text-foreground border border-border">
-                                            {producto.categoria || 'Sin categoría'}
+                                            {producto.categorias?.nombre || 'Sin categoría'}
                                         </span>
                                     </td>
 

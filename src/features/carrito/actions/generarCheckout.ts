@@ -21,7 +21,7 @@ async function obtenerNumeroWhatsAppAdmin(): Promise<string> {
         .from('admin_users')
         .select('whatsapp')
         .limit(1)
-        .single();
+        .maybeSingle();
     const adminWhatsapp = adminData as Pick<Database['public']['Tables']['admin_users']['Row'], 'whatsapp'> | null;
 
     if (adminError) {
@@ -87,13 +87,14 @@ export async function generarLinkWhatsApp(carrito: CarritoItemInput[], cliente: 
         mensaje += `- ${item.cantidad}x ${prodBD.nombre} ($${prodBD.precio})\n`;
     });
 
-    const clientePayload: Pick<Database['public']['Tables']['clientes']['Row'], 'nombre_completo' | 'telefono'> = {
+    const clientePayload: Pick<Database['public']['Tables']['clientes']['Row'], 'nombre_completo' | 'telefono' | 'tenant_id'> = {
         nombre_completo: cliente.nombre_completo.trim(),
         telefono: cliente.telefono.trim(),
+        tenant_id: 'default',
     };
     const { data: clienteRawData, error: clienteError } = await supabase
         .from('clientes')
-        .upsert(clientePayload as never, { onConflict: 'telefono' })
+        .upsert(clientePayload as never, { onConflict: 'tenant_id, telefono' })
         .select('id')
         .single();
     const clienteData = clienteRawData as Pick<Database['public']['Tables']['clientes']['Row'], 'id'> | null;

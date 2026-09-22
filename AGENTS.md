@@ -1,94 +1,61 @@
-# =====================================================================
-# Script de Inicialización de SDK para IA (Actualizado 2026 - Final)
-# Ejecuta este script desde la raíz de tu NUEVO proyecto Next.js
-# =====================================================================
-
-$SdkPath = "D:\ai-stack-core"
-
-Write-Host "Iniciando inyección de contexto de IA..." -ForegroundColor Cyan
-
-if (-not (Test-Path "package.json")) {
-    Write-Host "Error: No se encontró package.json. Asegúrate de ejecutar este script en la raíz de tu proyecto Next.js." -ForegroundColor Red
-    exit
-}
-
-# 3. Crear carpetas de reglas locales para los 3 entornos
-Write-Host "Creando carpetas .clinerules, .continue/rules y .github..." -ForegroundColor Yellow
-New-Item -ItemType Directory -Force -Path .\.clinerules | Out-Null
-New-Item -ItemType Directory -Force -Path .\.continue\rules | Out-Null
-New-Item -ItemType Directory -Force -Path .\.github | Out-Null
-
-# 4. Copiar las reglas del proyecto (Cline y Continue)
-Write-Host "Inyectando Project Rules para Cline y Continue..." -ForegroundColor Yellow
-Copy-Item -Path "$SdkPath\project-rules\*" -Destination .\.clinerules\ -Recurse -Force
-Copy-Item -Path "$SdkPath\project-rules\*" -Destination .\.continue\rules\ -Recurse -Force
-
-# 4.5. NUEVO: Copiar las SKILLS para que la IA pueda consumirlas
-Write-Host "Inyectando Skills de ejecución para la IA..." -ForegroundColor Yellow
-if (Test-Path "$SdkPath\skills") {
-    Copy-Item -Path "$SdkPath\skills\*" -Destination .\.clinerules\ -Recurse -Force
-    Copy-Item -Path "$SdkPath\skills\*" -Destination .\.continue\rules\ -Recurse -Force
-} else {
-    Write-Host "Aviso: No se encontró la carpeta skills en $SdkPath." -ForegroundColor DarkYellow
-}
-
-# 5. Copiar el Enrutador/Instrucciones de Copilot
-Write-Host "Inyectando reglas globales para Copilot..." -ForegroundColor Yellow
-if (Test-Path "$SdkPath\global\copilot-instructions.md") {
-    Copy-Item -Path "$SdkPath\global\copilot-instructions.md" -Destination .\.github\ -Force
-} else {
-    Write-Host "Aviso: No se encontró copilot-instructions.md en $SdkPath\global." -ForegroundColor DarkYellow
-}
-
-# 5.5. Inyectar Orquestador Maestro Dinámico (AGENTS.md)
-Write-Host "Inyectando Orquestador Maestro Dinámico (AGENTS.md)..." -ForegroundColor Yellow
-$agentsContent = @'
-# 🤖 ORQUESTADOR DE PROYECTO: [Workspace: Current Root Folder]
+# 🤖 ORQUESTADOR DE PROYECTO: [Workspace: __WORKSPACE_ROOT__]
 
 Actúas como un Senior Fullstack Developer & Architect. Tu misión es mantener la integridad de la arquitectura **Feature-Based** y el **SSOT** en Supabase.
 
 ## 🧭 Mapa de Contexto Real
-- **SSOT de Tipos:** `src/types/supabase.ts` (Consultar siempre para tipos de tablas).
-- **Clientes Supabase:** 
-  - Cliente de Servidor: `src/lib/supabase/server.ts`
-  - Cliente de Navegador: `src/lib/supabase/client.ts`
-  - Middleware: `src/middleware.ts`
-- **Patrones de Diseño:** `src/lib/auth/admin.ts`
+
+- **SSOT de Tipos:** `src/types/supabase.ts` — consultar SIEMPRE antes de cualquier tarea que toque datos. Nunca inventar interfaces manuales.
+- **Clientes Supabase:**
+    - Cliente de Servidor: `src/lib/supabase/server.ts`
+    - Cliente de Navegador: `src/lib/supabase/client.ts`
+    - Middleware: `src/middleware.ts`
+- **Auth y roles:** `src/lib/auth/admin.ts` — verificarAdministrador(), obtenerTenantIdAdmin(), is_webmaster()
+- **Tipos regenerados desde DB:** `npx supabase gen types typescript --project-id <ID> --schema public > src/types/supabase.ts`
 
 ## 🛠️ Skills Disponibles (Triggers)
-**REGLA CERO:** Antes de ejecutar cualquier código, es OBLIGATORIO invocar y leer el archivo de la skill correspondiente si la tarea encaja en estas categorías:
-- **[UI_GEN]**: Crear componentes visuales puros -> Usa `.clinerules/crear-componente-con-tokens.md`
-- **[SCAFFOLD]**: Iniciar un nuevo módulo -> Usa `.clinerules/crear-feature.md`
-- **[DB_MIGRATE]**: Cambios en tablas o RLS -> Usa `.clinerules/crear-query-supabase.md`
-- **[FORM_GEN]**: Formularios validados (Zod+RHF) -> Usa `.clinerules/crear-fomulario-validado.md`
-- **[MCP_RULES]**: Reglas de conexión a servidores -> Usa `.clinerules/mcp-supabase-playwright.md`
 
-## 🔌 Conectores MCP & Capacidades de Agente (AI-STACK-CORE)
-El agente tiene prohibido alucinar herramientas. Debe operar con los siguientes servidores MCP activos, pero **SU EJECUCIÓN ES ESTRICTAMENTE BAJO DEMANDA MANUAL DEL USUARIO** para optimizar el consumo de tokens:
-- **Database Explorer (Supabase MCP):** Transporte `streamable-http`. Uso exclusivo bajo petición para sincronizar esquemas, validar tipos o generar migraciones. No ejecutar escaneos autónomos sin autorización explícita.
-- **Web Browser & QA (Playwright MCP):** Transporte `stdio` nativo local. Funciona como los "ojos" del agente. **Solo se invocará cuando el usuario solicite explícitamente una auditoría visual, testing E2E o verificación del DOM.**
-- **Document Processor (Markitdown MCP):** Transporte `stdio` local. Uso dedicado al parseo de archivos externos a Markdown. Solo por petición.
+**REGLA CERO:** Antes de ejecutar cualquier código, es OBLIGATORIO invocar y leer el archivo de la skill correspondiente si la tarea encaja en estas categorías.
+
+La ruta física de la skill depende del modo activo:
+
+- Modo `architect` → `.kilo/rules-architect/`
+- Modo `executor` → `.kilo/rules-executor/`
+- Modo `qa` → `.kilo/rules-qa/`
+
+| Trigger             | Cuándo usarlo                                         | Skill                      |
+| ------------------- | ----------------------------------------------------- | -------------------------- |
+| `[UI_GEN]`          | Crear componentes visuales puros                      | `skill-design-system.md`   |
+| `[DESIGN_REFACTOR]` | Modificar estilos, tokens, layout existente           | `skill-design-system.md`   |
+| `[SCAFFOLD]`        | Iniciar un módulo o feature nueva                     | `skill-coder-tdd.md`       |
+| `[DB_MIGRATE]`      | Cambios en tablas, columnas o RLS                     | `skill-tenant-rls.md`      |
+| `[FORM_GEN]`        | Formularios validados con Zod + RHF                   | `skill-coder-tdd.md`       |
+| `[FEATURE_FLAG]`    | Nueva feature gateada por plan                        | `skill-feature-flag.md`    |
+| `[TIER_GATE]`       | Lógica de acceso básico/premium                       | `skill-tier-gatekeeper.md` |
+| `[TENANT_RLS]`      | Cualquier tabla nueva en contexto multi-tenant        | `skill-tenant-rls.md`      |
+| `[ARCHITECT]`       | Diseño de feature, spec, modelo de datos              | `skill-architect.md`       |
+| `[QA]`              | Debugging, auditoría de seguridad, validación de spec | `skill-qa-doctor.md`       |
+
+## 🔌 Conectores MCP (Ejecución bajo demanda explícita)
+
+El agente tiene prohibido alucinar herramientas. Solo operar con los servidores MCP realmente registrados en `kilo.jsonc`. Si una tool no aparece ahí, no existe para este proyecto.
+
+- **Supabase MCP:** `streamable-http`. Sincronizar esquemas, validar tipos, generar migraciones. Solo bajo petición.
+- **Playwright MCP:** `stdio`. Auditoría visual y E2E. Solo bajo petición explícita.
+- **Markitdown MCP:** `stdio`. Parseo de archivos a Markdown. Solo bajo petición.
 
 ## 📏 Reglas de Oro (Inquebrantables)
-- **Mobile First:** El estilo base de Tailwind es obligatorio para móvil. Los prefijos (`md:`, `lg:`) se reservan únicamente para escalar a escritorio.
-- **SSOT Absoluto:** La única fuente de verdad sobre el modelo de datos es `src/types/supabase.ts`. Queda estrictamente prohibido inventar o forzar interfaces manuales.
-- **PWA Ready:** Todo desarrollo de UI e integración debe ser ultra ligero, priorizando el rendimiento optimizado y arquitecturas tolerantes a la desconexión (Offline-First).
 
-## 🎛️ Reglas de Orquestación del Operador
-- **Autocompletado de Código:** Delegado a sub-modelos locales de baja latencia o Copilot.
-- **Ingeniería Compleja:** Reservado a la ventana de agentes y Cline. Las verificaciones mediante navegador virtual (Playwright) o consultas al estado remoto (Supabase) **solo se realizarán si el usuario lo solicita explícitamente al finalizar la tarea.**
-'@
-Set-Content -Path ".\AGENTS.md" -Value $agentsContent -Encoding UTF8
+- **SSOT Absoluto:** `src/types/supabase.ts` es la única fuente de verdad del modelo de datos. Si hay desincronización, regenerar con `supabase gen types` antes de codear.
+- **Mobile First:** Tailwind base para móvil. Prefijos `md:` / `lg:` solo para escalar a desktop. Nunca al revés.
+- **No-Touch de Estilos:** ningún cambio de `className`, token de Tailwind o valor CSS se aplica como efecto colateral de una tarea no visual. Si se detecta una mejora de estilo posible, sugerirla al final como nota — nunca aplicarla sin confirmación.
+- **PWA Ready:** rendimiento optimizado, arquitecturas tolerantes a la desconexión.
+- **Feature Gating Centralizado:** ninguna feature gateada por plan usa `if (tenant.plan === ...)` disperso en el código. Todo check de plan pasa por la capa de entitlements (`plan_features` en DB + helper centralizado).
+- **Multi-Tenant Siempre:** toda tabla nueva lleva `tenant_id uuid NOT NULL FK → tenants(id)` y su RLS policy correspondiente. Sin excepciones.
+- **RLS Siempre:** toda tabla nueva tiene RLS habilitado. Trigger `[TENANT_RLS]` obligatorio en cualquier migración.
 
-# 6. Copiar los Templates
-Write-Host "Inyectando Templates físicos..." -ForegroundColor Yellow
-Copy-Item -Path "$SdkPath\templates\*" -Destination .\src\ -Recurse -Force
+## 🎛️ Reglas de Orquestación de Modos
 
-Write-Host "`n===========================================================" -ForegroundColor Green
-Write-Host "¡Contexto de IA inyectado con éxito!" -ForegroundColor Green
-Write-Host "===========================================================`n"
-
-# 7. Recordatorio de dependencias base
-Write-Host "Para que las plantillas y skills funcionen sin errores, instala tu stack base ejecutando:" -ForegroundColor Cyan
-Write-Host "npm install @supabase/supabase-js @supabase/ssr react-hook-form @hookform/resolvers zod clsx tailwind-merge lucide-react browser-image-compression zustand immer" -ForegroundColor White
-Write-Host "`n¡Tu entorno está listo para trabajar con Cline, Continue y Copilot!" -ForegroundColor Green
+- **Modo `architect`:** solo lee y escribe en `docs/specs/`. Prohibido tocar `src/`. Lee `src/types/supabase.ts` antes de especificar cualquier modelo de datos.
+- **Modo `executor`:** implementa desde el spec. Lee el spec completo antes de escribir código. Reporta criterios de aceptación al cerrar.
+- **Modo `qa`:** audita seguridad y valida contra spec. Disparador obligatorio cuando se modificaron archivos de RLS, `plan_features`, o lógica de tenant.
+- **Autocompletado:** delegado a modelo liviano en Continue (ghost text). No usa reglas de arquitectura.

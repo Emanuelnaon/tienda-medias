@@ -123,6 +123,21 @@ export function FormularioProducto() {
 
             const primeraImagen = urlsPublicas[0] ?? null;
 
+            // Resolver categoria_id desde el nombre seleccionado
+            let categoriaId: string | null = null;
+            if (categoria) {
+                const { data: catData, error: catError } = await supabase
+                    .from('categorias')
+                    .select('id')
+                    .eq('nombre', categoria)
+                    .maybeSingle();
+
+                if (catError) {
+                    throw new Error(`Error al resolver categoría: ${catError.message}`);
+                }
+                categoriaId = catData?.id ?? null;
+            }
+
             // Construir array de variantes
             const variantes = tallesDisponibles.map((talle) => ({
                 talle,
@@ -137,7 +152,7 @@ export function FormularioProducto() {
                 precio: Number.parseFloat(precio),
                 imagenUrl: primeraImagen,
                 galeriaImagenes: urlsPublicas.length > 0 ? urlsPublicas : null,
-                categoria: categoria || null,
+                categoriaId: categoriaId,
                 tallesDisponibles,
                 variantes,
             };

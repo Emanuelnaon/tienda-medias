@@ -5,8 +5,12 @@ import { DrawerFiltros } from './DrawerFiltros'; // <-- Importamos el nuevo comp
 import type { Database } from '@/src/types/supabase';
 
 // Extraemos el tipo exacto de una fila de la tabla productos
+type CategoriaResumen = Pick<
+    Database['public']['Tables']['categorias']['Row'],
+    'id' | 'nombre' | 'slug'
+>;
 type Producto = Database['public']['Tables']['productos']['Row'] & {
-    categoria?: string | null;
+    categorias?: CategoriaResumen | null;
 };
 
 interface GrillaProductosProps {
@@ -32,7 +36,7 @@ export async function GrillaProductos({ parametros }: GrillaProductosProps) {
     const categoriasUnicas = Array.from(
         new Set(
             todosLosProductos
-                ?.map((p) => p.categoria)
+                ?.map((p) => p.categorias?.nombre)
                 .filter((c): c is string => typeof c === 'string' && c.trim() !== '')
         )
     );

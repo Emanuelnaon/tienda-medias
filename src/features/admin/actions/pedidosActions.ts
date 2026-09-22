@@ -1,6 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import type { Json } from '@/src/types/supabase';
 import { verificarAdministrador, obtenerTenantIdAdmin } from '@/src/lib/auth/admin';
 
 export type PedidoPendiente = {
@@ -45,7 +46,7 @@ export async function listarPedidosPendientes(): Promise<PedidoPendiente[]> {
  * Confirmar Acreditación del Pedido
  * Ejecuta la RPC transaccional en PostgreSQL.
  */
-export async function confirmarPedido(pedidoId: string): Promise<{ success: boolean; mensaje: string }> {
+export async function confirmarPedido(pedidoId: string): Promise<Json> {
     if (!pedidoId || typeof pedidoId !== 'string') {
         throw new Error('El ID del pedido es requerido y debe ser válido.');
     }
@@ -53,8 +54,8 @@ export async function confirmarPedido(pedidoId: string): Promise<{ success: bool
     try {
         const clienteBase = await verificarAdministrador('gestionar pedidos');
 
-        const { error } = await clienteBase.rpc('confirmar_pedido_transaccion', {
-            pedido_id: pedidoId,
+        const { data, error } = await clienteBase.rpc('confirmar_pedido_transaccion', {
+            p_pedido_id: pedidoId,
         });
 
         if (error) {
@@ -66,7 +67,7 @@ export async function confirmarPedido(pedidoId: string): Promise<{ success: bool
         revalidatePath('/admin/crm');
         revalidatePath('/catalogo');
 
-        return { success: true, mensaje: 'Venta confirmada y CRM actualizado.' };
+        return data;
     } catch (error) {
         const mensajeError = error instanceof Error ? error.message : 'Error desconocido al confirmar el pedido.';
         console.error('Error en confirmarPedido:', mensajeError);

@@ -8,7 +8,13 @@ import toast from 'react-hot-toast';
 import imageCompression from 'browser-image-compression';
 import Link from 'next/link';
 
-type Producto = Database['public']['Tables']['productos']['Row'];
+type CategoriaResumen = Pick<
+    Database['public']['Tables']['categorias']['Row'],
+    'id' | 'nombre' | 'slug'
+>;
+type Producto = Database['public']['Tables']['productos']['Row'] & {
+    categorias?: CategoriaResumen | null;
+};
 
 interface PageProps {
     readonly params: Promise<{ id: string }>;
@@ -46,7 +52,7 @@ export default function EditarProductoPage({ params }: PageProps) {
     useEffect(() => {
         const cargarProducto = async () => {
             try {
-                const { data, error } = await supabase.from('productos').select('*').eq('id', id).single();
+                const { data, error } = await supabase.from('productos').select('*, categorias:categorias(id,nombre,slug)').eq('id', id).single();
 
                 if (error || !data) {
                     throw new Error('No se pudo cargar el producto');
@@ -58,7 +64,7 @@ export default function EditarProductoPage({ params }: PageProps) {
                 setDescripcion(prod.descripcion || '');
                 setPrecio(String(prod.precio));
                 setStock(String(prod.stock));
-                setCategoria(prod.categoria || '');
+                setCategoria(prod.categorias?.nombre || '');
                 setImagenUrlExistente(prod.imagen_url || '');
                 setGaleriaExistente(Array.isArray(prod.galeria_imagenes) ? prod.galeria_imagenes.filter(Boolean) : []);
 
@@ -137,6 +143,21 @@ export default function EditarProductoPage({ params }: PageProps) {
                 finalImageUrl = urlsNuevas[0] ?? finalImageUrl;
             }
 
+            // Resolver categoria_id desde el nombre seleccionado
+            let categoriaId: string | null = null;
+            if (categoria) {
+                const { data: catData, error: catError } = await supabase
+                    .from('categorias')
+                    .select('id')
+                    .eq('nombre', categoria)
+                    .maybeSingle();
+
+                if (catError) {
+                    throw new Error(`Error al resolver categoría: ${catError.message}`);
+                }
+                categoriaId = catData?.id ?? null;
+            }
+
             const { error } = await supabase
                 .from('productos')
                 .update({
@@ -148,7 +169,7 @@ export default function EditarProductoPage({ params }: PageProps) {
                     imagen_url: finalImageUrl,
                     galeria_imagenes: galeriaFinal.length > 0 ? galeriaFinal : null,
                     talles_disponibles: tallesDisponibles.length > 0 ? tallesDisponibles : null,
-                    categoria: categoria || null,
+                    categoria_id: categoriaId,
                 })
                 .eq('id', id);
 

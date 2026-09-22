@@ -4,7 +4,13 @@ import { SliderProducto } from '@/src/features/productos/components/SliderProduc
 import ProductoSugeridos from '@/src/features/productos/components/ProductoSugeridos';
 import type { Database } from '@/src/types/supabase';
 
-type Producto = Database['public']['Tables']['productos']['Row'];
+type CategoriaResumen = Pick<
+    Database['public']['Tables']['categorias']['Row'],
+    'id' | 'nombre' | 'slug'
+>;
+type ProductoConCategoria = Database['public']['Tables']['productos']['Row'] & {
+    categorias: CategoriaResumen | null;
+};
 
 interface Props {
     params: Promise<{ id: string }>;
@@ -14,7 +20,7 @@ export default async function ProductoPage({ params }: Props) {
     const { id } = await params;
     const supabase = await createSupabaseServerClient();
 
-    const { data, error } = await supabase.from('productos').select('*').eq('id', id).single();
+    const { data, error } = await supabase.from('productos').select('*, categorias:categorias(id,nombre,slug)').eq('id', id).single();
 
     if (error || !data) {
         return (
@@ -25,7 +31,7 @@ export default async function ProductoPage({ params }: Props) {
         );
     }
 
-    const producto = data as Producto;
+    const producto = data as ProductoConCategoria;
 
     return (
         <div className="max-w-5xl mx-auto p-4 md:p-8 flex flex-col gap-8 bg-background flex-1">
@@ -50,7 +56,7 @@ export default async function ProductoPage({ params }: Props) {
                 </div>
             </div>
 
-            <ProductoSugeridos categoria={producto.categoria} productoId={producto.id} />
+            <ProductoSugeridos categoria={producto.categorias?.nombre ?? null} productoId={producto.id} />
         </div>
     );
 }
