@@ -87,10 +87,20 @@ export async function generarLinkWhatsApp(carrito: CarritoItemInput[], cliente: 
         mensaje += `- ${item.cantidad}x ${prodBD.nombre} ($${prodBD.precio})\n`;
     });
 
+    const { data: tenant, error: tenantError } = await supabase
+        .from('tenants')
+        .select('id')
+        .eq('slug', 'default')
+        .single();
+
+    if (tenantError || !tenant) {
+        throw new Error('Tenant no encontrado');
+    }
+
     const clientePayload: Pick<Database['public']['Tables']['clientes']['Row'], 'nombre_completo' | 'telefono' | 'tenant_id'> = {
         nombre_completo: cliente.nombre_completo.trim(),
         telefono: cliente.telefono.trim(),
-        tenant_id: 'default',
+        tenant_id: tenant.id,
     };
     const { data: clienteRawData, error: clienteError } = await supabase
         .from('clientes')
@@ -104,10 +114,11 @@ export async function generarLinkWhatsApp(carrito: CarritoItemInput[], cliente: 
         throw new Error('No se pudo guardar la información del cliente');
     }
 
-    const pedidoPayload: Pick<Database['public']['Tables']['pedidos']['Row'], 'cliente_id' | 'total' | 'estado'> = {
+    const pedidoPayload: Pick<Database['public']['Tables']['pedidos']['Row'], 'cliente_id' | 'total' | 'estado' | 'tenant_id'> = {
         cliente_id: clienteData.id,
         total: totalReal,
         estado: 'pendiente',
+        tenant_id: tenant.id,
     };
     const { data: pedidoRawData, error: pedidoError } = await supabase
         .from('pedidos')
