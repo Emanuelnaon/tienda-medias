@@ -1,6 +1,6 @@
 'use server';
 
-import { createSupabaseServerClient } from '@/src/lib/supabase/server';
+import { createSupabaseServerClient, createSupabasePublicClient } from '@/src/lib/supabase/server';
 import type { Database } from '@/src/types/supabase';
 import { WHATSAPP_SUPPORT_NUMBER } from '@/src/lib/constants';
 
@@ -39,7 +39,7 @@ export async function generarLinkWhatsApp(carrito: CarritoItemInput[], cliente: 
         throw new Error('Nombre y teléfono son obligatorios');
     }
 
-    const supabase = await createSupabaseServerClient();
+    const supabase = createSupabasePublicClient();
     const numeroAdmin = await obtenerNumeroWhatsAppAdmin();
 
     // 2. Precios Seguros: Extrae los IDs del carrito y haz un select a la tabla productos filtrando con .in('id', arrayDeIds).
