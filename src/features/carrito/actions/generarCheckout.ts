@@ -102,17 +102,19 @@ export async function generarLinkWhatsApp(carrito: CarritoItemInput[], cliente: 
         telefono: cliente.telefono.trim(),
         tenant_id: tenant.id,
     };
-    const { data: clienteRawData, error: clienteError } = await supabase
-        .from('clientes')
-        .insert(clientePayload)
-        .select('id')
-        .single();
-    const clienteData = clienteRawData as Pick<Database['public']['Tables']['clientes']['Row'], 'id'> | null;
+    const { data: clienteId, error: clienteError } = await supabase
+        .rpc('crear_cliente_checkout', {
+            p_nombre_completo: clientePayload.nombre_completo,
+            p_telefono: clientePayload.telefono,
+            p_tenant_id: tenant.id,
+        });
 
-    if (clienteError || !clienteData) {
+    if (clienteError || !clienteId) {
         console.error('Error al guardar cliente:', clienteError);
         throw new Error('No se pudo guardar la información del cliente');
     }
+
+    const clienteData = { id: clienteId };
 
     const pedidoPayload: Pick<Database['public']['Tables']['pedidos']['Row'], 'cliente_id' | 'total' | 'estado' | 'tenant_id'> = {
         cliente_id: clienteData.id,

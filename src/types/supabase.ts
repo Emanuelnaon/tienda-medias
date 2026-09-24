@@ -405,6 +405,14 @@ export type Database = {
       }
       get_my_tenant_id: { Args: never; Returns: string }
       is_webmaster: { Args: never; Returns: boolean }
+      crear_cliente_checkout: {
+        Args: {
+          p_nombre_completo: string
+          p_telefono: string
+          p_tenant_id: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never
