@@ -104,7 +104,7 @@ export async function generarLinkWhatsApp(carrito: CarritoItemInput[], cliente: 
     };
     const { data: clienteRawData, error: clienteError } = await supabase
         .from('clientes')
-        .upsert(clientePayload as never, { onConflict: 'tenant_id, telefono' })
+        .insert(clientePayload)
         .select('id')
         .single();
     const clienteData = clienteRawData as Pick<Database['public']['Tables']['clientes']['Row'], 'id'> | null;
