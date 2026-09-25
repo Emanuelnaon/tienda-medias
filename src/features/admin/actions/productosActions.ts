@@ -4,8 +4,6 @@ import { revalidatePath } from 'next/cache';
 import { obtenerTenantIdAdmin, verificarAdministrador } from '@/src/lib/auth/admin';
 import type { Database } from '@/src/types/supabase';
 
-type SupabaseAdminClient = Awaited<ReturnType<typeof verificarAdministrador>>;
-
 export type DatosProductoConVariantes = Readonly<{
     id?: string;
     nombre: string;

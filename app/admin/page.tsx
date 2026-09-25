@@ -1,14 +1,5 @@
 import { createSupabaseServerClient } from '@/src/lib/supabase/server';
 import { TablaProductos } from '@/src/features/admin/components/TablaProductos';
-import type { Database } from '@/src/types/supabase';
-
-type CategoriaResumen = Pick<
-    Database['public']['Tables']['categorias']['Row'],
-    'id' | 'nombre' | 'slug'
->;
-type ProductoConCategoria = Database['public']['Tables']['productos']['Row'] & {
-    categorias: CategoriaResumen | null;
-};
 
 export default async function AdminPage() {
     const supabase = await createSupabaseServerClient();

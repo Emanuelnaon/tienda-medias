@@ -1,12 +1,10 @@
 'use client';
 
 import React, { useState, useTransition } from 'react';
-import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { signInWithEmailAndPassword } from '../api/actions';
 
 export function FormularioLogin() {
-    const router = useRouter();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isPending, startTransition] = useTransition();
