@@ -1,39 +1,61 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import type { Json } from '@/src/types/supabase';
+import type { Database, Json } from '@/src/types/supabase';
 import { verificarAdministrador, obtenerTenantIdAdmin } from '@/src/lib/auth/admin';
+
+type ClienteResumen = Pick<
+    Database['public']['Tables']['clientes']['Row'],
+    'nombre_completo' | 'telefono' | 'estado'
+>;
+
+type ClienteDetalle = Database['public']['Tables']['clientes']['Row'];
+
+type PedidoItem = Pick<
+    Database['public']['Tables']['pedidos_items']['Row'],
+    'id' | 'nombre_producto' | 'talle' | 'cantidad' | 'precio_unitario'
+>;
 
 export type PedidoPendiente = {
     readonly id: string;
     readonly created_at: string | null;
     readonly total: number;
+    readonly estado: string | null;
     readonly comprobante_url: string | null;
-    readonly cliente: {
-        readonly nombre_completo: string;
-        readonly telefono: string;
-        readonly estado: string | null;
-    } | null;
-    readonly items: ReadonlyArray<{
-        readonly id: string;
-        readonly nombre_producto: string;
-        readonly talle: string | null;
-        readonly cantidad: number;
-        readonly precio_unitario: number;
-    }>;
+    readonly comprobante_numero: string | null;
+    readonly cliente: ClienteResumen | null;
+    readonly items: ReadonlyArray<PedidoItem>;
 };
 
-export async function listarPedidosPendientes(): Promise<PedidoPendiente[]> {
+export type PedidoDetalle = Omit<PedidoPendiente, 'cliente'> & {
+    readonly cliente: ClienteDetalle | null;
+    readonly cliente_id: string | null;
+};
+
+const ESTADOS_PEDIDO_WHITELIST = ['pendiente', 'confirmado', 'todos'] as const;
+type EstadoPedido = (typeof ESTADOS_PEDIDO_WHITELIST)[number];
+
+export async function listarPedidosPendientes(estado?: string): Promise<PedidoPendiente[]> {
     const supabase = await verificarAdministrador('gestionar pedidos');
     const tenantId = await obtenerTenantIdAdmin();
-    const { data, error } = await supabase
+
+    if (estado && !ESTADOS_PEDIDO_WHITELIST.includes(estado as EstadoPedido)) {
+        throw new Error(`Estado de pedido inválido: ${estado}.`);
+    }
+
+    let query = supabase
         .from('pedidos')
         .select(
-            'id, created_at, total, comprobante_url, cliente:clientes(nombre_completo, telefono, estado), items:pedidos_items(id, nombre_producto, talle, cantidad, precio_unitario)',
+            'id, created_at, total, estado, comprobante_url, comprobante_numero, cliente:clientes(nombre_completo, telefono, estado), items:pedidos_items(id, nombre_producto, talle, cantidad, precio_unitario)',
         )
         .eq('tenant_id', tenantId)
-        .eq('estado', 'pendiente')
         .order('created_at', { ascending: true });
+
+    if (estado && estado !== 'todos') {
+        query = query.eq('estado', estado);
+    }
+
+    const { data, error } = await query;
 
     if (error) {
         throw new Error(`No se pudieron cargar los pedidos: ${error.message}`);
@@ -76,13 +98,64 @@ export async function confirmarPedido(pedidoId: string): Promise<Json> {
 }
 
 /**
- * Wrapper para FormData (compatibilidad con elementos interactivos de UI)
+ * Obtener detalle completo de un pedido por ID (con cliente e items)
  */
-export async function confirmarVentaYActualizarCrm(formData: FormData): Promise<void> {
-    const pedidoId = formData.get('pedidoId');
-    if (typeof pedidoId !== 'string' || !pedidoId) {
-        throw new Error('El pedido no es válido.');
+export async function obtenerPedidoPorId(id: string): Promise<PedidoDetalle> {
+    if (!id || typeof id !== 'string') {
+        throw new Error('El ID del pedido es requerido y debe ser válido.');
     }
 
-    await confirmarPedido(pedidoId);
+    const supabase = await verificarAdministrador('gestionar pedidos');
+    const tenantId = await obtenerTenantIdAdmin();
+
+    const { data, error } = await supabase
+        .from('pedidos')
+        .select(
+            '*, cliente:clientes(*), items:pedidos_items(*)',
+        )
+        .eq('id', id)
+        .eq('tenant_id', tenantId)
+        .single();
+
+    if (error) {
+        throw new Error(`No se pudo cargar el pedido: ${error.message}`);
+    }
+
+    return data as unknown as PedidoDetalle;
+}
+
+/**
+ * Guardar número de comprobante en un pedido
+ */
+export async function guardarComprobante(
+    pedidoId: string,
+    numero: string,
+): Promise<{ success: boolean; pedidoId: string }> {
+    if (!pedidoId || typeof pedidoId !== 'string') {
+        throw new Error('El ID del pedido es requerido y debe ser válido.');
+    }
+
+    if (!numero || numero.trim().length === 0) {
+        throw new Error('El número de comprobante no puede estar vacío.');
+    }
+
+    const supabase = await verificarAdministrador('gestionar pedidos');
+    const tenantId = await obtenerTenantIdAdmin();
+
+    const { data, error } = await supabase
+        .from('pedidos')
+        .update({ comprobante_numero: numero.trim() })
+        .eq('id', pedidoId)
+        .eq('tenant_id', tenantId)
+        .select()
+        .single();
+
+    if (error) {
+        throw new Error(`Error al guardar el comprobante: ${error.message}`);
+    }
+
+    revalidatePath('/admin/pedidos');
+    revalidatePath(`/admin/pedidos/${pedidoId}`);
+
+    return { success: true, pedidoId: (data as { id: string }).id };
 }
