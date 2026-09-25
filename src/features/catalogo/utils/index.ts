@@ -1,2 +1,1 @@
-// Catalogo Utils placeholder
-export {};
+export * from './calcularEtiquetasInventario';

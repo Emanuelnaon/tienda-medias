@@ -8,6 +8,8 @@ import { useDrawerCarritoStore } from '@/src/features/carrito/drawerStore';
 import { useFavoritosStore } from '@/src/features/favoritos/store/useFavoritosStore';
 import { Heart } from 'lucide-react';
 import type { Database } from '@/src/types/supabase';
+import { calcularEtiquetasInventario } from '@/src/features/catalogo/utils';
+import { EtiquetaInventario } from './EtiquetaInventario';
 
 type CategoriaResumen = Pick<
     Database['public']['Tables']['categorias']['Row'],
@@ -75,21 +77,16 @@ export function TarjetaProducto({ producto }: { producto: Producto }) {
 
     // Lógica para etiquetas de escasez (FOMO)
     const renderEtiqueta = () => {
-        if (stock <= 0)
-            return (
-                <div className="absolute left-2 top-2 rounded-full bg-zinc-900 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.15em] text-white shadow-sm">
-                    Agotado
-                </div>
-            );
-        if (stock > 0 && stock < 5)
-            return (
-                <div className="absolute left-2 top-2 animate-pulse rounded-full bg-red-600 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.15em] text-white shadow-sm">
-                    ¡Últimas unidades!
-                </div>
-            );
+        const { primary, secondary } = calcularEtiquetasInventario({
+            stock: producto.stock,
+            created_at: producto.created_at,
+            producto_variantes: (producto as unknown as { producto_variantes?: ReadonlyArray<{ stock: number }> }).producto_variantes,
+        });
+
         return (
-            <div className="absolute left-2 top-2 rounded-full border border-border bg-background px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.15em] text-foreground shadow-sm">
-                Nuevo
+            <div className="absolute left-2 top-2 z-10 flex flex-col gap-1.5 pointer-events-none">
+                {primary && <EtiquetaInventario tipo={primary} />}
+                {secondary && <EtiquetaInventario tipo={secondary} />}
             </div>
         );
     };

@@ -2,14 +2,21 @@ import { createSupabaseServerClient } from '@/src/lib/supabase/server';
 import { SelectorProducto } from '@/src/features/productos/components/SelectorProducto';
 import { SliderProducto } from '@/src/features/productos/components/SliderProducto';
 import ProductoSugeridos from '@/src/features/productos/components/ProductoSugeridos';
+import { FormularioListaEspera } from '@/src/features/productos/components/FormularioListaEspera';
+import { calcularEtiquetasInventario } from '@/src/features/catalogo/utils';
+import { EtiquetaInventario } from '@/src/features/catalogo/components/EtiquetaInventario';
 import type { Database } from '@/src/types/supabase';
 
 type CategoriaResumen = Pick<
     Database['public']['Tables']['categorias']['Row'],
     'id' | 'nombre' | 'slug'
 >;
-type ProductoConCategoria = Database['public']['Tables']['productos']['Row'] & {
+
+type VarianteRow = Database['public']['Tables']['producto_variantes']['Row'];
+
+type ProductoConVariantes = Database['public']['Tables']['productos']['Row'] & {
     categorias: CategoriaResumen | null;
+    producto_variantes: VarianteRow[];
 };
 
 interface Props {
@@ -20,7 +27,11 @@ export default async function ProductoPage({ params }: Props) {
     const { id } = await params;
     const supabase = await createSupabaseServerClient();
 
-    const { data, error } = await supabase.from('productos').select('*, categorias:categorias(id,nombre,slug)').eq('id', id).single();
+    const { data, error } = await supabase
+        .from('productos')
+        .select('*, categorias:categorias(id,nombre,slug), producto_variantes(id,talle,stock)')
+        .eq('id', id)
+        .single();
 
     if (error || !data) {
         return (
@@ -31,7 +42,15 @@ export default async function ProductoPage({ params }: Props) {
         );
     }
 
-    const producto = data as ProductoConCategoria;
+    const producto = data as ProductoConVariantes;
+
+    const { primary, secondary } = calcularEtiquetasInventario({
+        stock: producto.stock,
+        created_at: producto.created_at,
+        producto_variantes: producto.producto_variantes,
+    });
+
+    const esAgotado = primary === 'agotado';
 
     return (
         <div className="max-w-5xl mx-auto p-4 md:p-8 flex flex-col gap-8 bg-background flex-1">
@@ -43,16 +62,26 @@ export default async function ProductoPage({ params }: Props) {
                     <p className="text-2xl font-extrabold text-blue-600 mt-4">
                         ${Number(producto.precio).toLocaleString('es-AR', { minimumFractionDigits: 2 })}
                     </p>
-                    {producto.stock > 0 && producto.stock < 5 && (
-                        <span className="mt-3 w-fit rounded-full bg-red-600 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.15em] text-white shadow-sm">
-                            ¡Últimas unidades!
-                        </span>
-                    )}
+                    
+                    <div className="flex flex-wrap gap-1.5 mt-3">
+                        {primary && <EtiquetaInventario tipo={primary} />}
+                        {secondary && <EtiquetaInventario tipo={secondary} />}
+                    </div>
+
                     <p className="text-zinc-800 dark:text-zinc-600 mt-4 flex-1">
                         {producto.descripcion || 'Sin descripción disponible.'}
                     </p>
 
-                    <SelectorProducto producto={producto} />
+                    {esAgotado ? (
+                        <FormularioListaEspera
+                            productoId={producto.id}
+                            tenantId={producto.tenant_id}
+                            productoNombre={producto.nombre}
+                            variantes={producto.producto_variantes}
+                        />
+                    ) : (
+                        <SelectorProducto producto={producto} />
+                    )}
                 </div>
             </div>
 
