@@ -413,6 +413,15 @@ export type Database = {
         }
         Returns: string
       }
+      crear_pedido_checkout: {
+        Args: {
+          p_cliente_id: string
+          p_total: number
+          p_tenant_id: string
+          p_items: Json[]
+        }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never

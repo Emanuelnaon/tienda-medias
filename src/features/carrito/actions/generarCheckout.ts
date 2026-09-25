@@ -116,34 +116,29 @@ export async function generarLinkWhatsApp(carrito: CarritoItemInput[], cliente: 
 
     const clienteData = { id: clienteId };
 
-    const pedidoPayload: Pick<Database['public']['Tables']['pedidos']['Row'], 'cliente_id' | 'total' | 'estado' | 'tenant_id'> = {
-        cliente_id: clienteData.id,
-        total: totalReal,
-        estado: 'pendiente',
-        tenant_id: tenant.id,
-    };
-    const { data: pedidoRawData, error: pedidoError } = await supabase
-        .from('pedidos')
-        .insert(pedidoPayload as never)
-        .select('id')
-        .single();
-    const pedidoData = pedidoRawData as Pick<Database['public']['Tables']['pedidos']['Row'], 'id'> | null;
+    const itemsJson = itemsPedido.map((item) => ({
+        producto_id: item.producto_id,
+        nombre_producto: item.nombre_producto,
+        talle: item.talle,
+        cantidad: item.cantidad,
+        precio_unitario: item.precio_unitario,
+    }));
 
-    if (pedidoError || !pedidoData) {
+    const { data: pedidoId, error: pedidoError } = await supabase
+        .rpc('crear_pedido_checkout', {
+            p_cliente_id: clienteData.id,
+            p_total: totalReal,
+            p_tenant_id: tenant.id,
+            p_items: itemsJson,
+        });
+
+    if (pedidoError || !pedidoId) {
         console.error('Error al guardar pedido:', pedidoError);
         throw new Error('No se pudo registrar el pedido');
     }
 
-    const itemsConPedido = itemsPedido.map((item) => ({ ...item, pedido_id: pedidoData.id }));
-    const { error: itemsError } = await supabase.from('pedidos_items').insert(itemsConPedido as never[]);
-
-    if (itemsError) {
-        console.error('Error al guardar items del pedido:', itemsError);
-        throw new Error('No se pudo registrar el detalle del pedido');
-    }
-
     mensaje += `Total a pagar: $${totalReal}\n`;
-    mensaje += `*Número de Orden: ${pedidoData.id.split('-')[0]}*`;
+    mensaje += `*Número de Orden: ${pedidoId.split('-')[0]}*`;
 
     // 5. Retorno: Codifica el string con encodeURIComponent y devuelve exactamente la estructura requerida.
     const textoCodificado = encodeURIComponent(mensaje);
