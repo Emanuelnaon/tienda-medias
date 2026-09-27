@@ -1,0 +1,1 @@
+export { TablaClientes } from './TablaClientes';

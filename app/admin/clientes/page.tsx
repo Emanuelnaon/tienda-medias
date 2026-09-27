@@ -1,37 +1,66 @@
-import React from 'react';
-import Link from 'next/link';
+import { Suspense } from 'react';
+import { listarClientes } from '@/src/features/admin/actions/clientesActions';
+import { TablaClientes } from '@/src/features/admin/components';
+import { tieneFeature } from '@/src/lib/auth/entitlements';
+import type { ClienteConEtiqueta } from '@/src/features/admin/types/clientesTypes';
 
-export default function CrmPage() {
-    return (
-        <div className="flex flex-col gap-6 w-full max-w-6xl mx-auto text-foreground bg-background">
-            {/* Cabecera */}
-            <div className="flex items-center justify-between pb-4 border-b border-border">
-                <div>
-                    <h1 className="text-2xl font-bold">Gestión de Clientes (CRM)</h1>
-                    <p className="text-sm text-foreground/70 mt-1">
-                        Visualización y gestión de la base de datos de clientes, historial de compras y programas de fidelización.
-                    </p>
-                </div>
-                <Link
-                    href="/admin"
-                    className="px-4 py-2 text-sm font-semibold text-foreground bg-transparent border border-border rounded-lg hover:border-foreground transition-colors"
-                >
-                    Volver al Dashboard
-                </Link>
+async function cargarClientes() {
+    return listarClientes();
+}
+
+async function TablaClientesWrapper() {
+    let clientes: ClienteConEtiqueta[] | null = null;
+    let errorMessage: string | null = null;
+
+    try {
+        clientes = await cargarClientes();
+    } catch (error: unknown) {
+        errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+    }
+
+    if (errorMessage) {
+        return (
+            <div className="rounded-md border border-red-500/50 bg-red-500/10 p-4 text-red-700 dark:text-red-300">
+                {errorMessage}
             </div>
+        );
+    }
 
-            {/* Contenedor de Contenido Vacio */}
-            <div className="flex flex-col items-center justify-center p-12 border border-dashed border-border rounded-xl bg-background/50">
-                <div className="w-12 h-12 mb-4 rounded-full bg-foreground/10 flex items-center justify-center text-foreground/50">
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                    </svg>
-                </div>
-                <h3 className="text-lg font-semibold mb-1">Módulo de CRM</h3>
-                <p className="text-sm text-foreground/60 max-w-md text-center">
-                    Esta vista está estructurada y lista para integrar la lógica feature-based correspondiente.
+    return <TablaClientes clientesIniciales={clientes ?? []} />;
+}
+
+async function FeatureGateWrapper() {
+    const featureHabilitada = await tieneFeature('crm_clientes');
+
+    if (!featureHabilitada) {
+        return (
+            <div className="rounded-md border border-amber-500/50 bg-amber-500/10 p-4 text-amber-700 dark:text-amber-300">
+                <p className="font-semibold">Feature no disponible</p>
+                <p className="text-sm mt-1">
+                    La funcionalidad CRM Clientes no está habilitada para tu plan actual.
                 </p>
             </div>
-        </div>
+        );
+    }
+
+    return (
+        <Suspense fallback={<p className="text-sm text-foreground/60">Cargando clientes...</p>}>
+            <TablaClientesWrapper />
+        </Suspense>
+    );
+}
+
+export default async function ClientesPage() {
+    return (
+        <section className="space-y-6">
+            <header>
+                <h2 className="text-2xl font-bold">CRM Clientes</h2>
+                <p className="text-sm text-foreground/70">
+                    Visualización y gestión de la base de datos de clientes, historial de compras y métricas.
+                </p>
+            </header>
+
+            <FeatureGateWrapper />
+        </section>
     );
 }
