@@ -415,32 +415,47 @@ export type Database = {
       tenants: {
         Row: {
           activo: boolean
+          alias_bancario: string | null
+          banco: string | null
+          cbu: string | null
           created_at: string
           email: string | null
           id: string
+          meta_pixel_id: string | null
           nombre: string
           plan: string
           slug: string
+          titular_cuenta: string | null
           whatsapp: string | null
         }
         Insert: {
           activo?: boolean
+          alias_bancario?: string | null
+          banco?: string | null
+          cbu?: string | null
           created_at?: string
           email?: string | null
           id?: string
+          meta_pixel_id?: string | null
           nombre: string
           plan?: string
           slug: string
+          titular_cuenta?: string | null
           whatsapp?: string | null
         }
         Update: {
           activo?: boolean
+          alias_bancario?: string | null
+          banco?: string | null
+          cbu?: string | null
           created_at?: string
           email?: string | null
           id?: string
+          meta_pixel_id?: string | null
           nombre?: string
           plan?: string
           slug?: string
+          titular_cuenta?: string | null
           whatsapp?: string | null
         }
         Relationships: []

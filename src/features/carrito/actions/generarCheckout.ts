@@ -15,6 +15,11 @@ export interface ClienteCheckoutInput {
     telefono: string;
 }
 
+export interface ResultadoCheckout {
+    pedidoId: string;
+    linkWhatsApp: string;
+}
+
 async function obtenerNumeroWhatsAppAdmin(): Promise<string> {
     const supabase = await createSupabaseServerClient();
     const { data: adminData, error: adminError } = await supabase
@@ -31,7 +36,10 @@ async function obtenerNumeroWhatsAppAdmin(): Promise<string> {
     return adminWhatsapp?.whatsapp?.replace(/[^\d+]/g, '') || WHATSAPP_SUPPORT_NUMBER;
 }
 
-export async function generarLinkWhatsApp(carrito: CarritoItemInput[], cliente: ClienteCheckoutInput): Promise<string> {
+export async function generarLinkWhatsApp(
+    carrito: CarritoItemInput[],
+    cliente: ClienteCheckoutInput,
+): Promise<ResultadoCheckout> {
     if (!carrito || carrito.length === 0) {
         throw new Error('El carrito está vacío');
     }
@@ -140,9 +148,10 @@ export async function generarLinkWhatsApp(carrito: CarritoItemInput[], cliente: 
     mensaje += `Total a pagar: $${totalReal}\n`;
     mensaje += `*Número de Orden: ${pedidoId.split('-')[0]}*`;
 
-    // 5. Retorno: Codifica el string con encodeURIComponent y devuelve exactamente la estructura requerida.
+    // 5. Retorno: Codifica el string con encodeURIComponent y devuelve pedidoId + linkWhatsApp.
     const textoCodificado = encodeURIComponent(mensaje);
-    return `https://wa.me/${numeroAdmin}?text=${textoCodificado}`;
+    const linkWhatsApp = `https://wa.me/${numeroAdmin}?text=${textoCodificado}`;
+    return { pedidoId, linkWhatsApp };
 }
 
 export async function obtenerLinkCompartirAdmin(productoId: string): Promise<string> {

@@ -1,12 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import toast from 'react-hot-toast';
 import { generarLinkWhatsApp, type ClienteCheckoutInput } from '@/src/features/carrito/actions/generarCheckout';
 import { useCarritoStore } from '@/src/features/carrito/store';
+import { guardarLinkWhatsApp } from '@/src/lib/utils/linkWhatsappStorage';
 
 const clienteSchema = z.object({
     nombre_completo: z.string().trim().min(2, 'Ingresa tu nombre completo'),
@@ -21,6 +23,16 @@ export function FormularioCheckout({ onCompleted }: FormularioCheckoutProps) {
     const items = useCarritoStore((state) => state.items);
     const limpiarCarrito = useCarritoStore((state) => state.limpiarCarrito);
     const [isPending, setIsPending] = useState(false);
+    const [linkWhatsApp, setLinkWhatsApp] = useState<string | null>(null);
+    const [pedidoId, setPedidoId] = useState<string | null>(null);
+    const router = useRouter();
+
+    useEffect(() => {
+        if (pedidoId && linkWhatsApp) {
+            guardarLinkWhatsApp(pedidoId, linkWhatsApp);
+        }
+    }, [linkWhatsApp, pedidoId]);
+
     const {
         register,
         handleSubmit,
@@ -30,7 +42,7 @@ export function FormularioCheckout({ onCompleted }: FormularioCheckoutProps) {
     const onSubmit = async (cliente: ClienteCheckoutInput) => {
         setIsPending(true);
         try {
-            const url = await generarLinkWhatsApp(
+            const result = await generarLinkWhatsApp(
                 items.map(({ id, cantidad, talle_seleccionado }) => ({
                     id,
                     cantidad,
@@ -38,9 +50,12 @@ export function FormularioCheckout({ onCompleted }: FormularioCheckoutProps) {
                 })),
                 cliente,
             );
+
+            setLinkWhatsApp(result.linkWhatsApp);
+            setPedidoId(result.pedidoId);
             limpiarCarrito();
             onCompleted?.();
-            window.location.assign(url);
+            router.push(`/pedido/${result.pedidoId}`);
         } catch (error) {
             toast.error(error instanceof Error ? error.message : 'Ocurrió un error al procesar la compra');
         } finally {

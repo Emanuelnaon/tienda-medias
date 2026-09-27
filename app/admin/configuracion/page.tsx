@@ -1,15 +1,31 @@
-import React from 'react';
 import Link from 'next/link';
+import { createSupabaseServerClient } from '@/src/lib/supabase/server';
+import {
+    FormularioDatosBancarios,
+    obtenerDatosBancariosTenant,
+    type DatosBancariosTenant,
+} from '@/src/features/configuracion-pagos';
 
-export default function ConfiguracionPage() {
+export default async function ConfiguracionPage() {
+    const supabase = await createSupabaseServerClient();
+
+    const { data: isWebmasterData, error: isWebmasterError } = await supabase.rpc('is_webmaster');
+    const isWebmaster = !isWebmasterError && isWebmasterData === true;
+
+    let datos: DatosBancariosTenant | null = null;
+    try {
+        datos = await obtenerDatosBancariosTenant();
+    } catch {
+        datos = null;
+    }
+
     return (
         <div className="flex flex-col gap-6 w-full max-w-6xl mx-auto text-foreground bg-background">
-            {/* Cabecera */}
-            <div className="flex items-center justify-between pb-4 border-b border-border">
+            <header className="flex items-center justify-between pb-4 border-b border-border">
                 <div>
                     <h1 className="text-2xl font-bold">Configuración Global</h1>
                     <p className="text-sm text-foreground/70 mt-1">
-                        Panel para configurar parámetros de la tienda, incluyendo métodos de pago, zonas de envío y ajustes multitenant.
+                        Configurá los datos de pago y método de cobro de tu tienda.
                     </p>
                 </div>
                 <Link
@@ -18,20 +34,15 @@ export default function ConfiguracionPage() {
                 >
                     Volver al Dashboard
                 </Link>
-            </div>
+            </header>
 
-            {/* Contenedor de Contenido Vacio */}
-            <div className="flex flex-col items-center justify-center p-12 border border-dashed border-border rounded-xl bg-background/50">
-                <div className="w-12 h-12 mb-4 rounded-full bg-foreground/10 flex items-center justify-center text-foreground/50">
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                    </svg>
-                </div>
-                <h3 className="text-lg font-semibold mb-1">Módulo de Configuración</h3>
-                <p className="text-sm text-foreground/60 max-w-md text-center">
-                    Esta vista está estructurada y lista para integrar la lógica feature-based correspondiente.
+            <section className="border border-border rounded-xl bg-background p-6">
+                <h2 className="text-lg font-semibold mb-1">Datos bancarios</h2>
+                <p className="text-sm text-foreground/60 mb-4">
+                    Estos datos se mostrarán al comprador en la página de confirmación de pedido para poder abonar.
                 </p>
-            </div>
+                <FormularioDatosBancarios datosIniciales={datos} isWebmaster={isWebmaster} />
+            </section>
         </div>
     );
 }
