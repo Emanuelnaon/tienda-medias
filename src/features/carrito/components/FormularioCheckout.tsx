@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -25,7 +24,6 @@ export function FormularioCheckout({ onCompleted }: FormularioCheckoutProps) {
     const [isPending, setIsPending] = useState(false);
     const [linkWhatsApp, setLinkWhatsApp] = useState<string | null>(null);
     const [pedidoId, setPedidoId] = useState<string | null>(null);
-    const router = useRouter();
 
     useEffect(() => {
         if (pedidoId && linkWhatsApp) {
@@ -54,7 +52,7 @@ export function FormularioCheckout({ onCompleted }: FormularioCheckoutProps) {
             setLinkWhatsApp(result.linkWhatsApp);
             setPedidoId(result.pedidoId);
             limpiarCarrito();
-            router.push(`/pedido/${result.pedidoId}`);
+            window.location.href = `/pedido/${result.pedidoId}`;
             setTimeout(() => onCompleted?.(), 100);
         } catch (error) {
             toast.error(error instanceof Error ? error.message : 'Ocurrió un error al procesar la compra');
