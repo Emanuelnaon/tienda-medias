@@ -37,7 +37,8 @@ export function FormularioCheckout({ onCompleted }: FormularioCheckoutProps) {
         formState: { errors },
     } = useForm<ClienteCheckoutInput>({ resolver: zodResolver(clienteSchema) });
 
-    const onSubmit = async (cliente: ClienteCheckoutInput) => {
+    const onSubmit = async (cliente: ClienteCheckoutInput, e?: React.BaseSyntheticEvent) => {
+        e?.preventDefault();
         setIsPending(true);
         try {
             const result = await generarLinkWhatsApp(
@@ -62,7 +63,11 @@ export function FormularioCheckout({ onCompleted }: FormularioCheckoutProps) {
     };
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="w-full space-y-3 border-t border-border pt-4">
+        <form
+            onSubmit={handleSubmit(onSubmit)}
+            action="#"
+            className="w-full space-y-3 border-t border-border pt-4"
+        >
             <div>
                 <label htmlFor="nombre_completo" className="mb-1 block text-sm font-semibold text-foreground">
                     Nombre completo
