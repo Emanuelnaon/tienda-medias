@@ -55,7 +55,7 @@ export function FormularioCheckout({ onCompleted }: FormularioCheckoutProps) {
             setPedidoId(result.pedidoId);
             limpiarCarrito();
             router.push(`/pedido/${result.pedidoId}`);
-            onCompleted?.();
+            setTimeout(() => onCompleted?.(), 100);
         } catch (error) {
             toast.error(error instanceof Error ? error.message : 'Ocurrió un error al procesar la compra');
         } finally {
