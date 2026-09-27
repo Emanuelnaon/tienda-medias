@@ -110,16 +110,29 @@ export async function generarLinkWhatsApp(
         telefono: cliente.telefono.trim(),
         tenant_id: tenant.id,
     };
-    const { data: clienteId, error: clienteError } = await supabase
-        .rpc('crear_cliente_checkout', {
+    const { data: clienteExistente } = await supabase
+        .from('clientes')
+        .select('id')
+        .eq('tenant_id', tenant.id)
+        .eq('telefono', clientePayload.telefono)
+        .maybeSingle();
+
+    let clienteId: string | null;
+
+    if (clienteExistente) {
+        clienteId = clienteExistente.id;
+    } else {
+        const { data: nuevoClienteId, error: clienteError } = await supabase.rpc('crear_cliente_checkout', {
             p_nombre_completo: clientePayload.nombre_completo,
             p_telefono: clientePayload.telefono,
             p_tenant_id: tenant.id,
         });
 
-    if (clienteError || !clienteId) {
-        console.error('Error al guardar cliente:', clienteError);
-        throw new Error('No se pudo guardar la información del cliente');
+        if (clienteError || !nuevoClienteId) {
+            console.error('Error al guardar cliente:', clienteError);
+            throw new Error('No se pudo guardar la información del cliente');
+        }
+        clienteId = nuevoClienteId;
     }
 
     const clienteData = { id: clienteId };

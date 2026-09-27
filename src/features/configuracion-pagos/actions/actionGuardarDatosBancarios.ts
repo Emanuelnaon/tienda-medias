@@ -23,6 +23,9 @@ export async function actionGuardarDatosBancarios(
 
     const supabase = await verificarAdministrador('configurar métodos de pago');
     const tenantId = await obtenerTenantIdAdmin();
+    if (!tenantId) {
+        throw new Error('Solo los admins de tenant pueden guardar datos bancarios');
+    }
 
     const { data, error } = await supabase
         .from('tenants')

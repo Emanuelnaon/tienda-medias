@@ -12,12 +12,9 @@ export default async function ConfiguracionPage() {
     const { data: isWebmasterData, error: isWebmasterError } = await supabase.rpc('is_webmaster');
     const isWebmaster = !isWebmasterError && isWebmasterData === true;
 
-    let datos: DatosBancariosTenant | null = null;
-    try {
-        datos = await obtenerDatosBancariosTenant();
-    } catch {
-        datos = null;
-    }
+    const datos: DatosBancariosTenant | null = isWebmaster
+        ? null
+        : await obtenerDatosBancariosTenant();
 
     return (
         <div className="flex flex-col gap-6 w-full max-w-6xl mx-auto text-foreground bg-background">
