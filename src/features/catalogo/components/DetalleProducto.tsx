@@ -76,4 +76,4 @@ export function DetalleProducto({ producto }: DetalleProductoProps) {
     );
 }
 
-export default DetalleProducto;
+

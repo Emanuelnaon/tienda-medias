@@ -76,4 +76,4 @@ export function SelectorTalles({ variantes, talleSeleccionado, onSeleccionarTall
     );
 }
 
-export default SelectorTalles;
+

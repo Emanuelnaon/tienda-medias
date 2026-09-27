@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { toDataURL } from 'qrcode';
 import toast from 'react-hot-toast';
@@ -40,9 +41,12 @@ export function GeneradorQrPago({ cbu, aliasBancario, total }: GeneradorQrPagoPr
     }
 
     return (
-        <img
+        <Image
             src={dataUrl}
             alt="Código QR para el pago"
+            width={200}
+            height={200}
+            unoptimized
             className="mx-auto max-w-[240px] rounded-xl border border-border bg-white"
         />
     );

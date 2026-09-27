@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { leerLinkWhatsApp } from '@/src/lib/utils/linkWhatsappStorage';
 
 interface BotonAbrirWhatsAppProps {
@@ -12,14 +12,9 @@ export function BotonAbrirWhatsApp({
     pedidoId,
     enlaceServidor,
 }: BotonAbrirWhatsAppProps) {
-    const [enlace, setEnlace] = useState<string>(enlaceServidor);
-
-    useEffect(() => {
-        const link = leerLinkWhatsApp(pedidoId);
-        if (link) {
-            setEnlace(link);
-        }
-    }, [pedidoId]);
+    const [enlace] = useState<string>(() =>
+        typeof window !== 'undefined' ? leerLinkWhatsApp(pedidoId) ?? enlaceServidor : enlaceServidor,
+    );
 
     return (
         <a

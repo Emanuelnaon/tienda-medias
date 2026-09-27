@@ -53,7 +53,7 @@ export function FormularioCheckout({ onCompleted }: FormularioCheckoutProps) {
             setLinkWhatsApp(result.linkWhatsApp);
             setPedidoId(result.pedidoId);
             limpiarCarrito();
-            window.location.href = `/pedido/${result.pedidoId}`;
+            window.location.assign(`/pedido/${result.pedidoId}`);
             setTimeout(() => onCompleted?.(), 100);
         } catch (error) {
             toast.error(error instanceof Error ? error.message : 'Ocurrió un error al procesar la compra');
