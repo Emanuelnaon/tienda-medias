@@ -31,9 +31,9 @@ function construirLinkWhatsapp(
 
 export default async function PedidoConfirmacionPage({
     params,
-}: {
+}: Readonly<{
     params: Promise<{ id: string }>;
-}) {
+}>) {
     const { id } = await params;
     const pedido = await obtenerPedidoConfirmacion(id);
 
