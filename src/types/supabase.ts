@@ -501,6 +501,7 @@ export type Database = {
         Returns: string
       }
       get_my_tenant_id: { Args: never; Returns: string }
+      get_pedido_publico: { Args: { p_id: string }; Returns: Json }
       is_webmaster: { Args: never; Returns: boolean }
     }
     Enums: {

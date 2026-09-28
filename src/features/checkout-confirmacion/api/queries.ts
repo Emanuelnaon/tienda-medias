@@ -31,22 +31,18 @@ export interface PedidoConfirmacion {
 export async function obtenerPedidoConfirmacion(id: string): Promise<PedidoConfirmacion | null> {
     const supabase = createSupabasePublicClient();
 
-    const { data, error } = await supabase
-        .from('pedidos')
-        .select(
-            `id, total, estado, created_at, tenant_id,
-            items:pedidos_items(id, nombre_producto, talle, cantidad, precio_unitario),
-            tenant:tenants!inner(nombre, cbu, alias_bancario, banco, titular_cuenta, whatsapp, plan)`,
-        )
-        .eq('id', id)
-        .maybeSingle();
+    const { data, error } = await supabase.rpc('get_pedido_publico', { p_id: id });
 
     if (error) {
         console.error('Error al obtener el pedido de confirmación:', error.message);
         return null;
     }
 
-    return (data ?? null) as PedidoConfirmacion | null;
+    if (!data) {
+        return null;
+    }
+
+    return data as unknown as PedidoConfirmacion;
 }
 
 export async function tieneFeaturePago(plan: string): Promise<boolean> {
