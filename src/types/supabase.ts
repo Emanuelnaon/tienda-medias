@@ -138,6 +138,48 @@ export type Database = {
           },
         ]
       }
+      delivery_tracking: {
+        Row: {
+          id: string
+          lat: number
+          lng: number
+          pedido_id: string
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          lat: number
+          lng: number
+          pedido_id: string
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          lat?: number
+          lng?: number
+          pedido_id?: string
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delivery_tracking_pedido_id_fkey"
+            columns: ["pedido_id"]
+            isOneToOne: true
+            referencedRelation: "pedidos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "delivery_tracking_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lista_espera: {
         Row: {
           created_at: string | null
@@ -193,33 +235,51 @@ export type Database = {
       pedidos: {
         Row: {
           cliente_id: string | null
+          codigo_postal: string | null
           comprobante_numero: string | null
           comprobante_url: string | null
+          costo_envio: number
           created_at: string | null
+          direccion_entrega: string | null
           estado: string | null
           id: string
+          metodo_envio: string | null
           tenant_id: string
+          token_seguimiento: string | null
           total: number
+          zona_envio_id: string | null
         }
         Insert: {
           cliente_id?: string | null
+          codigo_postal?: string | null
           comprobante_numero?: string | null
           comprobante_url?: string | null
+          costo_envio?: number
           created_at?: string | null
+          direccion_entrega?: string | null
           estado?: string | null
           id?: string
+          metodo_envio?: string | null
           tenant_id: string
+          token_seguimiento?: string | null
           total: number
+          zona_envio_id?: string | null
         }
         Update: {
           cliente_id?: string | null
+          codigo_postal?: string | null
           comprobante_numero?: string | null
           comprobante_url?: string | null
+          costo_envio?: number
           created_at?: string | null
+          direccion_entrega?: string | null
           estado?: string | null
           id?: string
+          metodo_envio?: string | null
           tenant_id?: string
+          token_seguimiento?: string | null
           total?: number
+          zona_envio_id?: string | null
         }
         Relationships: [
           {
@@ -231,6 +291,64 @@ export type Database = {
           },
           {
             foreignKeyName: "pedidos_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pedidos_zona_envio_fkey"
+            columns: ["zona_envio_id"]
+            isOneToOne: false
+            referencedRelation: "zonas_envio"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pedidos_historial: {
+        Row: {
+          changed_at: string
+          changed_by: string | null
+          estado_anterior: string | null
+          estado_nuevo: string
+          id: string
+          notas: string | null
+          origen: string
+          pedido_id: string
+          tenant_id: string
+        }
+        Insert: {
+          changed_at?: string
+          changed_by?: string | null
+          estado_anterior?: string | null
+          estado_nuevo: string
+          id?: string
+          notas?: string | null
+          origen?: string
+          pedido_id: string
+          tenant_id: string
+        }
+        Update: {
+          changed_at?: string
+          changed_by?: string | null
+          estado_anterior?: string | null
+          estado_nuevo?: string
+          id?: string
+          notas?: string | null
+          origen?: string
+          pedido_id?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pedidos_historial_pedido_id_fkey"
+            columns: ["pedido_id"]
+            isOneToOne: false
+            referencedRelation: "pedidos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pedidos_historial_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"
@@ -460,6 +578,53 @@ export type Database = {
         }
         Relationships: []
       }
+      zonas_envio: {
+        Row: {
+          activo: boolean
+          codigo_postal_desde: string | null
+          codigo_postal_hasta: string | null
+          costo: number
+          created_at: string
+          id: string
+          metodo: string
+          minimo_envio_gratis: number | null
+          nombre: string
+          tenant_id: string
+        }
+        Insert: {
+          activo?: boolean
+          codigo_postal_desde?: string | null
+          codigo_postal_hasta?: string | null
+          costo?: number
+          created_at?: string
+          id?: string
+          metodo: string
+          minimo_envio_gratis?: number | null
+          nombre: string
+          tenant_id: string
+        }
+        Update: {
+          activo?: boolean
+          codigo_postal_desde?: string | null
+          codigo_postal_hasta?: string | null
+          costo?: number
+          created_at?: string
+          id?: string
+          metodo?: string
+          minimo_envio_gratis?: number | null
+          nombre?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "zonas_envio_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -500,9 +665,30 @@ export type Database = {
         }
         Returns: string
       }
+      get_delivery_position: {
+        Args: { p_pedido_id: string; p_token: string }
+        Returns: Json
+      }
       get_my_tenant_id: { Args: never; Returns: string }
       get_pedido_publico: { Args: { p_id: string }; Returns: Json }
+      get_pedido_tracking: {
+        Args: { p_pedido_id: string; p_token: string }
+        Returns: Json
+      }
       is_webmaster: { Args: never; Returns: boolean }
+      tenant_tiene_feature: {
+        Args: { p_feature_key: string; p_tenant_id: string }
+        Returns: boolean
+      }
+      upsert_delivery_position: {
+        Args: {
+          p_lat: number
+          p_lng: number
+          p_pedido_id: string
+          p_token: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

@@ -46,3 +46,5 @@ next-env.d.ts
 # Supabase Backups
 backup-*/
 generar-backup.ps1
+
+.kilo/
