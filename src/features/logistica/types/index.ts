@@ -38,3 +38,8 @@ export type ResultadoEnvioInvalido = {
 };
 
 export type ResultadoEnvio = ResultadoEnvioValido | ResultadoEnvioInvalido;
+
+export type CoberturaEnvio = {
+    readonly estaHabilitado: boolean;
+    readonly zonas: ReadonlyArray<ZonaEnvio>;
+};

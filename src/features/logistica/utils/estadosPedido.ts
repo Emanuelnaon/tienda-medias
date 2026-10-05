@@ -9,6 +9,10 @@ export const ESTADOS_PEDIDO = {
 
 export type EstadoPedido = keyof typeof ESTADOS_PEDIDO;
 
+export function esEstadoPedido(valor: unknown): valor is EstadoPedido {
+    return typeof valor === 'string' && valor in ESTADOS_PEDIDO;
+}
+
 const MATRIZ_TRANSICIONES: { readonly [K in EstadoPedido]: ReadonlyArray<EstadoPedido> } = {
     pendiente: ['confirmado', 'cancelado'],
     confirmado: ['preparando', 'cancelado'],

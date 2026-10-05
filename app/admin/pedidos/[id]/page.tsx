@@ -11,10 +11,25 @@ import {
     guardarComprobante,
     confirmarPedido,
 } from '@/src/features/admin/actions/pedidosActions';
+import {
+    ESTADOS_PEDIDO,
+    SelectorEstadoPedido,
+    esEstadoPedido,
+    type EstadoPedido,
+} from '@/src/features/logistica';
 
 interface PageProps {
     readonly params: Promise<{ id: string }>;
 }
+
+const ESTILOS_BADGE_ESTADO: Record<EstadoPedido, string> = {
+    pendiente: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400',
+    confirmado: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400',
+    preparando: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400',
+    en_camino: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400',
+    entregado: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+    cancelado: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
+};
 
 function etiquetaCliente(estado: string | null): { texto: string; estilos: string } {
     const estadoNormalizado = estado?.toLowerCase();
@@ -27,11 +42,18 @@ function etiquetaCliente(estado: string | null): { texto: string; estilos: strin
     return { texto: 'Nuevo', estilos: 'border-amber-500/40 text-amber-700 dark:text-amber-300' };
 }
 
-function badgeEstadoPedido(estado: string | null): string {
-    if (estado === 'confirmado') {
-        return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400';
+function badgeEstadoPedido(estado: string | null): { texto: string; estilos: string } {
+    if (esEstadoPedido(estado)) {
+        return {
+            texto: ESTADOS_PEDIDO[estado].label,
+            estilos: ESTILOS_BADGE_ESTADO[estado],
+        };
     }
-    return 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400';
+
+    return {
+        texto: estado ?? 'Sin estado',
+        estilos: ESTILOS_BADGE_ESTADO.pendiente,
+    };
 }
 
 function formatearFecha(fecha: string | null): string {
@@ -104,6 +126,10 @@ export default function PedidoDetallePage({ params }: PageProps) {
         }
     };
 
+    const handleEstadoCambiado = (estado: EstadoPedido) => {
+        setPedido((previo) => (previo === null ? previo : { ...previo, estado }));
+    };
+
     if (cargando) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[50vh]">
@@ -145,12 +171,18 @@ export default function PedidoDetallePage({ params }: PageProps) {
                 <span
                     className={cn(
                         'inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold',
-                        badgeEstadoPedido(pedido.estado),
+                        badgeEstadoPedido(pedido.estado).estilos,
                     )}
                 >
-                    {pedido.estado ?? 'pendiente'}
+                    {badgeEstadoPedido(pedido.estado).texto}
                 </span>
             </header>
+
+            <SelectorEstadoPedido
+                pedidoId={pedido.id}
+                estadoActual={pedido.estado}
+                onEstadoCambiado={handleEstadoCambiado}
+            />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="rounded-lg border border-border bg-background p-4 space-y-3">

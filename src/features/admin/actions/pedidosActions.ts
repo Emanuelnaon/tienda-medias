@@ -3,6 +3,11 @@
 import { revalidatePath } from 'next/cache';
 import type { Database, Json } from '@/src/types/supabase';
 import { verificarAdministrador, obtenerTenantIdAdmin } from '@/src/lib/auth/admin';
+import {
+    esEstadoPedido,
+    traducirErrorCambioEstado,
+    type EstadoPedido,
+} from '@/src/features/logistica/utils';
 
 type ClienteResumen = Pick<
     Database['public']['Tables']['clientes']['Row'],
@@ -32,14 +37,23 @@ export type PedidoDetalle = Omit<PedidoPendiente, 'cliente'> & {
     readonly cliente_id: string | null;
 };
 
-const ESTADOS_PEDIDO_WHITELIST = ['pendiente', 'confirmado', 'todos'] as const;
-type EstadoPedido = (typeof ESTADOS_PEDIDO_WHITELIST)[number];
+const FILTRO_TODOS = 'todos';
+
+const ESTADOS_PEDIDO_WHITELIST: ReadonlyArray<string> = [
+    'pendiente',
+    'confirmado',
+    'preparando',
+    'en_camino',
+    'entregado',
+    'cancelado',
+    FILTRO_TODOS,
+];
 
 export async function listarPedidosPendientes(estado?: string): Promise<PedidoPendiente[]> {
     const supabase = await verificarAdministrador('gestionar pedidos');
     const tenantId = await obtenerTenantIdAdmin();
 
-    if (estado && !ESTADOS_PEDIDO_WHITELIST.includes(estado as EstadoPedido)) {
+    if (estado && !ESTADOS_PEDIDO_WHITELIST.includes(estado)) {
         throw new Error(`Estado de pedido inválido: ${estado}.`);
     }
 
@@ -51,7 +65,7 @@ export async function listarPedidosPendientes(estado?: string): Promise<PedidoPe
         .eq('tenant_id', tenantId)
         .order('created_at', { ascending: true });
 
-    if (estado && estado !== 'todos') {
+    if (estado && estado !== FILTRO_TODOS) {
         query = query.eq('estado', estado);
     }
 
@@ -158,4 +172,66 @@ export async function guardarComprobante(
     revalidatePath(`/admin/pedidos/${pedidoId}`);
 
     return { success: true, pedidoId: (data as { id: string }).id };
+}
+
+const LONGITUD_MINIMA_NOTAS_CANCELACION = 5;
+
+/**
+ * Cambiar el estado de un pedido.
+ * La matriz de transiciones válida la enforces el trigger de Postgres:
+ * esta acción solo acota el tenant y traduce los errores del motor.
+ */
+export async function actionCambiarEstadoPedido(
+    pedidoId: string,
+    nuevoEstado: string,
+    notas?: string,
+): Promise<{ success: true; estado: EstadoPedido; notas: string | null }> {
+    if (!pedidoId || typeof pedidoId !== 'string') {
+        throw new Error('El ID del pedido es requerido y debe ser válido.');
+    }
+
+    if (!esEstadoPedido(nuevoEstado)) {
+        throw new Error(`Estado de pedido inválido: ${nuevoEstado}.`);
+    }
+
+    const notasNormalizadas = typeof notas === 'string' ? notas.trim() : '';
+
+    if (nuevoEstado === 'cancelado' && notasNormalizadas.length < LONGITUD_MINIMA_NOTAS_CANCELACION) {
+        throw new Error('Indicá el motivo de la cancelación.');
+    }
+
+    const supabase = await verificarAdministrador('gestionar pedidos');
+    const tenantId = await obtenerTenantIdAdmin();
+
+    const { data, error } = await supabase
+        .from('pedidos')
+        .update({ estado: nuevoEstado })
+        .eq('id', pedidoId)
+        .eq('tenant_id', tenantId)
+        .select('id, estado')
+        .maybeSingle();
+
+    if (error) {
+        throw new Error(traducirErrorCambioEstado(error.message, error.code));
+    }
+
+    if (data === null) {
+        throw new Error('No se encontró el pedido o no pertenece a tu tienda.');
+    }
+
+    if (notasNormalizadas !== '') {
+        // `pedidos` no tiene columna de notas y el trigger del historial no las
+        // acepta: el motivo se deja registrado en el log del servidor hasta que
+        // exista la columna en el esquema.
+        console.warn(`Motivo de cancelación del pedido ${pedidoId}: ${notasNormalizadas}`);
+    }
+
+    revalidatePath('/admin/pedidos');
+    revalidatePath(`/admin/pedidos/${pedidoId}`);
+
+    return {
+        success: true,
+        estado: nuevoEstado,
+        notas: notasNormalizadas === '' ? null : notasNormalizadas,
+    };
 }

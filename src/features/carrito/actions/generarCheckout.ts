@@ -3,6 +3,12 @@
 import { createSupabaseServerClient, createSupabasePublicClient } from '@/src/lib/supabase/server';
 import type { Database } from '@/src/types/supabase';
 import { WHATSAPP_SUPPORT_NUMBER } from '@/src/lib/constants';
+import {
+    calcularEnvio,
+    describirLineaEnvio,
+    describirMotivoEnvio,
+} from '@/src/features/logistica';
+import { consultarCoberturaEnvio } from '@/src/features/logistica/server';
 
 export interface CarritoItemInput {
     id: string;
@@ -13,6 +19,8 @@ export interface CarritoItemInput {
 export interface ClienteCheckoutInput {
     nombre_completo: string;
     telefono: string;
+    codigo_postal?: string;
+    direccion_entrega?: string;
 }
 
 export interface ResultadoCheckout {
@@ -105,6 +113,30 @@ export async function generarLinkWhatsApp(
         throw new Error('Tenant no encontrado');
     }
 
+    // Envío: el costo nunca viaja desde el navegador. Se recalcula acá con el
+    // subtotal real de la base de datos contra las zonas activas del tenant.
+    const codigoPostal = cliente.codigo_postal?.trim() ?? '';
+    const direccionEntrega = cliente.direccion_entrega?.trim() ?? '';
+    const cobertura = await consultarCoberturaEnvio();
+
+    let costoEnvio = 0;
+    let lineaEnvio: string | null = null;
+
+    if (cobertura.estaHabilitado) {
+        if (codigoPostal === '') {
+            throw new Error('Ingresá tu código postal para calcular el costo de envío');
+        }
+
+        const resultadoEnvio = calcularEnvio(cobertura.zonas, codigoPostal, totalReal);
+
+        if (!resultadoEnvio.esValido) {
+            throw new Error(describirMotivoEnvio(resultadoEnvio.motivo));
+        }
+
+        costoEnvio = resultadoEnvio.costo;
+        lineaEnvio = describirLineaEnvio(resultadoEnvio);
+    }
+
     const clientePayload: Pick<Database['public']['Tables']['clientes']['Row'], 'nombre_completo' | 'telefono' | 'tenant_id'> = {
         nombre_completo: cliente.nombre_completo.trim(),
         telefono: cliente.telefono.trim(),
@@ -148,7 +180,7 @@ export async function generarLinkWhatsApp(
     const { data: pedidoId, error: pedidoError } = await supabase
         .rpc('crear_pedido_checkout', {
             p_cliente_id: clienteData.id,
-            p_total: totalReal,
+            p_total: totalReal + costoEnvio,
             p_tenant_id: tenant.id,
             p_items: itemsJson,
         });
@@ -158,7 +190,19 @@ export async function generarLinkWhatsApp(
         throw new Error('No se pudo registrar el pedido');
     }
 
-    mensaje += `Total a pagar: $${totalReal}\n`;
+    if (lineaEnvio !== null) {
+        mensaje += `${lineaEnvio}\n`;
+    }
+
+    if (codigoPostal !== '') {
+        mensaje += `Código postal: ${codigoPostal}\n`;
+    }
+
+    if (direccionEntrega !== '') {
+        mensaje += `Dirección de entrega: ${direccionEntrega}\n`;
+    }
+
+    mensaje += `Total a pagar: $${totalReal + costoEnvio}\n`;
     mensaje += `*Número de Orden: ${pedidoId.split('-')[0]}*`;
 
     // 5. Retorno: Codifica el string con encodeURIComponent y devuelve pedidoId + linkWhatsApp.

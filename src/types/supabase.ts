@@ -659,9 +659,14 @@ export type Database = {
       crear_pedido_checkout: {
         Args: {
           p_cliente_id: string
+          p_codigo_postal?: string
+          p_costo_envio?: number
+          p_direccion_entrega?: string
           p_items: Json
+          p_metodo_envio?: string
           p_tenant_id: string
           p_total: number
+          p_zona_envio_id?: string
         }
         Returns: string
       }
