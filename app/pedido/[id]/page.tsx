@@ -9,6 +9,13 @@ import {
     BotonAbrirWhatsApp,
     type PedidoConfirmacion,
 } from '@/src/features/checkout-confirmacion';
+import { METODOS_ENVIO } from '@/src/features/logistica';
+import {
+    MapaRepartidorLoader,
+    TimelineEstadosTracking,
+    normalizarToken,
+} from '@/src/features/tracking';
+import { obtenerPosicionRepartidor, obtenerTrackingInicial } from '@/src/features/tracking/server';
 import { WHATSAPP_SUPPORT_NUMBER } from '@/src/lib/constants';
 
 function construirLinkWhatsapp(
@@ -31,10 +38,12 @@ function construirLinkWhatsapp(
 
 export default async function PedidoConfirmacionPage({
     params,
+    searchParams,
 }: Readonly<{
     params: Promise<{ id: string }>;
+    searchParams: Promise<{ t?: string | string[] }>;
 }>) {
-    const { id } = await params;
+    const [{ id }, parametrosBusqueda] = await Promise.all([params, searchParams]);
     const pedido = await obtenerPedidoConfirmacion(id);
 
     if (!pedido) {
@@ -48,6 +57,14 @@ export default async function PedidoConfirmacionPage({
     const mostrarPago = planActivo && tieneDatosBancarios;
 
     const linkWhatsapp = construirLinkWhatsapp(pedido, pedido.tenant.whatsapp);
+
+    const token = normalizarToken(parametrosBusqueda.t);
+    const tracking = token === null ? null : await obtenerTrackingInicial(id, token);
+    const esMensajeriaLocal = tracking?.metodo_envio === METODOS_ENVIO.mensajeria_local;
+    const posicionInicial =
+        esMensajeriaLocal && token !== null
+            ? await obtenerPosicionRepartidor(id, token)
+            : null;
 
     return (
         <article className="w-full max-w-3xl mx-auto py-8 px-4">
@@ -67,6 +84,28 @@ export default async function PedidoConfirmacionPage({
                 <section>
                     <ResumenPedido pedido={pedido} />
                 </section>
+
+                {tracking !== null && token !== null && (
+                    <>
+                        <section>
+                            <TimelineEstadosTracking
+                                pedidoId={id}
+                                historialInicial={tracking.historial}
+                                token={token}
+                            />
+                        </section>
+
+                        {esMensajeriaLocal && (
+                            <section>
+                                <MapaRepartidorLoader
+                                    pedidoId={id}
+                                    token={token}
+                                    posicionInicial={posicionInicial}
+                                />
+                            </section>
+                        )}
+                    </>
+                )}
 
                 {mostrarPago && (
                     <>
