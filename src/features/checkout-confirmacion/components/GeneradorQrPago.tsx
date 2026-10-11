@@ -8,22 +8,24 @@ import toast from 'react-hot-toast';
 interface GeneradorQrPagoProps {
     readonly cbu: string | null;
     readonly aliasBancario: string | null;
+    readonly titularCuenta: string | null;
+    readonly numeroOrden: string;
     readonly total: number;
 }
 
-export function GeneradorQrPago({ cbu, aliasBancario, total }: GeneradorQrPagoProps) {
+export function GeneradorQrPago({ cbu, aliasBancario, titularCuenta, numeroOrden, total }: GeneradorQrPagoProps) {
     const [dataUrl, setDataUrl] = useState<string | null>(null);
     const [error, setError] = useState(false);
 
     useEffect(() => {
-        const payload = `CBU:${cbu ?? ''}|ALIAS:${aliasBancario ?? ''}|MONTO:${total}`;
+        const payload = `NOMBRE:${titularCuenta ?? ''}|CBU:${cbu ?? ''}|ALIAS:${aliasBancario ?? ''}\nMONTO:${total}|CONCEPTO:${numeroOrden}`;
         toDataURL(payload)
             .then((url) => setDataUrl(url))
             .catch(() => {
                 setError(true);
                 toast.error('No se pudo generar el código QR');
             });
-    }, [cbu, aliasBancario, total]);
+    }, [cbu, aliasBancario, titularCuenta, numeroOrden, total]);
 
     if (error) {
         return (

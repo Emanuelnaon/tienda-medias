@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import { cn } from '@/src/lib/utils/cn';
-import { obtenerClientePorId, actualizarNotasCliente } from '@/src/features/admin/actions/clientesActions';
+import { obtenerClientePorId, actualizarNotasCliente, actionToggleBloqueoCliente } from '@/src/features/admin/actions/clientesActions';
 import { calcularEtiquetaCliente } from '@/src/features/admin/utils';
 import type { ClienteConPedidos } from '@/src/features/admin/types/clientesTypes';
 
@@ -41,6 +41,7 @@ export default function ClienteDetallePage({ params }: PageProps) {
     const [cliente, setCliente] = useState<ClienteConPedidos | null>(null);
     const [cargando, setCargando] = useState(true);
     const [guardandoNotas, setGuardandoNotas] = useState(false);
+    const [bloqueadoOptimista, setBloqueadoOptimista] = useState<boolean | null>(null);
     const [notasInput, setNotasInput] = useState('');
 
     useEffect(() => {
@@ -80,6 +81,30 @@ export default function ClienteDetallePage({ params }: PageProps) {
             setNotasInput(notasAnteriores ?? '');
         } finally {
             setGuardandoNotas(false);
+        }
+    };
+
+    const handleToggleBloqueo = async () => {
+        if (!cliente) return;
+
+        const nuevoEstado = !cliente.bloqueado;
+        setBloqueadoOptimista(nuevoEstado);
+
+        try {
+            await actionToggleBloqueoCliente(id, nuevoEstado);
+            setCliente((prev) =>
+                prev ? { ...prev, bloqueado: nuevoEstado } : prev,
+            );
+            toast.success(
+                nuevoEstado ? 'Cliente bloqueado' : 'Cliente desbloqueado',
+            );
+        } catch (error: unknown) {
+            const mensaje =
+                error instanceof Error
+                    ? error.message
+                    : 'Error al actualizar el estado de bloqueo.';
+            toast.error(mensaje);
+            setBloqueadoOptimista(null);
         }
     };
 
@@ -192,6 +217,42 @@ export default function ClienteDetallePage({ params }: PageProps) {
                                     'Guardar notas'
                                 )}
                             </button>
+                        </div>
+
+                        <div>
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <span className="text-xs text-foreground/60 block mb-1">
+                                        Estado de la cuenta
+                                    </span>
+                                    <p
+                                        className={cn(
+                                            'text-sm font-semibold',
+                                            (bloqueadoOptimista ?? cliente.bloqueado)
+                                                ? 'text-red-600 dark:text-red-400'
+                                                : 'text-emerald-600 dark:text-emerald-400',
+                                        )}
+                                    >
+                                        {bloqueadoOptimista ?? cliente.bloqueado
+                                            ? 'Cliente bloqueado'
+                                            : 'Cliente activo'}
+                                    </p>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={handleToggleBloqueo}
+                                    className={cn(
+                                        'rounded-md border px-4 py-2 text-sm font-semibold transition-colors',
+                                        (bloqueadoOptimista ?? cliente.bloqueado)
+                                            ? 'border-border bg-background text-foreground hover:bg-muted'
+                                            : 'border-red-600 bg-red-600 text-white hover:bg-red-700',
+                                    )}
+                                >
+                                    {bloqueadoOptimista ?? cliente.bloqueado
+                                        ? 'Desbloquear cliente'
+                                        : 'Bloquear cliente'}
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

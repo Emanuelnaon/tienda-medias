@@ -144,12 +144,18 @@ export async function generarLinkWhatsApp(
     };
     const { data: clienteExistente } = await supabase
         .from('clientes')
-        .select('id')
+        .select('id, bloqueado')
         .eq('tenant_id', tenant.id)
         .eq('telefono', clientePayload.telefono)
         .maybeSingle();
 
     let clienteId: string | null;
+
+    if (clienteExistente?.bloqueado) {
+        throw new Error(
+            'Tu cuenta está temporalmente bloqueada. Contactá al comercio.',
+        );
+    }
 
     if (clienteExistente) {
         clienteId = clienteExistente.id;

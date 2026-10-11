@@ -99,3 +99,32 @@ export async function actualizarNotasCliente(
 
     return { success: true, clienteId: (data as { id: string }).id };
 }
+
+export async function actionToggleBloqueoCliente(
+    id: string,
+    bloqueado: boolean,
+): Promise<{ success: boolean; clienteId: string }> {
+    if (!id || typeof id !== 'string') {
+        throw new Error('El ID del cliente es requerido y debe ser válido.');
+    }
+
+    const supabase = await verificarAdministrador('gestionar clientes');
+    const tenantId = await obtenerTenantIdAdmin();
+
+    const { data, error } = await supabase
+        .from('clientes')
+        .update({ bloqueado })
+        .eq('id', id)
+        .eq('tenant_id', tenantId)
+        .select('id')
+        .single();
+
+    if (error) {
+        throw new Error(`Error al actualizar el estado de bloqueo: ${error.message}`);
+    }
+
+    revalidatePath('/admin/clientes');
+    revalidatePath(`/admin/clientes/${id}`);
+
+    return { success: true, clienteId: (data as { id: string }).id };
+}

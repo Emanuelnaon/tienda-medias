@@ -6,13 +6,15 @@ import toast from 'react-hot-toast';
 interface EnlacesBancariosProps {
     readonly cbu: string | null;
     readonly aliasBancario: string | null;
+    readonly titularCuenta: string | null;
+    readonly numeroOrden: string;
     readonly total: number;
 }
 
 const TIEMPO_DETECCION_MS = 1500;
 
-function payloadPago(cbu: string | null, aliasBancario: string | null, total: number): string {
-    return `CBU:${cbu ?? ''}|ALIAS:${aliasBancario ?? ''}|MONTO:${total}`;
+function payloadPago(cbu: string | null, aliasBancario: string | null, titularCuenta: string | null, numeroOrden: string, total: number): string {
+    return `NOMBRE:${titularCuenta ?? ''}|CBU:${cbu ?? ''}|ALIAS:${aliasBancario ?? ''}\nMONTO:${total}|CONCEPTO:${numeroOrden}`;
 }
 
 function fallbackClipboardOCita(fallbackUrl: string, datos: string): void {
@@ -28,9 +30,9 @@ function fallbackClipboardOCita(fallbackUrl: string, datos: string): void {
         });
 }
 
-export function EnlacesBancarios({ cbu, aliasBancario, total }: EnlacesBancariosProps) {
+export function EnlacesBancarios({ cbu, aliasBancario, titularCuenta, numeroOrden, total }: EnlacesBancariosProps) {
     const handleOpenApp = (scheme: string, fallbackUrl: string) => {
-        const datos = payloadPago(cbu, aliasBancario, total);
+        const datos = payloadPago(cbu, aliasBancario, titularCuenta, numeroOrden, total);
         let abierta = false;
 
         const manejarBlur = () => {

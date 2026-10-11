@@ -66,6 +66,8 @@ export default async function PedidoConfirmacionPage({
             ? await obtenerPosicionRepartidor(id, token)
             : null;
 
+    const numeroOrden = pedido.id.split('-')[0];
+
     return (
         <article className="w-full max-w-3xl mx-auto py-8 px-4">
             <div className="space-y-8">
@@ -125,6 +127,8 @@ export default async function PedidoConfirmacionPage({
                             <GeneradorQrPago
                                 aliasBancario={pedido.tenant.alias_bancario}
                                 cbu={pedido.tenant.cbu}
+                                titularCuenta={pedido.tenant.titular_cuenta}
+                                numeroOrden={numeroOrden}
                                 total={pedido.total}
                             />
                         </section>
@@ -133,6 +137,8 @@ export default async function PedidoConfirmacionPage({
                             <EnlacesBancarios
                                 aliasBancario={pedido.tenant.alias_bancario}
                                 cbu={pedido.tenant.cbu}
+                                titularCuenta={pedido.tenant.titular_cuenta}
+                                numeroOrden={numeroOrden}
                                 total={pedido.total}
                             />
                         </section>

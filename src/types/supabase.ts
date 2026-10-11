@@ -93,6 +93,7 @@ export type Database = {
       }
       clientes: {
         Row: {
+          bloqueado: boolean
           cantidad_pedidos: number | null
           created_at: string | null
           email: string | null
@@ -105,6 +106,7 @@ export type Database = {
           total_gastado: number | null
         }
         Insert: {
+          bloqueado?: boolean
           cantidad_pedidos?: number | null
           created_at?: string | null
           email?: string | null
@@ -117,6 +119,7 @@ export type Database = {
           total_gastado?: number | null
         }
         Update: {
+          bloqueado?: boolean
           cantidad_pedidos?: number | null
           created_at?: string | null
           email?: string | null
@@ -539,6 +542,7 @@ export type Database = {
           created_at: string
           email: string | null
           id: string
+          instagram_usuario: string | null
           meta_pixel_id: string | null
           nombre: string
           plan: string
@@ -554,6 +558,7 @@ export type Database = {
           created_at?: string
           email?: string | null
           id?: string
+          instagram_usuario?: string | null
           meta_pixel_id?: string | null
           nombre: string
           plan?: string
@@ -569,6 +574,7 @@ export type Database = {
           created_at?: string
           email?: string | null
           id?: string
+          instagram_usuario?: string | null
           meta_pixel_id?: string | null
           nombre?: string
           plan?: string
