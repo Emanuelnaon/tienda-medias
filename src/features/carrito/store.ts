@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { trackPixel } from '@/src/features/tracking-pixel';
 
 export interface CartItem {
     id: string;
@@ -8,8 +9,8 @@ export interface CartItem {
     cantidad: number;
     talle_seleccionado: string;
     categoria: string;
-    imagenUrl: string | null; // ◄ Agregado para mostrar la foto
-    stockMaximo: number; // ◄ Agregado para controlar el límite de stock
+    imagenUrl: string | null;
+    stockMaximo: number;
 }
 
 interface CartStore {
@@ -35,7 +36,6 @@ export const useCarritoStore = create<CartStore>()(
                         return {
                             items: state.items.map((i) => {
                                 if (i.id === nuevoItem.id && i.talle_seleccionado === nuevoItem.talle_seleccionado) {
-                                    // ◄ Validamos que la suma no supere el stock máximo disponible
                                     const nuevaCantidad = i.cantidad + nuevoItem.cantidad;
                                     return {
                                         ...i,
@@ -46,6 +46,16 @@ export const useCarritoStore = create<CartStore>()(
                             }),
                         };
                     }
+
+                    if (typeof window !== 'undefined') {
+                        trackPixel('AddToCart', {
+                            content_name: nuevoItem.nombre,
+                            content_ids: [nuevoItem.id],
+                            value: nuevoItem.precio * nuevoItem.cantidad,
+                            currency: 'ARS',
+                        });
+                    }
+
                     return { items: [...state.items, nuevoItem] };
                 }),
             removerItem: (id, talle) =>
@@ -56,7 +66,6 @@ export const useCarritoStore = create<CartStore>()(
                 set((state) => ({
                     items: state.items.map((i) => {
                         if (i.id === id && i.talle_seleccionado === talle) {
-                            // ◄ Validamos que al escribir/cambiar manualmente no se pase del stockMaximo
                             const cantidadValidada = Math.min(Math.max(1, cantidad), i.stockMaximo);
                             return { ...i, cantidad: cantidadValidada };
                         }

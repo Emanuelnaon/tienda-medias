@@ -10,6 +10,7 @@ import { BuscadorRedes } from '@/src/components/layout/BuscadorRedes';
 import { Footer } from '@/src/components/layout/Footer';
 import { MainLayoutWrapper } from '@/src/components/layout/MainLayoutWrapper';
 import { GoogleAnalytics } from '@next/third-parties/google';
+import { MetaPixelInit } from '@/src/features/tracking-pixel';
 
 const geistSans = Geist({
     variable: '--font-geist-sans',
@@ -31,6 +32,8 @@ export default function RootLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
+    const metaPixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID;
+
     return (
         <html lang="es" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`} suppressHydrationWarning>
             <body className="h-screen overflow-hidden bg-background text-foreground flex flex-col lg:flex-row">
@@ -79,6 +82,7 @@ export default function RootLayout({
                 {process.env.NEXT_PUBLIC_GA_ID && (
                     <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID || ''} />
                 )}
+                {metaPixelId && <MetaPixelInit pixelId={metaPixelId} />}
             </body>
         </html>
     );

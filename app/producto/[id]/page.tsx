@@ -6,6 +6,7 @@ import { FormularioListaEspera } from '@/src/features/productos/components/Formu
 import { BotonesCompartir } from '@/src/features/productos/components/BotonesCompartir';
 import { calcularEtiquetasInventario } from '@/src/features/catalogo/utils';
 import { EtiquetaInventario } from '@/src/features/catalogo/components/EtiquetaInventario';
+import { PixelViewContent } from './PixelViewContent';
 import type { Database } from '@/src/types/supabase';
 
 type CategoriaResumen = Pick<
@@ -55,6 +56,12 @@ export default async function ProductoPage({ params }: Props) {
 
     return (
         <div className="max-w-5xl mx-auto p-4 md:p-8 flex flex-col gap-8 bg-background flex-1">
+            <PixelViewContent
+                contentName={producto.nombre}
+                contentIds={[producto.id]}
+                value={producto.precio}
+                currency="ARS"
+            />
             <div className="flex flex-col md:flex-row gap-8">
                 <SliderProducto producto={producto} />
 

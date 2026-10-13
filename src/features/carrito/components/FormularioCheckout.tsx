@@ -18,6 +18,7 @@ import {
 } from '@/src/features/logistica';
 import { useCarritoStore } from '@/src/features/carrito/store';
 import { guardarLinkWhatsApp } from '@/src/lib/utils/linkWhatsappStorage';
+import { trackPixel } from '@/src/features/tracking-pixel';
 
 const CODIGO_POSTAL_VALIDO = /^\d{4}$/;
 const DEBOUNCE_COTIZACION_MS = 400;
@@ -59,6 +60,10 @@ export function FormularioCheckout({ onCompleted }: FormularioCheckoutProps) {
         () => items.reduce((total, item) => total + item.precio * item.cantidad, 0),
         [items],
     );
+
+    useEffect(() => {
+        trackPixel('InitiateCheckout');
+    }, []);
 
     useEffect(() => {
         if (pedidoId && linkWhatsApp) {
