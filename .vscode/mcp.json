@@ -2,12 +2,11 @@
    "servers": {
       "supabase": {
          "type": "http",
-         "url": "https://mcp.supabase.com/mcp?project_ref=adauxoedgfvaadkvvifu&features=docs%2Caccount%2Cdatabase%2Cdebugging%2Cdevelopment%2Cfunctions%2Cbranching",
+         "url": "https://mcp.supabase.com/mcp?project_ref=adauxoedgfvaadkvvifu&features=docs%2Caccount%2Cdatabase%2Cdebugging%2Cdevelopment%2Cfunctions%2Cbranching%2Cfeedback",
          "headers": {
             "Authorization": "Bearer ${env:NEXT_PUBLIC_SUPABASE_ACCESS_TOKEN}"
          }
       },
-      
       "chrome-devtools": {
          "command": "npx",
          "args": [
