@@ -13,10 +13,13 @@ export default function EliminacionDatosPage() {
 
                 <section className="mb-8">
                     <p className="text-base leading-relaxed mb-4">
-                        De acuerdo con las políticas de Meta y las normativas de privacidad, Emanuel Tecnico ofrece a sus usuarios un método claro para solicitar la eliminación completa de sus datos personales recopilados a través de nuestra aplicación.
+                        De acuerdo con las políticas de Meta y las normativas de privacidad, Emanuel Tecnico ofrece a
+                        sus usuarios un método claro para solicitar la eliminación completa de sus datos personales
+                        recopilados a través de nuestra aplicación.
                     </p>
                     <p className="text-base leading-relaxed mb-4">
-                        Si utilizaste el inicio de sesión con Facebook (Facebook Login) en Emanuel Tecnico y deseas que eliminemos todos tus datos de nuestra base de datos, sigue estos pasos:
+                        Si utilizaste el inicio de sesión con Facebook (Facebook Login) en Emanuel Tecnico y deseas que
+                        eliminemos todos tus datos de nuestra base de datos, sigue estos pasos:
                     </p>
                 </section>
 
@@ -24,11 +27,11 @@ export default function EliminacionDatosPage() {
                     <h2 className="text-xl font-semibold mb-4">Opción 1: Eliminación automática desde Facebook</h2>
                     <ol className="list-decimal list-inside space-y-3 text-base leading-relaxed">
                         <li>
-                            Ve a tu cuenta de Facebook y haz clic en 
+                            Ve a tu cuenta de Facebook y haz clic en
                             <strong>Configuración y privacidad {' > '} Configuración</strong>.
                         </li>
                         <li>
-                            En el menú lateral, selecciona 
+                            En el menú lateral, selecciona
                             <strong>Aplicaciones y sitios web</strong>.
                         </li>
                         <li>
@@ -46,34 +49,42 @@ export default function EliminacionDatosPage() {
                 <section className="mb-8">
                     <h2 className="text-xl font-semibold mb-4">Opción 2: Solicitud directa por correo electrónico</h2>
                     <p className="text-base leading-relaxed mb-4">
-                        Si prefieres solicitar la eliminación manual de tus datos, puedes hacerlo enviándonos un correo electrónico:
+                        Si prefieres solicitar la eliminación manual de tus datos, puedes hacerlo enviándonos un correo
+                        electrónico:
                     </p>
                     <ol className="list-decimal list-inside space-y-3 text-base leading-relaxed">
                         <li>
-                            Envía un correo a 
-                            <a href="mailto:emanuel_naon@hotmail.com.ar" className="text-blue-600 hover:underline font-medium">
-                                emanuel_naon@hotmail.com.ar
-                            </a>.
+                            Envía un correo a{' '}
+                            <a
+                                href="mailto:emanuel_naon@hotmail.com.ar"
+                                className="text-blue-600 hover:underline font-medium">
+                                {' '}
+                                emanuel_naon@hotmail.com.ar{' '}
+                            </a>
+                            .
                         </li>
                         <li>
-                            En el asunto del correo, escribe: 
-                            <strong>"Solicitud de Eliminación de Datos - Emanuel Tecnico"</strong>.
+                            En el asunto del correo, escribe:{' '}
+                            <strong>Solicitud de Eliminación de Datos - Emanuel Técnico</strong>.
                         </li>
                         <li>
-                            En el cuerpo del correo, indícanos el correo electrónico asociado a tu cuenta de Facebook para que podamos identificar tus registros.
+                            En el cuerpo del correo, indícanos el correo electrónico asociado a tu cuenta de Facebook
+                            para que podamos identificar tus registros.
                         </li>
                     </ol>
                     <p className="text-base leading-relaxed mt-4">
-                        Procesaremos tu solicitud y eliminaremos todos tus datos de nuestros servidores en un plazo máximo de <strong>7 días hábiles</strong>, enviándote una confirmación al finalizar.
+                        Procesaremos tu solicitud y eliminaremos todos tus datos de nuestros servidores en un plazo
+                        máximo de <strong>7 días hábiles</strong>, enviándote una confirmación al finalizar.
                     </p>
                 </section>
 
                 <section className="border-t border-border pt-6">
                     <p className="text-base leading-relaxed text-center text-muted-foreground">
-                        ¿Volver a la 
+                        ¿Volver a la
                         <a href="/privacidad" className="text-blue-600 hover:underline font-medium">
                             Política de Privacidad
-                        </a>?
+                        </a>
+                        ?
                     </p>
                 </section>
             </article>
