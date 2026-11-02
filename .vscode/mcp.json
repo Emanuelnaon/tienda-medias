@@ -7,10 +7,7 @@
             "Authorization": "Bearer ${env:NEXT_PUBLIC_SUPABASE_ACCESS_TOKEN}"
          }
       },
-      "Meta Social Technologies": {
-         "url": "https://mcp.facebook.com/devtools",
-         "type": "http"
-      },
+      
       "chrome-devtools": {
          "command": "npx",
          "args": [
