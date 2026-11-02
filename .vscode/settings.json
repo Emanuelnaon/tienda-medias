@@ -1,5 +1,13 @@
 {
    "cSpell.ignoreWords": [
       "theme"
-   ]
+   ],
+   "chat.mcp.serverSampling": {
+      "tienda-medias/.vscode/mcp.json: supabase": {
+         "allowedModels": [
+            "copilot/auto",
+            "copilotcli/auto"
+         ]
+      }
+   }
 }
