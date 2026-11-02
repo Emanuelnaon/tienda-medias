@@ -1,9 +1,9 @@
 {
    "servers": {
-      "supabase": {
-         "type": "http",
-         "url": "https://mcp.supabase.com/mcp?project_ref=adauxoedgfvaadkvvifu&read_only=true"
-      },
+"supabase": {
+   "type": "http",
+   "url": "https://mcp.supabase.com/mcp?project_ref=adauxoedgfvaadkvvifu"
+},
       "chrome-devtools": {
          "command": "npx",
          "args": [
