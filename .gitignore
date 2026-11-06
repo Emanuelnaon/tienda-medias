@@ -47,3 +47,9 @@ generar-backup.ps1
 .kilo/playwright-report/
 test-results/
 supabase/.temp/
+.kilo
+skills
+rules
+plans
+playwright-report
+tests
