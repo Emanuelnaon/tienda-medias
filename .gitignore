@@ -44,4 +44,6 @@ next-env.d.ts
 backup-*/
 generar-backup.ps1
 
-.kilo/
+.kilo/playwright-report/
+test-results/
+supabase/.temp/

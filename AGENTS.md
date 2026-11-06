@@ -58,4 +58,8 @@ El agente tiene prohibido alucinar herramientas. Solo operar con los servidores 
 - **Modo `architect`:** solo lee y escribe en `docs/specs/`. Prohibido tocar `src/`. Lee `src/types/supabase.ts` antes de especificar cualquier modelo de datos.
 - **Modo `executor`:** implementa desde el spec. Lee el spec completo antes de escribir código. Reporta criterios de aceptación al cerrar.
 - **Modo `qa`:** audita seguridad y valida contra spec. Disparador obligatorio cuando se modificaron archivos de RLS, `plan_features`, o lógica de tenant.
-- **Autocompletado:** delegado a modelo liviano en Continue (ghost text). No usa reglas de arquitectura.
+
+## Bases de datos
+
+- **BASE DE DATOS:** leer .kilo/rules/07-flujo-base-de-datos.md antes de
+proponer cualquier cambio de schema, policy o función.

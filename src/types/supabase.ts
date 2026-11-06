@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5"
+    PostgrestVersion: "14.15"
   }
   public: {
     Tables: {
@@ -639,10 +639,6 @@ export type Database = {
       confirmar_pedido_transaccion: {
         Args: { p_pedido_id: string }
         Returns: Json
-      }
-      confirmar_venta_y_actualizar_crm: {
-        Args: { p_pedido_id: string }
-        Returns: undefined
       }
       crear_cliente_checkout: {
         Args: {

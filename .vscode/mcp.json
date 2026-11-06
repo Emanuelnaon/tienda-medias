@@ -1,19 +1,8 @@
 {
-   "servers": {
-"supabase": {
-   "type": "http",
-   "url": "https://mcp.supabase.com/mcp?project_ref=adauxoedgfvaadkvvifu"
-},
-      "chrome-devtools": {
-         "command": "npx",
-         "args": [
-            "-y",
-            "chrome-devtools-mcp@latest"
-         ]
-      },
-      "figma": {
-         "url": "https://mcp.figma.com/mcp",
-         "type": "http"
-      }
-   }
+	"servers": {
+		"supabase": {
+			"type": "http",
+			"url": "https://mcp.supabase.com/mcp?project_ref=adauxoedgfvaadkvvifu&read_only=true&features=docs%2Cdatabase%2Cdebugging%2Cdevelopment%2Cfunctions%2Cfeedback"
+		}
+	}
 }
