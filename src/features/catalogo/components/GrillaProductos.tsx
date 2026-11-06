@@ -45,7 +45,7 @@ export async function GrillaProductos({ parametros }: GrillaProductosProps) {
         <div className="flex flex-col gap-4">
             {/* Cabecera: Título y Botón de Filtros */}
             <div className="flex items-center justify-between mb-1">
-                <h1 className="text-2xl font-extrabold text-foreground">Catálogo</h1>
+                <h1 className="text-2xl font-extrabold text-foreground">Encuntra algo especial</h1>
                 <DrawerFiltros />
             </div>
 

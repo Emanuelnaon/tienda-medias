@@ -36,7 +36,7 @@ export function FormularioLogin() {
     return (
         <div className="w-full max-w-md mx-auto p-6 bg-background rounded-2xl border border-border shadow-sm">
             <div className="text-center mb-6">
-                <h2 className="text-2xl font-bold tracking-tight text-foreground">Iniciar Sesión</h2>
+                <h2 className="text-2xl font-bold tracking-tight text-foreground">Bienvenido a tu espacio</h2>
                 <p className="text-sm text-muted-foreground mt-2">
                     Ingresa tu correo y contraseña para acceder al panel de administración.
                 </p>
