@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useForm, useWatch } from 'react-hook-form';
+import { useForm, useWatch, type FieldErrors } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import toast from 'react-hot-toast';
@@ -29,10 +29,16 @@ const clienteSchema = z.object({
     codigo_postal: z
         .string()
         .trim()
-        .refine((valor) => valor === '' || CODIGO_POSTAL_VALIDO.test(valor), {
+        .optional()
+        .refine((valor) => valor === undefined || valor === '' || CODIGO_POSTAL_VALIDO.test(valor), {
             message: 'El código postal tiene 4 dígitos',
         }),
-    direccion_entrega: z.string().trim().max(200, 'Máximo 200 caracteres').optional(),
+    direccion_entrega: z
+        .string()
+        .trim()
+        .max(200, 'Máximo 200 caracteres')
+        .optional()
+        .or(z.literal('')),
 });
 
 type DatosCheckout = z.infer<typeof clienteSchema>;
@@ -178,8 +184,10 @@ export function FormularioCheckout({ onCompleted }: FormularioCheckoutProps) {
     const onSubmit = async (datos: DatosCheckout, e?: React.BaseSyntheticEvent) => {
         e?.preventDefault();
 
+        const codigoPostal = (datos.codigo_postal ?? '').trim();
+
         if (hayZonasActivas) {
-            if (!CODIGO_POSTAL_VALIDO.test(datos.codigo_postal.trim())) {
+            if (!CODIGO_POSTAL_VALIDO.test(codigoPostal)) {
                 toast.error('Ingresá tu código postal (4 dígitos) para calcular el envío');
                 return;
             }
@@ -200,7 +208,7 @@ export function FormularioCheckout({ onCompleted }: FormularioCheckoutProps) {
             const cliente: ClienteCheckoutInput = {
                 nombre_completo: datos.nombre_completo,
                 telefono: datos.telefono,
-                codigo_postal: datos.codigo_postal,
+                codigo_postal: codigoPostal,
                 direccion_entrega: datos.direccion_entrega,
             };
 
@@ -225,9 +233,19 @@ export function FormularioCheckout({ onCompleted }: FormularioCheckoutProps) {
         }
     };
 
+    const onInvalid = (errores: FieldErrors<DatosCheckout>) => {
+        const primerMensaje =
+            errores.nombre_completo?.message ??
+            errores.telefono?.message ??
+            errores.codigo_postal?.message ??
+            errores.direccion_entrega?.message ??
+            'Revisá los datos del formulario';
+        toast.error(primerMensaje);
+    };
+
     return (
         <form
-            onSubmit={handleSubmit(onSubmit)}
+            onSubmit={handleSubmit(onSubmit, onInvalid)}
             action="#"
             className="w-full space-y-3 border-t border-border pt-4"
         >
