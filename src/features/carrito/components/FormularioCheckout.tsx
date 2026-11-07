@@ -221,10 +221,15 @@ export function FormularioCheckout({ onCompleted }: FormularioCheckoutProps) {
                 cliente,
             );
 
+            if (!result.ok) {
+                toast.error(result.error);
+                return;
+            }
+
             setLinkWhatsApp(result.linkWhatsApp);
             setPedidoId(result.pedidoId);
             limpiarCarrito();
-            window.location.assign(`/pedido/${result.pedidoId}`);
+            window.location.assign(`/pedido/${result.pedidoId}?t=${result.token}`);
             setTimeout(() => onCompleted?.(), 100);
         } catch (error) {
             toast.error(error instanceof Error ? error.message : 'Ocurrió un error al procesar la compra');

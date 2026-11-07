@@ -3,12 +3,6 @@
 import { createSupabaseServerClient, createSupabasePublicClient } from '@/src/lib/supabase/server';
 import type { Database } from '@/src/types/supabase';
 import { WHATSAPP_SUPPORT_NUMBER } from '@/src/lib/constants';
-import {
-    calcularEnvio,
-    describirLineaEnvio,
-    describirMotivoEnvio,
-} from '@/src/features/logistica';
-import { consultarCoberturaEnvio } from '@/src/features/logistica/server';
 
 export interface CarritoItemInput {
     id: string;
@@ -23,10 +17,9 @@ export interface ClienteCheckoutInput {
     direccion_entrega?: string;
 }
 
-export interface ResultadoCheckout {
-    pedidoId: string;
-    linkWhatsApp: string;
-}
+export type ResultadoCheckout =
+    | { ok: true; pedidoId: string; token: string; linkWhatsApp: string }
+    | { ok: false; error: string };
 
 async function obtenerNumeroWhatsAppAdmin(): Promise<string> {
     const supabase = await createSupabaseServerClient();
@@ -48,60 +41,7 @@ export async function generarLinkWhatsApp(
     carrito: CarritoItemInput[],
     cliente: ClienteCheckoutInput,
 ): Promise<ResultadoCheckout> {
-    if (!carrito || carrito.length === 0) {
-        throw new Error('El carrito está vacío');
-    }
-    if (!cliente.nombre_completo.trim() || !cliente.telefono.trim()) {
-        throw new Error('Nombre y teléfono son obligatorios');
-    }
-
     const supabase = createSupabasePublicClient();
-    const numeroAdmin = await obtenerNumeroWhatsAppAdmin();
-
-    // 2. Precios Seguros: Extrae los IDs del carrito y haz un select a la tabla productos filtrando con .in('id', arrayDeIds).
-    const ids = carrito.map((item) => item.id);
-    const { data, error: prodError } = await supabase.from('productos').select('*').in('id', ids);
-
-    if (prodError) {
-        console.error('Error al consultar productos:', prodError);
-        throw new Error('Error al validar el carrito con la base de datos');
-    }
-
-    if (!data || data.length === 0 || data.length !== new Set(ids).size) {
-        throw new Error('No se encontraron los productos seleccionados');
-    }
-
-    const productos = data as Database['public']['Tables']['productos']['Row'][];
-
-    // Mapear productos por ID para acceso rápido O(1)
-    const productosMap = new Map<string, Database['public']['Tables']['productos']['Row']>();
-    productos.forEach((p) => {
-        productosMap.set(p.id, p);
-    });
-
-    let totalReal = 0;
-    const itemsPedido: Database['public']['Tables']['pedidos_items']['Insert'][] = [];
-    let mensaje = '¡Hola! Quiero confirmar mi pedido.\n';
-
-    carrito.forEach((item) => {
-        const prodBD = productosMap.get(item.id);
-        if (!prodBD || !Number.isInteger(item.cantidad) || item.cantidad <= 0) {
-            throw new Error('El carrito contiene un producto o cantidad inválida');
-        }
-
-        const subtotal = prodBD.precio * item.cantidad;
-        totalReal += subtotal;
-        itemsPedido.push({
-            pedido_id: '',
-            producto_id: prodBD.id,
-            nombre_producto: prodBD.nombre,
-            talle: item.talle,
-            cantidad: item.cantidad,
-            precio_unitario: prodBD.precio,
-        });
-
-        mensaje += `- ${item.cantidad}x ${prodBD.nombre} ($${prodBD.precio})\n`;
-    });
 
     const { data: tenant, error: tenantError } = await supabase
         .from('tenants')
@@ -110,111 +50,85 @@ export async function generarLinkWhatsApp(
         .single();
 
     if (tenantError || !tenant) {
-        throw new Error('Tenant no encontrado');
+        console.error('Error al resolver tenant:', tenantError);
+        return { ok: false, error: 'No pudimos registrar tu pedido. Intentá de nuevo.' };
     }
 
-    // Envío: el costo nunca viaja desde el navegador. Se recalcula acá con el
-    // subtotal real de la base de datos contra las zonas activas del tenant.
-    const codigoPostal = cliente.codigo_postal?.trim() ?? '';
-    const direccionEntrega = cliente.direccion_entrega?.trim() ?? '';
-    const cobertura = await consultarCoberturaEnvio();
+    const { data, error } = await supabase.rpc('registrar_pedido_checkout', {
+        p_tenant_id: tenant.id,
+        p_nombre: cliente.nombre_completo,
+        p_telefono: cliente.telefono,
+        p_items: carrito.map(({ id, cantidad, talle }) => ({
+            producto_id: id,
+            talle,
+            cantidad,
+        })),
+        p_codigo_postal: cliente.codigo_postal ?? undefined,
+        p_direccion: cliente.direccion_entrega ?? undefined,
+    });
 
-    let costoEnvio = 0;
-    let lineaEnvio: string | null = null;
-
-    if (cobertura.estaHabilitado) {
-        if (codigoPostal === '') {
-            throw new Error('Ingresá tu código postal para calcular el costo de envío');
+    if (error || !data) {
+        const msg = error?.message ?? '';
+        let friendly = 'No pudimos registrar tu pedido. Intentá de nuevo.';
+        let mapped = false;
+        if (msg.includes('Cliente bloqueado')) {
+            friendly = 'No pudimos procesar tu pedido. Contactá al comercio por WhatsApp.';
+            mapped = true;
+        } else if (msg.includes('Teléfono inválido')) {
+            friendly = 'Revisá tu teléfono: tiene que tener al menos 8 dígitos.';
+            mapped = true;
+        } else if (msg.includes('NOMBRE_INVALIDO')) {
+            friendly = 'Ingresá tu nombre completo.';
+            mapped = true;
+        } else if (msg.includes('CARRITO_INVALIDO')) {
+            friendly = 'Tu carrito tiene un problema. Volvé a armarlo.';
+            mapped = true;
+        } else if (msg.includes('PRODUCTO_NO_DISPONIBLE')) {
+            friendly = 'Algún producto de tu carrito ya no está disponible.';
+            mapped = true;
+        } else if (msg.includes('SIN_STOCK')) {
+            friendly = 'No hay stock suficiente de algún producto de tu carrito.';
+            mapped = true;
+        } else if (msg.includes('CP_INVALIDO')) {
+            friendly = 'Ingresá un código postal de 4 dígitos.';
+            mapped = true;
+        } else if (msg.includes('SIN_COBERTURA')) {
+            friendly = 'Por ahora no realizamos envíos a ese código postal.';
+            mapped = true;
         }
-
-        const resultadoEnvio = calcularEnvio(cobertura.zonas, codigoPostal, totalReal);
-
-        if (!resultadoEnvio.esValido) {
-            throw new Error(describirMotivoEnvio(resultadoEnvio.motivo));
+        if (!mapped) {
+            console.error('Error al registrar pedido:', error);
         }
-
-        costoEnvio = resultadoEnvio.costo;
-        lineaEnvio = describirLineaEnvio(resultadoEnvio);
+        return { ok: false, error: friendly };
     }
 
-    const clientePayload: Pick<Database['public']['Tables']['clientes']['Row'], 'nombre_completo' | 'telefono' | 'tenant_id'> = {
-        nombre_completo: cliente.nombre_completo.trim(),
-        telefono: cliente.telefono.trim(),
-        tenant_id: tenant.id,
+    const result = data as {
+        pedido_id: string;
+        token: string;
+        subtotal: number;
+        costo_envio: number;
+        total: number;
+        metodo_envio: string | null;
+        whatsapp: string | null;
+        items: { nombre: string; cantidad: number; precio: number }[];
     };
-    const { data: clienteExistente } = await supabase
-        .from('clientes')
-        .select('id, bloqueado')
-        .eq('tenant_id', tenant.id)
-        .eq('telefono', clientePayload.telefono)
-        .maybeSingle();
 
-    let clienteId: string | null;
+    const numeroAdmin = (result.whatsapp ?? '').replace(/[^\d+]/g, '') || WHATSAPP_SUPPORT_NUMBER;
 
-    if (clienteExistente?.bloqueado) {
-        throw new Error(
-            'Tu cuenta está temporalmente bloqueada. Contactá al comercio.',
-        );
+    let mensaje = '¡Hola! Quiero confirmar mi pedido.\n';
+    for (const item of result.items) {
+        mensaje += `- ${item.cantidad}x ${item.nombre} ($${item.precio})\n`;
     }
-
-    if (clienteExistente) {
-        clienteId = clienteExistente.id;
-    } else {
-        const { data: nuevoClienteId, error: clienteError } = await supabase.rpc('crear_cliente_checkout', {
-            p_nombre_completo: clientePayload.nombre_completo,
-            p_telefono: clientePayload.telefono,
-            p_tenant_id: tenant.id,
-        });
-
-        if (clienteError || !nuevoClienteId) {
-            console.error('Error al guardar cliente:', clienteError);
-            throw new Error('No se pudo guardar la información del cliente');
-        }
-        clienteId = nuevoClienteId;
+    mensaje += `Subtotal: $${result.subtotal}\n`;
+    if (result.costo_envio) {
+        mensaje += `Envío: $${result.costo_envio}\n`;
     }
+    mensaje += `Total a pagar: $${result.total}\n`;
+    mensaje += `*Número de Orden: ${result.pedido_id.split('-')[0]}*`;
 
-    const clienteData = { id: clienteId };
-
-    const itemsJson = itemsPedido.map((item) => ({
-        producto_id: item.producto_id,
-        nombre_producto: item.nombre_producto,
-        talle: item.talle,
-        cantidad: item.cantidad,
-        precio_unitario: item.precio_unitario,
-    }));
-
-    const { data: pedidoId, error: pedidoError } = await supabase
-        .rpc('crear_pedido_checkout', {
-            p_cliente_id: clienteData.id,
-            p_total: totalReal + costoEnvio,
-            p_tenant_id: tenant.id,
-            p_items: itemsJson,
-        });
-
-    if (pedidoError || !pedidoId) {
-        console.error('Error al guardar pedido:', pedidoError);
-        throw new Error('No se pudo registrar el pedido');
-    }
-
-    if (lineaEnvio !== null) {
-        mensaje += `${lineaEnvio}\n`;
-    }
-
-    if (codigoPostal !== '') {
-        mensaje += `Código postal: ${codigoPostal}\n`;
-    }
-
-    if (direccionEntrega !== '') {
-        mensaje += `Dirección de entrega: ${direccionEntrega}\n`;
-    }
-
-    mensaje += `Total a pagar: $${totalReal + costoEnvio}\n`;
-    mensaje += `*Número de Orden: ${pedidoId.split('-')[0]}*`;
-
-    // 5. Retorno: Codifica el string con encodeURIComponent y devuelve pedidoId + linkWhatsApp.
     const textoCodificado = encodeURIComponent(mensaje);
     const linkWhatsApp = `https://wa.me/${numeroAdmin}?text=${textoCodificado}`;
-    return { pedidoId, linkWhatsApp };
+    return { ok: true, pedidoId: result.pedido_id, token: result.token, linkWhatsApp };
 }
 
 export async function obtenerLinkCompartirAdmin(productoId: string): Promise<string> {
@@ -225,7 +139,6 @@ export async function obtenerLinkCompartirAdmin(productoId: string): Promise<str
     const supabase = await createSupabaseServerClient();
     const numeroAdmin = await obtenerNumeroWhatsAppAdmin();
 
-    // 2. Consulte el nombre y codigo_corto del producto en la tabla productos.
     const { data: prodData, error: prodError } = await supabase
         .from('productos')
         .select('*')
@@ -239,11 +152,9 @@ export async function obtenerLinkCompartirAdmin(productoId: string): Promise<str
         throw new Error('Producto no encontrado');
     }
 
-    // 3. Construya el mensaje: "Hola, quiero consultar el stock de: ${producto.nombre} (Código: ${producto.codigo_corto})"
     const codigoMostrar = producto.codigo_corto || 'Sin código';
     const mensaje = `Hola, quiero consultar el stock de: ${producto.nombre} (Código: ${codigoMostrar})`;
 
-    // 4. Devuelva la URL completa armada con la variable dinámica.
     const textoCodificado = encodeURIComponent(mensaje);
     return `https://wa.me/${numeroAdmin}?text=${textoCodificado}`;
 }
