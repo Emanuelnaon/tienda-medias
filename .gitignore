@@ -46,7 +46,7 @@ generar-backup.ps1
 .kilo/playwright-report/
 test-results/
 supabase/.temp/
-.kilo
+.kilo/worktrees/
 skills
 rules
 plans
