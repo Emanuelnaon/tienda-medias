@@ -42,16 +42,17 @@ next-env.d.ts
 # Supabase Backups
 backup-*/
 generar-backup.ps1
-
-.kilo/playwright-report/
-test-results/
 supabase/.temp/
+
+# Kilo
 .kilo/worktrees/
-skills
-rules
-plans
-playwright-report
-tests
+.kilo/plans/
+.kilo/playwright-report/
+
+# testing
+/coverage
+/playwright-report/
+/test-results/
 
 # editor backups
 .gitignore~
