@@ -247,6 +247,7 @@ export type Database = {
           estado: string | null
           id: string
           metodo_envio: string | null
+          nombre_contacto: string | null
           tenant_id: string
           token_seguimiento: string | null
           total: number
@@ -263,6 +264,7 @@ export type Database = {
           estado?: string | null
           id?: string
           metodo_envio?: string | null
+          nombre_contacto?: string | null
           tenant_id: string
           token_seguimiento?: string | null
           total: number
@@ -279,6 +281,7 @@ export type Database = {
           estado?: string | null
           id?: string
           metodo_envio?: string | null
+          nombre_contacto?: string | null
           tenant_id?: string
           token_seguimiento?: string | null
           total?: number
@@ -683,6 +686,17 @@ export type Database = {
         Returns: Json
       }
       is_webmaster: { Args: never; Returns: boolean }
+      registrar_pedido_checkout: {
+        Args: {
+          p_codigo_postal?: string
+          p_direccion?: string
+          p_items: Json
+          p_nombre: string
+          p_telefono: string
+          p_tenant_id: string
+        }
+        Returns: Json
+      }
       tenant_tiene_feature: {
         Args: { p_feature_key: string; p_tenant_id: string }
         Returns: boolean
