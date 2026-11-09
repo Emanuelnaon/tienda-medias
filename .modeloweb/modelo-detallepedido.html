@@ -1,0 +1,495 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detalle de Pedido #5077eca1 · Socks Store</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            paper: '#f7f4ed',
+            surface: '#ffffff',
+            sidebar: '#fbf9f4',
+            ink: '#1d1a24',
+            muted: '#6a6472',
+            line: '#e8e3d8',
+            'line-soft': '#f0ebe1',
+            violet: {
+              DEFAULT: '#4c3df0',
+              hover: '#3d2ee0',
+              soft: '#eeebff',
+              text: '#3c30c8',
+            },
+            emerald: {
+              DEFAULT: '#078b53',
+              hover: '#056e41',
+              soft: '#e6f7ef',
+              text: '#056e41'
+            }
+          },
+          fontFamily: {
+            sans: ['Montserrat', 'sans-serif'],
+            display: ['Josefin Sans', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@600;700;800&family=Montserrat:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      background-color: #f7f4ed;
+      color: #1d1a24;
+      font-family: 'Montserrat', sans-serif;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="min-h-screen antialiased bg-paper text-ink">
+
+  <div class="min-h-screen lg:grid lg:grid-cols-[240px_1fr]">
+
+    <!-- ==========================================================================
+         TOPBAR MOBILE (Visible en móviles)
+         ========================================================================== -->
+    <header class="lg:hidden flex items-center justify-between px-5 py-4 bg-sidebar border-b border-line">
+      <div class="flex items-center gap-3">
+        <div class="w-4 h-4 rounded-full bg-violet"></div>
+        <span class="font-display font-extrabold text-xl tracking-tight">Socks Store</span>
+      </div>
+      <button onclick="toggleMobileSidebar()" class="p-2 text-ink hover:bg-line-soft rounded-xl transition">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+      </button>
+    </header>
+
+    <!-- ==========================================================================
+         1. SIDEBAR GLOBAL LATERAL (IZQUIERDA)
+         ========================================================================== -->
+    <aside id="globalSidebar" class="hidden lg:flex flex-col fixed lg:sticky top-0 h-screen w-60 z-40 bg-sidebar border-r border-line p-6 transition-all duration-300">
+      
+      <!-- Logo Branding -->
+      <div class="flex items-center gap-3 mb-6 px-1">
+        <div class="w-4 h-4 rounded-full bg-violet"></div>
+        <span class="font-display font-extrabold text-2xl tracking-tight text-ink">Socks Store</span>
+      </div>
+
+      <!-- Buscador rápido en Sidebar -->
+      <div class="relative mb-6">
+        <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8" stroke-width="2"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65" stroke-width="2"></line>
+        </svg>
+        <input type="text" placeholder="¿Lo viste en redes? Código" class="w-full h-10 pl-9 pr-3 text-xs bg-white border border-line rounded-xl outline-none focus:border-violet focus:ring-2 focus:ring-violet/10 transition">
+      </div>
+
+      <!-- Navegación Principal -->
+      <nav class="space-y-1">
+        <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-gray-700 hover:bg-[#f0ebdf] hover:text-ink transition">
+          <svg class="w-4 h-4 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+          Inicio
+        </a>
+        <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-gray-700 hover:bg-[#f0ebdf] hover:text-ink transition">
+          <svg class="w-4 h-4 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+          Categorías
+        </a>
+        <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-gray-700 hover:bg-[#f0ebdf] hover:text-ink transition">
+          <svg class="w-4 h-4 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+          Favoritos
+        </a>
+        <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-gray-700 hover:bg-[#f0ebdf] hover:text-ink transition">
+          <svg class="w-4 h-4 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+          Carrito
+          <span class="ml-auto bg-rose-500 text-white font-extrabold text-[10px] w-5 h-5 rounded-full grid place-items-center">1</span>
+        </a>
+        
+        <!-- Panel de Control Activo -->
+        <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold bg-violet-soft text-violet-text transition">
+          <svg class="w-4 h-4 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          Panel de Control
+        </a>
+
+        <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-gray-700 hover:bg-[#f0ebdf] hover:text-ink transition">
+          <svg class="w-4 h-4 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+          Cerrar Sesión
+        </a>
+      </nav>
+
+      <!-- Footer del Sidebar -->
+      <div class="mt-auto pt-5 border-t border-line">
+        <button type="button" class="w-full h-10 flex items-center justify-center gap-2 bg-white border border-line rounded-xl text-xs font-semibold hover:bg-line-soft transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke-width="2"></path></svg>
+          Modo oscuro
+        </button>
+        <p class="mt-4 text-[11px] text-muted text-center font-medium">© 2026 Socks Store</p>
+      </div>
+    </aside>
+
+    <!-- ==========================================================================
+         2. ESPACIO DE TRABAJO PRINCIPAL (WORKSPACE)
+         ========================================================================== -->
+    <main class="p-4 sm:p-6 lg:p-8 max-w-[1380px] w-full mx-auto">
+
+      <!-- PANEL DE ADMINISTRACIÓN HORIZONTAL (REUBICADO SUPERIOR) -->
+      <section class="bg-surface border border-line rounded-2xl p-5 lg:p-6 mb-8 shadow-sm">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+          <div>
+            <p class="text-[10px] font-extrabold tracking-widest text-muted uppercase">SOCKS STORE</p>
+            <h2 class="font-display font-extrabold text-2xl lg:text-3xl text-ink">Panel de administración</h2>
+          </div>
+          <span class="text-xs font-medium text-muted bg-paper px-3 py-1.5 rounded-lg border border-line self-start sm:self-auto">
+            subli.cat.insumos@gmail.com
+          </span>
+        </div>
+
+        <!-- Pestañas Horizontales de Administración -->
+        <nav class="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+          
+          <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-xl border border-transparent text-gray-700 hover:bg-line-soft transition whitespace-nowrap flex-shrink-0">
+            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            <div>
+              <strong class="block text-xs font-bold leading-tight">Dashboard</strong>
+              <small class="block text-[10px] text-muted">Resumen general</small>
+            </div>
+          </a>
+
+          <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-xl border border-transparent text-gray-700 hover:bg-line-soft transition whitespace-nowrap flex-shrink-0">
+            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+            <div>
+              <strong class="block text-xs font-bold leading-tight">Catálogo & Stock</strong>
+              <small class="block text-[10px] text-muted">Productos e inventario</small>
+            </div>
+          </a>
+
+          <!-- PESTAÑA ACTIVA: VENTAS & PEDIDOS -->
+          <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-xl border border-violet/20 bg-violet-soft text-violet-text transition whitespace-nowrap flex-shrink-0">
+            <svg class="w-5 h-5 text-violet" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="M6 8h4"></path><path d="M6 12h12"></path></svg>
+            <div>
+              <strong class="block text-xs font-extrabold leading-tight">Ventas & Pedidos</strong>
+              <small class="block text-[10px] text-violet-text/80 font-medium">Gestionar ventas</small>
+            </div>
+          </a>
+
+          <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-xl border border-transparent text-gray-700 hover:bg-line-soft transition whitespace-nowrap flex-shrink-0">
+            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            <div>
+              <strong class="block text-xs font-bold leading-tight">CRM Clientes</strong>
+              <small class="block text-[10px] text-muted">Relación con clientes</small>
+            </div>
+          </a>
+
+          <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-xl border border-transparent text-gray-700 hover:bg-line-soft transition whitespace-nowrap flex-shrink-0">
+            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+            <div>
+              <strong class="block text-xs font-bold leading-tight">Configuración</strong>
+              <small class="block text-[10px] text-muted">Ajustes del tenant</small>
+            </div>
+          </a>
+
+        </nav>
+      </section>
+
+      <!-- ==========================================================================
+           HEADER DEL DETALLE DEL PEDIDO + UNIFICACIÓN DE ESTADO (MARGEN DERECHO)
+           ========================================================================== -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+        
+        <!-- Lado Izquierdo: Volver + Título + Fecha -->
+        <div class="flex items-start sm:items-center gap-4">
+          <a href="#" class="h-10 px-3.5 inline-flex items-center gap-2 bg-white border border-line text-ink hover:bg-line-soft rounded-xl text-xs font-bold transition shadow-2xs">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            Volver
+          </a>
+          <div>
+            <div class="flex items-center gap-3 flex-wrap">
+              <h1 class="font-display font-extrabold text-2xl sm:text-3xl text-ink tracking-tight">Pedido #5077eca1</h1>
+            </div>
+            <p class="text-xs text-muted mt-0.5 font-medium">27 sept 2026, 9:03 p. m.</p>
+          </div>
+        </div>
+
+        <!-- Lado Derecho: SELECTOR DE ESTADOS UNIFICADO CON MICROINTERACCIÓN (Optimización sin redundancia) -->
+        <div class="flex items-center gap-2 self-start md:self-auto bg-surface border border-line p-1.5 rounded-2xl shadow-2xs">
+          <span class="text-[10px] font-extrabold uppercase text-muted px-2.5 tracking-wider hidden sm:inline">Estado:</span>
+          
+          <div class="relative inline-block">
+            <!-- Badge / Select Interactivo con color según el estado -->
+            <select id="statusSelector" onchange="handleStatusChange(this)" class="appearance-none cursor-pointer pl-8 pr-8 py-2 text-xs font-bold rounded-xl border transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-violet/20 bg-emerald-soft border-emerald/30 text-emerald-text">
+              <option value="Confirmado" selected>✓ Confirmado</option>
+              <option value="Pendiente">⏳ Pendiente</option>
+              <option value="Preparando">📦 Preparando</option>
+              <option value="En camino">🚚 En camino</option>
+              <option value="Entregado">🎉 Entregado</option>
+              <option value="Cancelado">❌ Cancelado</option>
+            </select>
+            <!-- Punto de Estado Vivo -->
+            <span id="statusDot" class="w-2.5 h-2.5 rounded-full bg-emerald absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none transition-colors duration-300"></span>
+            <!-- Flecha Dropdown Custom -->
+            <svg class="w-4 h-4 absolute right-2.5 top-1/2 -translate-y-1/2 text-emerald-text pointer-events-none stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ==========================================================================
+           3. GRILLA DE CONTENEDORES CON ÍCONOS DE EDICIÓN Y ESTRUCTURA OPTIMIZADA
+           ========================================================================== -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        
+        <!-- CARD 1: DATOS DEL CLIENTE -->
+        <section class="bg-surface border border-line rounded-2xl p-5 shadow-2xs relative group hover:border-violet/30 transition">
+          <div class="flex items-center justify-between border-b border-line pb-3 mb-4">
+            <h3 class="text-[11px] font-extrabold uppercase tracking-widest text-muted">DATOS DEL CLIENTE</h3>
+            <!-- Ícono de Edición Superior Derecho -->
+            <button onclick="editCard('Datos del cliente')" class="p-1.5 rounded-lg text-muted hover:text-violet hover:bg-violet-soft transition" title="Editar datos del cliente">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            </button>
+          </div>
+
+          <div class="space-y-3.5 text-xs">
+            <div>
+              <span class="block text-[10px] font-bold text-muted uppercase">Nombre</span>
+              <strong class="font-bold text-ink text-sm">otrom</strong>
+            </div>
+
+            <div>
+              <span class="block text-[10px] font-bold text-muted uppercase">Teléfono</span>
+              <a href="https://wa.me/5491112345679" target="_blank" class="font-mono text-gray-800 font-semibold hover:text-violet inline-flex items-center gap-1.5 transition">
+                +5491112345679
+                <svg class="w-3.5 h-3.5 text-emerald" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+              </a>
+            </div>
+
+            <div>
+              <span class="block text-[10px] font-bold text-muted uppercase mb-1">Estado del cliente</span>
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-extrabold bg-amber-100 text-amber-800 border border-amber-200">
+                Nuevo
+              </span>
+            </div>
+          </div>
+        </section>
+
+        <!-- CARD 2: RESUMEN DEL PEDIDO -->
+        <section class="bg-surface border border-line rounded-2xl p-5 shadow-2xs relative group hover:border-violet/30 transition flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between border-b border-line pb-3 mb-4">
+              <h3 class="text-[11px] font-extrabold uppercase tracking-widest text-muted">RESUMEN DEL PEDIDO</h3>
+              <!-- Ícono de Edición Superior Derecho -->
+              <button onclick="editCard('Resumen del pedido')" class="p-1.5 rounded-lg text-muted hover:text-violet hover:bg-violet-soft transition" title="Editar resumen de valores">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+              </button>
+            </div>
+
+            <div class="space-y-3 text-xs">
+              <div class="flex items-center justify-between text-gray-700">
+                <span>Subtotal</span>
+                <span class="font-semibold tabular-nums text-ink">$1.000</span>
+              </div>
+
+              <!-- NUEVO ITEM SOLICITADO: Descuento (Debajo de Subtotal) -->
+              <div class="flex items-center justify-between text-gray-700">
+                <span class="flex items-center gap-1.5">
+                  Descuento
+                </span>
+                <span class="px-2 py-0.5 rounded-md bg-paper border border-line font-mono text-[10px] font-bold text-muted uppercase">
+                  no_aplica
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Total Mantenido Abajo -->
+          <div class="pt-4 mt-4 border-t border-line flex items-center justify-between">
+            <span class="font-extrabold text-ink text-sm">Total</span>
+            <span class="font-display font-extrabold text-xl text-ink tabular-nums">$1.000</span>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- ==========================================================================
+           4. TABLA DESGLOSE DE PRODUCTOS DEL PEDIDO (MÁS AMPLIO Y DETALLADO)
+           ========================================================================== -->
+      <section class="bg-surface border border-line rounded-2xl shadow-2xs overflow-hidden mb-6">
+        <div class="p-4 border-b border-line bg-paper/50 flex items-center justify-between">
+          <h3 class="text-[11px] font-extrabold uppercase tracking-widest text-muted">LISTA DE PRODUCTOS COMPRADOS</h3>
+          <span class="text-xs font-semibold text-muted">1 artículo</span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse min-w-[650px]">
+            <thead>
+              <tr class="bg-paper border-b border-line text-[10px] font-extrabold uppercase tracking-wider text-muted">
+                <th class="p-4">PRODUCTO</th>
+                <th class="p-4">TALLE</th>
+                <th class="p-4 text-center">CANT.</th>
+                <th class="p-4 text-right">PRECIO UNIT.</th>
+                <th class="p-4 text-right">SUBTOTAL</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-line-soft text-xs">
+              <tr class="hover:bg-paper/40 transition">
+                <td class="p-4">
+                  <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-xl bg-amber-100 border border-amber-200 flex items-center justify-center font-bold text-lg text-amber-800 shadow-2xs">
+                      🧥
+                    </div>
+                    <div>
+                      <strong class="block font-bold text-ink text-xs sm:text-sm">Buzo One Piece</strong>
+                      <span class="text-[10px] text-muted">SKU: OP-BUZ-001</span>
+                    </div>
+                  </div>
+                </td>
+                <td class="p-4">
+                  <span class="px-2.5 py-1 rounded-lg bg-paper border border-line font-semibold text-xs text-gray-700">
+                    Único
+                  </span>
+                </td>
+                <td class="p-4 text-center font-extrabold text-ink tabular-nums">
+                  1
+                </td>
+                <td class="p-4 text-right font-medium text-gray-700 tabular-nums">
+                  $1.000
+                </td>
+                <td class="p-4 text-right font-extrabold text-ink tabular-nums text-sm">
+                  $1.000
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ==========================================================================
+           5. TARJETA: COMPROBANTE DE ACREDITACIÓN CON ÍCONO DE COPIAR Y DE EDICIÓN
+           ========================================================================== -->
+      <section class="bg-surface border border-line rounded-2xl p-5 shadow-2xs hover:border-violet/30 transition">
+        <div class="flex items-center justify-between border-b border-line pb-3 mb-4">
+          <h3 class="text-[11px] font-extrabold uppercase tracking-widest text-muted">COMPROBANTE DE ACREDITACIÓN</h3>
+          <!-- Ícono de Edición Superior Derecho -->
+          <button onclick="editCard('Comprobante de acreditación')" class="p-1.5 rounded-lg text-muted hover:text-violet hover:bg-violet-soft transition" title="Editar comprobante">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+          </button>
+        </div>
+
+        <div class="space-y-4 max-w-xl">
+          <div>
+            <label class="block text-xs font-bold text-ink mb-2">Número de comprobante</label>
+            
+            <!-- Campo con Botón de Copiar integrado -->
+            <div class="flex items-center">
+              <input id="receiptInput" type="text" value="MP-5678-ABCD-9921" placeholder="Ej. 12345-AE, MP-5678-ABCD" class="w-full h-10 px-3.5 text-xs font-mono bg-paper border border-line rounded-l-xl outline-none focus:border-violet focus:ring-2 focus:ring-violet/10 transition">
+              
+              <!-- Botón con ícono de copiar -->
+              <button onclick="copyReceiptNumber()" title="Copiar número de comprobante" type="button" class="h-10 px-3 bg-white border border-line border-l-0 rounded-r-xl hover:bg-line-soft text-gray-700 hover:text-ink font-bold flex items-center gap-1.5 transition text-xs shadow-2xs">
+                <svg class="w-4 h-4 text-violet" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                <span>Copiar</span>
+              </button>
+            </div>
+          </div>
+
+          <button type="button" onclick="saveReceipt()" class="h-10 px-5 bg-gray-700 hover:bg-ink text-white font-extrabold text-xs rounded-xl shadow-xs transition inline-flex items-center gap-2">
+            Guardar número de comprobante
+          </button>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- TOAST NOTIFICACIÓN INTERACTIVA -->
+  <div id="toastNotification" class="fixed bottom-5 right-5 bg-ink text-white px-4 py-3 rounded-xl text-xs font-bold shadow-xl flex items-center gap-3 translate-y-20 opacity-0 transition-all duration-300 z-50">
+    <svg class="w-4 h-4 text-emerald" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+    <span id="toastText">Acción completada con éxito.</span>
+  </div>
+
+  <!-- LÓGICA JAVASCRIPT -->
+  <script>
+    function toggleMobileSidebar() {
+      const sidebar = document.getElementById('globalSidebar');
+      sidebar.classList.toggle('hidden');
+      sidebar.classList.toggle('w-full');
+    }
+
+    // Microinteracción y cambio de color dinámico para el Selector de Estados
+    function handleStatusChange(selectElement) {
+      const status = selectElement.value;
+      const dot = document.getElementById('statusDot');
+      
+      // Mapeo de estilos según estado
+      const statusStyles = {
+        'Confirmado': { bg: 'bg-emerald-soft', border: 'border-emerald/30', text: 'text-emerald-text', dot: 'bg-emerald' },
+        'Pendiente': { bg: 'bg-amber-100', border: 'border-amber-300', text: 'text-amber-800', dot: 'bg-amber-500' },
+        'Preparando': { bg: 'bg-blue-100', border: 'border-blue-300', text: 'text-blue-800', dot: 'bg-blue-500' },
+        'En camino': { bg: 'bg-purple-100', border: 'border-purple-300', text: 'text-purple-800', dot: 'bg-purple-500' },
+        'Entregado': { bg: 'bg-gray-200', border: 'border-gray-300', text: 'text-gray-800', dot: 'bg-gray-600' },
+        'Cancelado': { bg: 'bg-rose-100', border: 'border-rose-300', text: 'text-rose-800', dot: 'bg-rose-500' }
+      };
+
+      const style = statusStyles[status] || statusStyles['Confirmado'];
+      
+      // Aplicar clases dinámicas
+      selectElement.className = `appearance-none cursor-pointer pl-8 pr-8 py-2 text-xs font-bold rounded-xl border transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-violet/20 ${style.bg} ${style.border} ${style.text}`;
+      dot.className = `w-2.5 h-2.5 rounded-full absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none transition-colors duration-300 ${style.dot}`;
+
+      showToast(`Estado actualizado a "${status}".`);
+    }
+
+    // Copiar número de comprobante
+    function copyReceiptNumber() {
+      const input = document.getElementById('receiptInput');
+      input.select();
+      input.setSelectionRange(0, 99999); // Para móviles
+      
+      try {
+        document.execCommand('copy');
+        showToast('¡Número de comprobante copiado al portapapeles!');
+      } catch (err) {
+        showToast('Número seleccionado para copiar.');
+      }
+    }
+
+    // Modal de edición genérico
+    function editCard(sectionName) {
+      showToast(`Modo edición activado para: ${sectionName}`);
+    }
+
+    // Guardar comprobante
+    function saveReceipt() {
+      const val = document.getElementById('receiptInput').value;
+      if (!val.trim()) {
+        showToast('Ingresá un número de comprobante válido.');
+        return;
+      }
+      showToast('Comprobante de acreditación guardado.');
+    }
+
+    // Notificaciones Toast
+    function showToast(message) {
+      const toast = document.getElementById('toastNotification');
+      const toastText = document.getElementById('toastText');
+      toastText.innerText = message;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3000);
+    }
+  </script>
+</body>
+</html>

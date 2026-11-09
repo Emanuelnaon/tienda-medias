@@ -1,0 +1,604 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ventas & Pedidos · Socks Store</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            paper: '#f7f4ed',
+            surface: '#ffffff',
+            sidebar: '#fbf9f4',
+            ink: '#1d1a24',
+            muted: '#6a6472',
+            line: '#e8e3d8',
+            'line-soft': '#f0ebe1',
+            violet: {
+              DEFAULT: '#4c3df0',
+              hover: '#3d2ee0',
+              soft: '#eeebff',
+              text: '#3c30c8',
+            },
+            emerald: {
+              DEFAULT: '#078b53',
+              hover: '#056e41',
+              soft: '#e6f7ef',
+              text: '#056e41'
+            }
+          },
+          fontFamily: {
+            sans: ['Montserrat', 'sans-serif'],
+            display: ['Josefin Sans', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@600;700;800&family=Montserrat:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      background-color: #f7f4ed;
+      color: #1d1a24;
+      font-family: 'Montserrat', sans-serif;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="min-h-screen antialiased bg-paper text-ink">
+
+  <div class="min-h-screen lg:grid lg:grid-cols-[240px_1fr]">
+
+    <!-- ==========================================================================
+         TOPBAR MOBILE (Visible en móviles)
+         ========================================================================== -->
+    <header class="lg:hidden flex items-center justify-between px-5 py-4 bg-sidebar border-b border-line">
+      <div class="flex items-center gap-3">
+        <div class="w-4 h-4 rounded-full bg-violet"></div>
+        <span class="font-display font-extrabold text-xl tracking-tight">Socks Store</span>
+      </div>
+      <button onclick="toggleMobileSidebar()" class="p-2 text-ink hover:bg-line-soft rounded-xl transition">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+      </button>
+    </header>
+
+    <!-- ==========================================================================
+         1. SIDEBAR GLOBAL LATERAL (IZQUIERDA)
+         ========================================================================== -->
+    <aside id="globalSidebar" class="hidden lg:flex flex-col fixed lg:sticky top-0 h-screen w-60 z-40 bg-sidebar border-r border-line p-6 transition-all duration-300">
+      
+      <!-- Logo Branding -->
+      <div class="flex items-center gap-3 mb-6 px-1">
+        <div class="w-4 h-4 rounded-full bg-violet"></div>
+        <span class="font-display font-extrabold text-2xl tracking-tight text-ink">Socks Store</span>
+      </div>
+
+      <!-- Buscador rápido en Sidebar -->
+      <div class="relative mb-6">
+        <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8" stroke-width="2"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65" stroke-width="2"></line>
+        </svg>
+        <input type="text" placeholder="¿Lo viste en redes? Código" class="w-full h-10 pl-9 pr-3 text-xs bg-white border border-line rounded-xl outline-none focus:border-violet focus:ring-2 focus:ring-violet/10 transition">
+      </div>
+
+      <!-- Navegación Principal -->
+      <nav class="space-y-1">
+        <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-gray-700 hover:bg-[#f0ebdf] hover:text-ink transition">
+          <svg class="w-4 h-4 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+          Inicio
+        </a>
+        <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-gray-700 hover:bg-[#f0ebdf] hover:text-ink transition">
+          <svg class="w-4 h-4 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+          Categorías
+        </a>
+        <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-gray-700 hover:bg-[#f0ebdf] hover:text-ink transition">
+          <svg class="w-4 h-4 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+          Favoritos
+        </a>
+        <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-gray-700 hover:bg-[#f0ebdf] hover:text-ink transition">
+          <svg class="w-4 h-4 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+          Carrito
+          <span class="ml-auto bg-rose-500 text-white font-extrabold text-[10px] w-5 h-5 rounded-full grid place-items-center">1</span>
+        </a>
+        
+        <!-- Panel de Control Activo -->
+        <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold bg-violet-soft text-violet-text transition">
+          <svg class="w-4 h-4 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          Panel de Control
+        </a>
+
+        <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-gray-700 hover:bg-[#f0ebdf] hover:text-ink transition">
+          <svg class="w-4 h-4 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+          Cerrar Sesión
+        </a>
+      </nav>
+
+      <!-- Footer del Sidebar -->
+      <div class="mt-auto pt-5 border-t border-line">
+        <button type="button" class="w-full h-10 flex items-center justify-center gap-2 bg-white border border-line rounded-xl text-xs font-semibold hover:bg-line-soft transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke-width="2"></path></svg>
+          Modo oscuro
+        </button>
+        <p class="mt-4 text-[11px] text-muted text-center font-medium">© 2026 Socks Store</p>
+      </div>
+    </aside>
+
+    <!-- ==========================================================================
+         2. ESPACIO DE TRABAJO PRINCIPAL (WORKSPACE)
+         ========================================================================== -->
+    <main class="p-4 sm:p-6 lg:p-8 max-w-[1380px] w-full mx-auto">
+
+      <!-- PANEL DE ADMINISTRACIÓN HORIZONTAL (REUBICADO SUPERIOR) -->
+      <section class="bg-surface border border-line rounded-2xl p-5 lg:p-6 mb-8 shadow-sm">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+          <div>
+            <p class="text-[10px] font-extrabold tracking-widest text-muted uppercase">SOCKS STORE</p>
+            <h2 class="font-display font-extrabold text-2xl lg:text-3xl text-ink">Panel de administración</h2>
+          </div>
+          <span class="text-xs font-medium text-muted bg-paper px-3 py-1.5 rounded-lg border border-line self-start sm:self-auto">
+            subli.cat.insumos@gmail.com
+          </span>
+        </div>
+
+        <!-- Pestañas Horizontales de Administración -->
+        <nav class="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+          
+          <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-xl border border-transparent text-gray-700 hover:bg-line-soft transition whitespace-nowrap flex-shrink-0">
+            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            <div>
+              <strong class="block text-xs font-bold leading-tight">Dashboard</strong>
+              <small class="block text-[10px] text-muted">Resumen general</small>
+            </div>
+          </a>
+
+          <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-xl border border-transparent text-gray-700 hover:bg-line-soft transition whitespace-nowrap flex-shrink-0">
+            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+            <div>
+              <strong class="block text-xs font-bold leading-tight">Catálogo & Stock</strong>
+              <small class="block text-[10px] text-muted">Productos e inventario</small>
+            </div>
+          </a>
+
+          <!-- PESTAÑA ACTIVA: VENTAS & PEDIDOS -->
+          <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-xl border border-violet/20 bg-violet-soft text-violet-text transition whitespace-nowrap flex-shrink-0">
+            <svg class="w-5 h-5 text-violet" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="M6 8h4"></path><path d="M6 12h12"></path></svg>
+            <div>
+              <strong class="block text-xs font-extrabold leading-tight">Ventas & Pedidos</strong>
+              <small class="block text-[10px] text-violet-text/80 font-medium">Gestionar ventas</small>
+            </div>
+          </a>
+
+          <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-xl border border-transparent text-gray-700 hover:bg-line-soft transition whitespace-nowrap flex-shrink-0">
+            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            <div>
+              <strong class="block text-xs font-bold leading-tight">CRM Clientes</strong>
+              <small class="block text-[10px] text-muted">Relación con clientes</small>
+            </div>
+          </a>
+
+          <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-xl border border-transparent text-gray-700 hover:bg-line-soft transition whitespace-nowrap flex-shrink-0">
+            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+            <div>
+              <strong class="block text-xs font-bold leading-tight">Configuración</strong>
+              <small class="block text-[10px] text-muted">Ajustes del tenant</small>
+            </div>
+          </a>
+
+        </nav>
+      </section>
+
+      <!-- ==========================================================================
+           3. TÍTULO Y DESCRIPCIÓN DE LA SECCIÓN
+           ========================================================================== -->
+      <div class="mb-6">
+        <h1 id="sectionTitle" class="font-display font-extrabold text-2xl sm:text-3xl text-ink tracking-tight">Pedidos pendientes</h1>
+        <p class="text-xs text-muted mt-1 font-medium">Revisa las acreditaciones y confirma cada venta.</p>
+      </div>
+
+      <!-- ==========================================================================
+           4. SUB-NAVEGACIÓN POR ESTADO DE PEDIDOS (PESTAÑAS HORIZONTALES)
+           ========================================================================== -->
+      <div class="border-b border-line mb-6 overflow-x-auto no-scrollbar">
+        <nav class="flex gap-6 min-w-max text-xs font-bold">
+          <button onclick="filterStatus('Pendiente', this)" class="status-tab pb-3 border-b-2 border-ink text-ink font-extrabold transition">
+            Pendiente <span class="ml-1 px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px]">6</span>
+          </button>
+          <button onclick="filterStatus('Confirmado', this)" class="status-tab pb-3 border-b-2 border-transparent text-muted hover:text-ink transition">
+            Confirmado
+          </button>
+          <button onclick="filterStatus('Preparando', this)" class="status-tab pb-3 border-b-2 border-transparent text-muted hover:text-ink transition">
+            Preparando
+          </button>
+          <button onclick="filterStatus('En camino', this)" class="status-tab pb-3 border-b-2 border-transparent text-muted hover:text-ink transition">
+            En camino
+          </button>
+          <button onclick="filterStatus('Entregado', this)" class="status-tab pb-3 border-b-2 border-transparent text-muted hover:text-ink transition">
+            Entregado
+          </button>
+          <button onclick="filterStatus('Cancelado', this)" class="status-tab pb-3 border-b-2 border-transparent text-muted hover:text-ink transition">
+            Cancelado
+          </button>
+          <button onclick="filterStatus('Todos', this)" class="status-tab pb-3 border-b-2 border-transparent text-muted hover:text-ink transition">
+            Todos
+          </button>
+        </nav>
+      </div>
+
+      <!-- BARRA DE BÚSQUEDA RÁPIDA DE PEDIDOS -->
+      <div class="mb-5 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div class="relative w-full sm:w-80">
+          <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8" stroke-width="2"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65" stroke-width="2"></line>
+          </svg>
+          <input id="orderSearch" onkeyup="filterOrders()" type="text" placeholder="Buscar por cliente, orden o teléfono..." class="w-full h-10 pl-9 pr-3 text-xs bg-surface border border-line rounded-xl outline-none focus:border-violet focus:ring-2 focus:ring-violet/10 transition">
+        </div>
+        
+        <span class="text-xs font-semibold text-muted self-end sm:self-auto">
+          Mostrando <strong id="orderCount" class="text-ink">6</strong> pedidos
+        </span>
+      </div>
+
+      <!-- ==========================================================================
+           5. TABLA DE PEDIDOS PENDIENTES
+           ========================================================================== -->
+      <section class="bg-surface border border-line rounded-2xl shadow-2xs overflow-hidden mb-6">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse min-w-[780px]">
+            <thead>
+              <tr class="bg-paper border-b border-line text-[10px] font-extrabold uppercase tracking-wider text-muted">
+                <th class="p-4">FECHA</th>
+                <th class="p-4">NÚMERO DE ORDEN</th>
+                <th class="p-4">CLIENTE</th>
+                <th class="p-4">TELÉFONO</th>
+                <th class="p-4">TOTAL</th>
+                <th class="p-4">ESTADO</th>
+                <th class="p-4 text-center">ACCIONES</th>
+              </tr>
+            </thead>
+            <tbody id="ordersTableBody" class="divide-y divide-line-soft text-xs">
+              
+              <!-- Fila 1 -->
+              <tr class="order-row hover:bg-paper/40 transition" data-status="Pendiente" data-search="253da103 zod 1179548123">
+                <td class="p-4 text-muted font-medium whitespace-nowrap">
+                  6 nov 2026, 1:16 a. m.
+                </td>
+                <td class="p-4">
+                  <span class="font-mono font-bold text-ink">253da103</span>
+                </td>
+                <td class="p-4 font-bold text-ink">
+                  zod
+                </td>
+                <td class="p-4 font-mono text-gray-700">
+                  1179548123
+                </td>
+                <td class="p-4 font-extrabold text-ink tabular-nums text-sm">
+                  $13.000
+                </td>
+                <td class="p-4 status-cell">
+                  <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                    pendiente
+                  </span>
+                </td>
+                <td class="p-4 text-center">
+                  <div class="flex items-center justify-center gap-2">
+                    <button onclick="confirmAccreditation(this, '253da103')" type="button" class="action-btn h-9 px-4 bg-ink hover:bg-violet text-white font-extrabold text-xs rounded-xl shadow-xs transition duration-200">
+                      Confirmar Acreditación
+                    </button>
+                    <a href="#" class="p-2 text-muted hover:text-violet hover:bg-violet-soft rounded-xl transition" title="Ver detalle">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+                    </a>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Fila 2 -->
+              <tr class="order-row hover:bg-paper/40 transition" data-status="Pendiente" data-search="50825e9d chat 1194759565">
+                <td class="p-4 text-muted font-medium whitespace-nowrap">
+                  6 nov 2026, 3:23 a. m.
+                </td>
+                <td class="p-4">
+                  <span class="font-mono font-bold text-ink">50825e9d</span>
+                </td>
+                <td class="p-4 font-bold text-ink">
+                  chat
+                </td>
+                <td class="p-4 font-mono text-gray-700">
+                  1194759565
+                </td>
+                <td class="p-4 font-extrabold text-ink tabular-nums text-sm">
+                  $1.500
+                </td>
+                <td class="p-4 status-cell">
+                  <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                    pendiente
+                  </span>
+                </td>
+                <td class="p-4 text-center">
+                  <div class="flex items-center justify-center gap-2">
+                    <button onclick="confirmAccreditation(this, '50825e9d')" type="button" class="action-btn h-9 px-4 bg-ink hover:bg-violet text-white font-extrabold text-xs rounded-xl shadow-xs transition duration-200">
+                      Confirmar Acreditación
+                    </button>
+                    <a href="#" class="p-2 text-muted hover:text-violet hover:bg-violet-soft rounded-xl transition" title="Ver detalle">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+                    </a>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Fila 3 -->
+              <tr class="order-row hover:bg-paper/40 transition" data-status="Pendiente" data-search="0c374c42 otrassss 1123963594">
+                <td class="p-4 text-muted font-medium whitespace-nowrap">
+                  6 nov 2026, 6:06 a. m.
+                </td>
+                <td class="p-4">
+                  <span class="font-mono font-bold text-ink">0c374c42</span>
+                </td>
+                <td class="p-4 font-bold text-ink">
+                  otrassss
+                </td>
+                <td class="p-4 font-mono text-gray-700">
+                  1123963594
+                </td>
+                <td class="p-4 font-extrabold text-ink tabular-nums text-sm">
+                  $31.500
+                </td>
+                <td class="p-4 status-cell">
+                  <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                    pendiente
+                  </span>
+                </td>
+                <td class="p-4 text-center">
+                  <div class="flex items-center justify-center gap-2">
+                    <button onclick="confirmAccreditation(this, '0c374c42')" type="button" class="action-btn h-9 px-4 bg-ink hover:bg-violet text-white font-extrabold text-xs rounded-xl shadow-xs transition duration-200">
+                      Confirmar Acreditación
+                    </button>
+                    <a href="#" class="p-2 text-muted hover:text-violet hover:bg-violet-soft rounded-xl transition" title="Ver detalle">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+                    </a>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Fila 4 -->
+              <tr class="order-row hover:bg-paper/40 transition" data-status="Pendiente" data-search="6d8f4470 loren 1177487595">
+                <td class="p-4 text-muted font-medium whitespace-nowrap">
+                  6 nov 2026, 6:09 a. m.
+                </td>
+                <td class="p-4">
+                  <span class="font-mono font-bold text-ink">6d8f4470</span>
+                </td>
+                <td class="p-4 font-bold text-ink">
+                  loren
+                </td>
+                <td class="p-4 font-mono text-gray-700">
+                  1177487595
+                </td>
+                <td class="p-4 font-extrabold text-ink tabular-nums text-sm">
+                  $1.500
+                </td>
+                <td class="p-4 status-cell">
+                  <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                    pendiente
+                  </span>
+                </td>
+                <td class="p-4 text-center">
+                  <div class="flex items-center justify-center gap-2">
+                    <button onclick="confirmAccreditation(this, '6d8f4470')" type="button" class="action-btn h-9 px-4 bg-ink hover:bg-violet text-white font-extrabold text-xs rounded-xl shadow-xs transition duration-200">
+                      Confirmar Acreditación
+                    </button>
+                    <a href="#" class="p-2 text-muted hover:text-violet hover:bg-violet-soft rounded-xl transition" title="Ver detalle">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+                    </a>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Fila 5 -->
+              <tr class="order-row hover:bg-paper/40 transition" data-status="Pendiente" data-search="c447ea31 susu 1164754683">
+                <td class="p-4 text-muted font-medium whitespace-nowrap">
+                  6 nov 2026, 6:10 a. m.
+                </td>
+                <td class="p-4">
+                  <span class="font-mono font-bold text-ink">c447ea31</span>
+                </td>
+                <td class="p-4 font-bold text-ink">
+                  susu
+                </td>
+                <td class="p-4 font-mono text-gray-700">
+                  1164754683
+                </td>
+                <td class="p-4 font-extrabold text-ink tabular-nums text-sm">
+                  $1.000
+                </td>
+                <td class="p-4 status-cell">
+                  <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                    pendiente
+                  </span>
+                </td>
+                <td class="p-4 text-center">
+                  <div class="flex items-center justify-center gap-2">
+                    <button onclick="confirmAccreditation(this, 'c447ea31')" type="button" class="action-btn h-9 px-4 bg-ink hover:bg-violet text-white font-extrabold text-xs rounded-xl shadow-xs transition duration-200">
+                      Confirmar Acreditación
+                    </button>
+                    <a href="#" class="p-2 text-muted hover:text-violet hover:bg-violet-soft rounded-xl transition" title="Ver detalle">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+                    </a>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Fila 6 -->
+              <tr class="order-row hover:bg-paper/40 transition" data-status="Pendiente" data-search="640ab38c sietedelonce 1100000003">
+                <td class="p-4 text-muted font-medium whitespace-nowrap">
+                  7 nov 2026, 5:56 p. m.
+                </td>
+                <td class="p-4">
+                  <span class="font-mono font-bold text-ink">640ab38c</span>
+                </td>
+                <td class="p-4 font-bold text-ink">
+                  sietedelonce
+                </td>
+                <td class="p-4 font-mono text-gray-700">
+                  1100000003
+                </td>
+                <td class="p-4 font-extrabold text-ink tabular-nums text-sm">
+                  $10.000
+                </td>
+                <td class="p-4 status-cell">
+                  <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                    pendiente
+                  </span>
+                </td>
+                <td class="p-4 text-center">
+                  <div class="flex items-center justify-center gap-2">
+                    <button onclick="confirmAccreditation(this, '640ab38c')" type="button" class="action-btn h-9 px-4 bg-ink hover:bg-violet text-white font-extrabold text-xs rounded-xl shadow-xs transition duration-200">
+                      Confirmar Acreditación
+                    </button>
+                    <a href="#" class="p-2 text-muted hover:text-violet hover:bg-violet-soft rounded-xl transition" title="Ver detalle">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+                    </a>
+                  </div>
+                </td>
+              </tr>
+
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pie de Tabla / Paginación -->
+        <div class="p-4 border-t border-line bg-paper/30 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+          <span class="text-muted font-medium">Página 1 de 1</span>
+          <div class="flex items-center gap-1.5">
+            <button disabled class="px-3 py-1.5 rounded-lg border border-line bg-surface text-gray-400 cursor-not-allowed text-xs font-bold">Anterior</button>
+            <button class="px-3 py-1.5 rounded-lg border border-violet bg-violet text-white text-xs font-extrabold">1</button>
+            <button disabled class="px-3 py-1.5 rounded-lg border border-line bg-surface text-gray-400 cursor-not-allowed text-xs font-bold">Siguiente</button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- TOAST NOTIFICACIÓN INTERACTIVA -->
+  <div id="toastNotification" class="fixed bottom-5 right-5 bg-ink text-white px-4 py-3 rounded-xl text-xs font-bold shadow-xl flex items-center gap-3 translate-y-20 opacity-0 transition-all duration-300 z-50">
+    <svg class="w-4 h-4 text-emerald" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+    <span id="toastText">Acción completada con éxito.</span>
+  </div>
+
+  <!-- LÓGICA JAVASCRIPT -->
+  <script>
+    let activeFilter = 'Pendiente';
+
+    function toggleMobileSidebar() {
+      const sidebar = document.getElementById('globalSidebar');
+      sidebar.classList.toggle('hidden');
+      sidebar.classList.toggle('w-full');
+    }
+
+    // Filtrar por pestaña de estado
+    function filterStatus(status, tabBtn) {
+      activeFilter = status;
+      
+      // Actualizar pestañas estilizadas
+      document.querySelectorAll('.status-tab').forEach(btn => {
+        btn.classList.remove('border-ink', 'text-ink', 'font-extrabold');
+        btn.classList.add('border-transparent', 'text-muted');
+      });
+
+      tabBtn.classList.remove('border-transparent', 'text-muted');
+      tabBtn.classList.add('border-ink', 'text-ink', 'font-extrabold');
+
+      // Actualizar Título
+      document.getElementById('sectionTitle').innerText = status === 'Todos' ? 'Todos los pedidos' : `Pedidos ${status.toLowerCase()}s`;
+
+      filterOrders();
+    }
+
+    // Filtrar filas por estado y búsqueda
+    function filterOrders() {
+      const query = document.getElementById('orderSearch').value.toLowerCase();
+      const rows = document.querySelectorAll('.order-row');
+      let visibleCount = 0;
+
+      rows.forEach(row => {
+        const rowStatus = row.getAttribute('data-status');
+        const searchData = row.getAttribute('data-search').toLowerCase();
+
+        const matchesStatus = (activeFilter === 'Todos') || (rowStatus === activeFilter);
+        const matchesSearch = searchData.includes(query);
+
+        if (matchesStatus && matchesSearch) {
+          row.style.display = '';
+          visibleCount++;
+        } else {
+          row.style.display = 'none';
+        }
+      });
+
+      document.getElementById('orderCount').innerText = visibleCount;
+    }
+
+    // Microinteracción para confirmar acreditación
+    function confirmAccreditation(btn, orderCode) {
+      const row = btn.closest('tr');
+      const statusCell = row.querySelector('.status-cell');
+
+      // Cambiar estado a Confirmado
+      row.setAttribute('data-status', 'Confirmado');
+      statusCell.innerHTML = `
+        <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-bold bg-emerald-soft text-emerald-text border border-emerald/30">
+          ✓ confirmado
+        </span>
+      `;
+
+      // Cambiar botón a desactivado
+      btn.innerText = 'Acreditado';
+      btn.className = 'h-9 px-4 bg-emerald-soft text-emerald-text border border-emerald/30 font-bold text-xs rounded-xl cursor-default';
+      btn.disabled = true;
+
+      showToast(`¡Acreditación confirmada para el pedido #${orderCode}!`);
+
+      // Si el filtro activo es "Pendiente", ocultar suavemente tras 1s
+      if (activeFilter === 'Pendiente') {
+        setTimeout(() => {
+          row.classList.add('opacity-0', 'transition-opacity');
+          setTimeout(() => {
+            filterOrders();
+            row.classList.remove('opacity-0');
+          }, 300);
+        }, 800);
+      }
+    }
+
+    // Notificaciones Toast
+    function showToast(message) {
+      const toast = document.getElementById('toastNotification');
+      const toastText = document.getElementById('toastText');
+      toastText.innerText = message;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3000);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,990 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CRM Clientes · Socks Store</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            paper: '#f7f4ed',
+            surface: '#ffffff',
+            sidebar: '#fbf9f4',
+            ink: '#1d1a24',
+            muted: '#6a6472',
+            line: '#e8e3d8',
+            'line-soft': '#f0ebe1',
+            violet: {
+              DEFAULT: '#4c3df0',
+              hover: '#3d2ee0',
+              soft: '#eeebff',
+              text: '#3c30c8',
+            },
+            emerald: {
+              DEFAULT: '#078b53',
+              hover: '#056e41',
+              soft: '#e6f7ef',
+            }
+          },
+          fontFamily: {
+            sans: ['Montserrat', 'sans-serif'],
+            display: ['Josefin Sans', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@600;700;800&family=Montserrat:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      background-color: #f7f4ed;
+      color: #1d1a24;
+      font-family: 'Montserrat', sans-serif;
+    }
+    /* Smooth scrollbar for horizontal tab bar */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="min-h-screen antialiased bg-paper text-ink">
+
+  <div class="min-h-screen lg:grid lg:grid-cols-[240px_1fr]">
+
+    <!-- ==========================================================================
+         TOPBAR MOBILE (Visible en pantallas pequeñas)
+         ========================================================================== -->
+    <header class="lg:hidden flex items-center justify-between px-5 py-4 bg-sidebar border-b border-line">
+      <div class="flex items-center gap-3">
+        <div class="w-4 h-4 rounded-full bg-violet"></div>
+        <span class="font-display font-extrabold text-xl tracking-tight">Socks Store</span>
+      </div>
+      <button onclick="toggleMobileSidebar()" class="p-2 text-ink hover:bg-line-soft rounded-xl transition">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+      </button>
+    </header>
+
+    <!-- ==========================================================================
+         1. SIDEBAR GLOBAL LATERAL (IZQUIERDA)
+         ========================================================================== -->
+    <aside id="globalSidebar" class="hidden lg:flex flex-col fixed lg:sticky top-0 h-screen w-60 z-40 bg-sidebar border-r border-line p-6 transition-all duration-300">
+      
+      <!-- Logo Branding -->
+      <div class="flex items-center gap-3 mb-6 px-1">
+        <div class="w-4 h-4 rounded-full bg-violet"></div>
+        <span class="font-display font-extrabold text-2xl tracking-tight text-ink">Socks Store</span>
+      </div>
+
+      <!-- Buscador rápido en Sidebar -->
+      <div class="relative mb-6">
+        <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8" stroke-width="2"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65" stroke-width="2"></line>
+        </svg>
+        <input type="text" placeholder="¿Lo viste en redes? Código" class="w-full h-10 pl-9 pr-3 text-xs bg-white border border-line rounded-xl outline-none focus:border-violet focus:ring-2 focus:ring-violet/10 transition">
+      </div>
+
+      <!-- Navegación Principal -->
+      <nav class="space-y-1">
+        <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-gray-700 hover:bg-[#f0ebdf] hover:text-ink transition">
+          <svg class="w-4 h-4 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+          Inicio
+        </a>
+        <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-gray-700 hover:bg-[#f0ebdf] hover:text-ink transition">
+          <svg class="w-4 h-4 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+          Categorías
+        </a>
+        <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-gray-700 hover:bg-[#f0ebdf] hover:text-ink transition">
+          <svg class="w-4 h-4 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+          Favoritos
+        </a>
+        <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-gray-700 hover:bg-[#f0ebdf] hover:text-ink transition">
+          <svg class="w-4 h-4 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+          Carrito
+          <span class="ml-auto bg-rose-500 text-white font-extrabold text-[10px] w-5 h-5 rounded-full grid place-items-center">1</span>
+        </a>
+        
+        <!-- Panel de Control Activo -->
+        <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold bg-violet-soft text-violet-text transition">
+          <svg class="w-4 h-4 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          Panel de Control
+        </a>
+
+        <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-gray-700 hover:bg-[#f0ebdf] hover:text-ink transition">
+          <svg class="w-4 h-4 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+          Cerrar Sesión
+        </a>
+      </nav>
+
+      <!-- Footer del Sidebar -->
+      <div class="mt-auto pt-5 border-t border-line">
+        <button type="button" class="w-full h-10 flex items-center justify-center gap-2 bg-white border border-line rounded-xl text-xs font-semibold hover:bg-line-soft transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke-width="2"></path></svg>
+          Modo oscuro
+        </button>
+        <p class="mt-4 text-[11px] text-muted text-center font-medium">© 2026 Socks Store</p>
+      </div>
+    </aside>
+
+    <!-- ==========================================================================
+         2. ESPACIO DE TRABAJO PRINCIPAL (WORKSPACE)
+         ========================================================================== -->
+    <main class="p-4 sm:p-6 lg:p-8 max-w-[1380px] w-full mx-auto">
+
+      <!-- PANEL DE ADMINISTRACIÓN HORIZONTAL (REUBICADO SUPERIOR) -->
+      <section class="bg-surface border border-line rounded-2xl p-5 lg:p-6 mb-8 shadow-sm">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+          <div>
+            <p class="text-[10px] font-extrabold tracking-widest text-muted uppercase">SOCKS STORE</p>
+            <h2 class="font-display font-extrabold text-2xl lg:text-3xl text-ink">Panel de administración</h2>
+          </div>
+          <span class="text-xs font-medium text-muted bg-paper px-3 py-1.5 rounded-lg border border-line self-start sm:self-auto">
+            subli.cat.insumos@gmail.com
+          </span>
+        </div>
+
+        <!-- Pestañas Horizontales de Administración -->
+        <nav class="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+          
+          <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-xl border border-transparent text-gray-700 hover:bg-line-soft transition whitespace-nowrap flex-shrink-0">
+            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            <div>
+              <strong class="block text-xs font-bold leading-tight">Dashboard</strong>
+              <small class="block text-[10px] text-muted">Resumen general</small>
+            </div>
+          </a>
+
+          <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-xl border border-transparent text-gray-700 hover:bg-line-soft transition whitespace-nowrap flex-shrink-0">
+            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+            <div>
+              <strong class="block text-xs font-bold leading-tight">Catálogo & Stock</strong>
+              <small class="block text-[10px] text-muted">Productos e inventario</small>
+            </div>
+          </a>
+
+          <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-xl border border-transparent text-gray-700 hover:bg-line-soft transition whitespace-nowrap flex-shrink-0">
+            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="M6 8h4"></path><path d="M6 12h12"></path></svg>
+            <div>
+              <strong class="block text-xs font-bold leading-tight">Ventas & Pedidos</strong>
+              <small class="block text-[10px] text-muted">Gestionar ventas</small>
+            </div>
+          </a>
+
+          <!-- PESTAÑA ACTIVA: CRM CLIENTES -->
+          <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-xl border border-violet/20 bg-violet-soft text-violet-text transition whitespace-nowrap flex-shrink-0">
+            <svg class="w-5 h-5 text-violet" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            <div>
+              <strong class="block text-xs font-extrabold leading-tight">CRM Clientes</strong>
+              <small class="block text-[10px] text-violet-text/80 font-medium">Relación con clientes</small>
+            </div>
+          </a>
+
+          <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-xl border border-transparent text-gray-700 hover:bg-line-soft transition whitespace-nowrap flex-shrink-0">
+            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+            <div>
+              <strong class="block text-xs font-bold leading-tight">Configuración</strong>
+              <small class="block text-[10px] text-muted">Ajustes del tenant</small>
+            </div>
+          </a>
+
+        </nav>
+      </section>
+
+      <!-- SECCIÓN PRINCIPAL: HEADER DE PÁGINA -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <div>
+          <h1 class="font-display font-extrabold text-3xl sm:text-4xl text-ink tracking-tight">CRM Clientes</h1>
+          <p class="text-xs sm:text-sm text-muted mt-1">Visualización y gestión de la base de datos de clientes, historial de compras y métricas.</p>
+        </div>
+      </div>
+
+      <!-- ==========================================================================
+           3. TARJETAS DE MÉTRICAS / KPIS (4 CARDS)
+           ========================================================================== -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        
+        <!-- KPI 1 -->
+        <div class="bg-surface border border-line rounded-2xl p-4 shadow-sm">
+          <div class="flex items-center justify-between text-muted mb-2">
+            <span class="text-xs font-bold uppercase tracking-wider">Total Clientes</span>
+            <div class="w-8 h-8 rounded-xl bg-violet-soft text-violet grid place-items-center">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+            </div>
+          </div>
+          <div class="flex items-baseline justify-between">
+            <span id="statTotalClients" class="font-display font-extrabold text-2xl text-ink">128</span>
+            <span class="text-[11px] font-bold text-emerald flex items-center gap-0.5">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg>
+              +12%
+            </span>
+          </div>
+          <p class="text-[10px] text-muted mt-1">+14 clientes nuevos este mes</p>
+        </div>
+
+        <!-- KPI 2 -->
+        <div class="bg-surface border border-line rounded-2xl p-4 shadow-sm">
+          <div class="flex items-center justify-between text-muted mb-2">
+            <span class="text-xs font-bold uppercase tracking-wider">Clientes Activos</span>
+            <div class="w-8 h-8 rounded-xl bg-emerald-soft text-emerald grid place-items-center">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            </div>
+          </div>
+          <div class="flex items-baseline justify-between">
+            <span class="font-display font-extrabold text-2xl text-ink">94</span>
+            <span class="text-[11px] font-bold text-emerald">73.4%</span>
+          </div>
+          <p class="text-[10px] text-muted mt-1">Realizaron compras últimos 90 días</p>
+        </div>
+
+        <!-- KPI 3 -->
+        <div class="bg-surface border border-line rounded-2xl p-4 shadow-sm">
+          <div class="flex items-center justify-between text-muted mb-2">
+            <span class="text-xs font-bold uppercase tracking-wider">Nuevas Suscripciones</span>
+            <div class="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 grid place-items-center">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+            </div>
+          </div>
+          <div class="flex items-baseline justify-between">
+            <span class="font-display font-extrabold text-2xl text-ink">18</span>
+            <span class="text-[11px] font-bold text-emerald flex items-center gap-0.5">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg>
+              +5.4%
+            </span>
+          </div>
+          <p class="text-[10px] text-muted mt-1">Planes Pro y VIP este mes</p>
+        </div>
+
+        <!-- KPI 4 -->
+        <div class="bg-surface border border-line rounded-2xl p-4 shadow-sm">
+          <div class="flex items-center justify-between text-muted mb-2">
+            <span class="text-xs font-bold uppercase tracking-wider">Facturación Prom.</span>
+            <div class="w-8 h-8 rounded-xl bg-blue-100 text-blue-700 grid place-items-center">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+            </div>
+          </div>
+          <div class="flex items-baseline justify-between">
+            <span class="font-display font-extrabold text-2xl text-ink tabular-nums">$18.450</span>
+            <span class="text-[11px] font-bold text-emerald">+8.2%</span>
+          </div>
+          <p class="text-[10px] text-muted mt-1">Ticket promedio por cliente</p>
+        </div>
+
+      </div>
+
+      <!-- ==========================================================================
+           4. BARRA DE HERRAMIENTAS Y FILTROS
+           ========================================================================== -->
+      <div class="bg-surface border border-line rounded-2xl p-4 mb-6 shadow-sm">
+        <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
+          
+          <!-- Buscador principal -->
+          <div class="relative flex-1">
+            <svg class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="8" stroke-width="2"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65" stroke-width="2"></line>
+            </svg>
+            <input id="searchInput" type="text" onkeyup="filterClients()" placeholder="Buscar por nombre, email o teléfono..." class="w-full h-11 pl-10 pr-4 text-xs font-medium bg-paper border border-line rounded-xl outline-none focus:border-violet focus:ring-2 focus:ring-violet/10 transition">
+          </div>
+
+          <!-- Filtros desplegables y botones -->
+          <div class="flex flex-wrap items-center gap-3">
+            
+            <!-- Filtro Estado -->
+            <select id="filterStatus" onchange="filterClients()" class="h-11 px-3 text-xs font-semibold bg-paper border border-line rounded-xl outline-none focus:border-violet transition cursor-pointer">
+              <option value="">Estado: Todos</option>
+              <option value="Activo">Activo</option>
+              <option value="Inactivo">Inactivo</option>
+              <option value="Pendiente">Pendiente</option>
+            </select>
+
+            <!-- Filtro Plan -->
+            <select id="filterPlan" onchange="filterClients()" class="h-11 px-3 text-xs font-semibold bg-paper border border-line rounded-xl outline-none focus:border-violet transition cursor-pointer">
+              <option value="">Plan: Todos</option>
+              <option value="VIP">VIP</option>
+              <option value="Pro">Pro</option>
+              <option value="Standard">Standard</option>
+              <option value="Nuevo">Nuevo</option>
+            </select>
+
+            <!-- Botón Exportar CSV -->
+            <button onclick="exportCSV()" type="button" class="h-11 px-4 inline-flex items-center gap-2 bg-white border border-line text-ink rounded-xl text-xs font-bold hover:bg-line-soft transition shadow-2xs">
+              <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              Exportar CSV
+            </button>
+
+            <!-- Botón Primario: + Nuevo Cliente -->
+            <button onclick="openModal()" type="button" class="h-11 px-5 inline-flex items-center justify-center gap-2 bg-violet hover:bg-violet-hover text-white rounded-xl text-xs font-extrabold shadow-md shadow-violet/20 transition">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              Nuevo Cliente
+            </button>
+
+          </div>
+
+        </div>
+
+        <!-- Banner de selección masiva (oculto por defecto) -->
+        <div id="massActionBanner" class="hidden mt-3 p-2.5 bg-violet-soft border border-violet/20 rounded-xl flex items-center justify-between text-xs font-bold text-violet-text">
+          <span id="selectedCount">0 clientes seleccionados</span>
+          <div class="flex items-center gap-2">
+            <button onclick="bulkAction('email')" class="px-3 py-1 bg-white border border-violet/30 rounded-lg hover:bg-white/80 transition text-violet-text">Enviar Email</button>
+            <button onclick="bulkAction('delete')" class="px-3 py-1 bg-rose-600 text-white rounded-lg hover:bg-rose-700 transition">Eliminar seleccionados</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==========================================================================
+           5. TABLA DE CRM DE CLIENTES
+           ========================================================================== -->
+      <section class="bg-surface border border-line rounded-2xl shadow-sm overflow-hidden mb-6">
+        <div class="overflow-x-auto">
+          <table class="w-full min-w-[900px] text-left border-collapse">
+            <thead>
+              <tr class="bg-paper border-b border-line text-[10px] font-extrabold uppercase tracking-wider text-muted">
+                <th class="p-4 w-12 text-center">
+                  <input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)" class="w-4 h-4 rounded border-line text-violet focus:ring-violet cursor-pointer">
+                </th>
+                <th class="p-4">Cliente</th>
+                <th class="p-4">Teléfono</th>
+                <th class="p-4">Estado</th>
+                <th class="p-4">Plan / Etiqueta</th>
+                <th class="p-4">Última Compra</th>
+                <th class="p-4">Total Gastado</th>
+                <th class="p-4 text-right">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="clientsTableBody" class="divide-y divide-line-soft text-xs">
+              
+              <!-- FILA 1 -->
+              <tr class="hover:bg-paper/60 transition group" data-name="ultimo" data-email="ultimo@gmail.com" data-phone="1172396962" data-status="Activo" data-plan="VIP">
+                <td class="p-4 text-center">
+                  <input type="checkbox" onchange="updateSelectedCount()" class="row-checkbox w-4 h-4 rounded border-line text-violet focus:ring-violet cursor-pointer">
+                </td>
+                <td class="p-4">
+                  <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-full bg-violet-soft text-violet font-bold text-xs grid place-items-center uppercase">UL</div>
+                    <div>
+                      <span class="block font-bold text-ink leading-tight">ultimo</span>
+                      <span class="block text-[11px] text-muted">ultimo@gmail.com</span>
+                    </div>
+                  </div>
+                </td>
+                <td class="p-4 font-mono text-gray-700">1172396962</td>
+                <td class="p-4">
+                  <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-soft text-emerald">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald"></span>
+                    Activo
+                  </span>
+                </td>
+                <td class="p-4">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-extrabold bg-purple-100 text-purple-700 uppercase">
+                    VIP
+                  </span>
+                </td>
+                <td class="p-4 text-gray-600 font-medium">08 Nov, 2026</td>
+                <td class="p-4 font-bold text-ink tabular-nums text-sm">$40.500</td>
+                <td class="p-4 text-right">
+                  <div class="flex items-center justify-end gap-1">
+                    <button onclick="viewClient('ultimo')" class="p-1.5 text-gray-500 hover:text-violet hover:bg-violet-soft rounded-lg transition" title="Ver detalle">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    </button>
+                    <button onclick="editClient('ultimo')" class="p-1.5 text-gray-500 hover:text-ink hover:bg-line-soft rounded-lg transition" title="Editar">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    </button>
+                    <button onclick="deleteRow(this)" class="p-1.5 text-gray-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition" title="Eliminar">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- FILA 2 -->
+              <tr class="hover:bg-paper/60 transition group" data-name="roxy" data-email="roxy@socksstore.com" data-phone="0112855588" data-status="Activo" data-plan="Pro">
+                <td class="p-4 text-center">
+                  <input type="checkbox" onchange="updateSelectedCount()" class="row-checkbox w-4 h-4 rounded border-line text-violet focus:ring-violet cursor-pointer">
+                </td>
+                <td class="p-4">
+                  <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-full bg-blue-100 text-blue-700 font-bold text-xs grid place-items-center uppercase">RX</div>
+                    <div>
+                      <span class="block font-bold text-ink leading-tight">roxy</span>
+                      <span class="block text-[11px] text-muted">roxy@socksstore.com</span>
+                    </div>
+                  </div>
+                </td>
+                <td class="p-4 font-mono text-gray-700">0112855588</td>
+                <td class="p-4">
+                  <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-soft text-emerald">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald"></span>
+                    Activo
+                  </span>
+                </td>
+                <td class="p-4">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-extrabold bg-blue-100 text-blue-700 uppercase">
+                    Pro
+                  </span>
+                </td>
+                <td class="p-4 text-gray-600 font-medium">06 Nov, 2026</td>
+                <td class="p-4 font-bold text-ink tabular-nums text-sm">$19.000</td>
+                <td class="p-4 text-right">
+                  <div class="flex items-center justify-end gap-1">
+                    <button onclick="viewClient('roxy')" class="p-1.5 text-gray-500 hover:text-violet hover:bg-violet-soft rounded-lg transition" title="Ver detalle">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    </button>
+                    <button onclick="editClient('roxy')" class="p-1.5 text-gray-500 hover:text-ink hover:bg-line-soft rounded-lg transition" title="Editar">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    </button>
+                    <button onclick="deleteRow(this)" class="p-1.5 text-gray-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition" title="Eliminar">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- FILA 3 -->
+              <tr class="hover:bg-paper/60 transition group" data-name="dbz" data-email="dbz.store@gmail.com" data-phone="1125200000" data-status="Activo" data-plan="Standard">
+                <td class="p-4 text-center">
+                  <input type="checkbox" onchange="updateSelectedCount()" class="row-checkbox w-4 h-4 rounded border-line text-violet focus:ring-violet cursor-pointer">
+                </td>
+                <td class="p-4">
+                  <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-full bg-amber-100 text-amber-700 font-bold text-xs grid place-items-center uppercase">DB</div>
+                    <div>
+                      <span class="block font-bold text-ink leading-tight">dbz</span>
+                      <span class="block text-[11px] text-muted">dbz.store@gmail.com</span>
+                    </div>
+                  </div>
+                </td>
+                <td class="p-4 font-mono text-gray-700">1125200000</td>
+                <td class="p-4">
+                  <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-soft text-emerald">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald"></span>
+                    Activo
+                  </span>
+                </td>
+                <td class="p-4">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-extrabold bg-gray-100 text-gray-700 uppercase">
+                    Standard
+                  </span>
+                </td>
+                <td class="p-4 text-gray-600 font-medium">04 Nov, 2026</td>
+                <td class="p-4 font-bold text-ink tabular-nums text-sm">$10.000</td>
+                <td class="p-4 text-right">
+                  <div class="flex items-center justify-end gap-1">
+                    <button onclick="viewClient('dbz')" class="p-1.5 text-gray-500 hover:text-violet hover:bg-violet-soft rounded-lg transition" title="Ver detalle">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    </button>
+                    <button onclick="editClient('dbz')" class="p-1.5 text-gray-500 hover:text-ink hover:bg-line-soft rounded-lg transition" title="Editar">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    </button>
+                    <button onclick="deleteRow(this)" class="p-1.5 text-gray-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition" title="Eliminar">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- FILA 4 -->
+              <tr class="hover:bg-paper/60 transition group" data-name="Motog56" data-email="moto.g56@gmail.com" data-phone="1128555888" data-status="Pendiente" data-plan="Nuevo">
+                <td class="p-4 text-center">
+                  <input type="checkbox" onchange="updateSelectedCount()" class="row-checkbox w-4 h-4 rounded border-line text-violet focus:ring-violet cursor-pointer">
+                </td>
+                <td class="p-4">
+                  <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-full bg-emerald-soft text-emerald font-bold text-xs grid place-items-center uppercase">MO</div>
+                    <div>
+                      <span class="block font-bold text-ink leading-tight">Motog56</span>
+                      <span class="block text-[11px] text-muted">moto.g56@gmail.com</span>
+                    </div>
+                  </div>
+                </td>
+                <td class="p-4 font-mono text-gray-700">1128555888</td>
+                <td class="p-4">
+                  <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                    Pendiente
+                  </span>
+                </td>
+                <td class="p-4">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-extrabold bg-orange-100 text-orange-700 uppercase">
+                    Nuevo
+                  </span>
+                </td>
+                <td class="p-4 text-gray-600 font-medium">01 Nov, 2026</td>
+                <td class="p-4 font-bold text-ink tabular-nums text-sm">$1.500</td>
+                <td class="p-4 text-right">
+                  <div class="flex items-center justify-end gap-1">
+                    <button onclick="viewClient('Motog56')" class="p-1.5 text-gray-500 hover:text-violet hover:bg-violet-soft rounded-lg transition" title="Ver detalle">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    </button>
+                    <button onclick="editClient('Motog56')" class="p-1.5 text-gray-500 hover:text-ink hover:bg-line-soft rounded-lg transition" title="Editar">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    </button>
+                    <button onclick="deleteRow(this)" class="p-1.5 text-gray-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition" title="Eliminar">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- FILA 5 -->
+              <tr class="hover:bg-paper/60 transition group" data-name="otrom" data-email="otrom.cli@gmail.com" data-phone="+5491112345679" data-status="Inactivo" data-plan="Nuevo">
+                <td class="p-4 text-center">
+                  <input type="checkbox" onchange="updateSelectedCount()" class="row-checkbox w-4 h-4 rounded border-line text-violet focus:ring-violet cursor-pointer">
+                </td>
+                <td class="p-4">
+                  <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-full bg-gray-200 text-gray-700 font-bold text-xs grid place-items-center uppercase">OT</div>
+                    <div>
+                      <span class="block font-bold text-ink leading-tight">otrom</span>
+                      <span class="block text-[11px] text-muted">otrom.cli@gmail.com</span>
+                    </div>
+                  </div>
+                </td>
+                <td class="p-4 font-mono text-gray-700">+5491112345679</td>
+                <td class="p-4">
+                  <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-gray-100 text-gray-600">
+                    <span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span>
+                    Inactivo
+                  </span>
+                </td>
+                <td class="p-4">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-extrabold bg-orange-100 text-orange-700 uppercase">
+                    Nuevo
+                  </span>
+                </td>
+                <td class="p-4 text-gray-600 font-medium">28 Oct, 2026</td>
+                <td class="p-4 font-bold text-ink tabular-nums text-sm">$1.000</td>
+                <td class="p-4 text-right">
+                  <div class="flex items-center justify-end gap-1">
+                    <button onclick="viewClient('otrom')" class="p-1.5 text-gray-500 hover:text-violet hover:bg-violet-soft rounded-lg transition" title="Ver detalle">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    </button>
+                    <button onclick="editClient('otrom')" class="p-1.5 text-gray-500 hover:text-ink hover:bg-line-soft rounded-lg transition" title="Editar">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    </button>
+                    <button onclick="deleteRow(this)" class="p-1.5 text-gray-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition" title="Eliminar">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- FILA 6 -->
+              <tr class="hover:bg-paper/60 transition group" data-name="roxy22" data-email="roxy22@gmail.com" data-phone="1122559999" data-status="Activo" data-plan="Standard">
+                <td class="p-4 text-center">
+                  <input type="checkbox" onchange="updateSelectedCount()" class="row-checkbox w-4 h-4 rounded border-line text-violet focus:ring-violet cursor-pointer">
+                </td>
+                <td class="p-4">
+                  <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-full bg-pink-100 text-pink-700 font-bold text-xs grid place-items-center uppercase">R2</div>
+                    <div>
+                      <span class="block font-bold text-ink leading-tight">roxy22</span>
+                      <span class="block text-[11px] text-muted">roxy22@gmail.com</span>
+                    </div>
+                  </div>
+                </td>
+                <td class="p-4 font-mono text-gray-700">1122559999</td>
+                <td class="p-4">
+                  <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-soft text-emerald">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald"></span>
+                    Activo
+                  </span>
+                </td>
+                <td class="p-4">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-extrabold bg-gray-100 text-gray-700 uppercase">
+                    Standard
+                  </span>
+                </td>
+                <td class="p-4 text-gray-600 font-medium">25 Oct, 2026</td>
+                <td class="p-4 font-bold text-ink tabular-nums text-sm">$1.000</td>
+                <td class="p-4 text-right">
+                  <div class="flex items-center justify-end gap-1">
+                    <button onclick="viewClient('roxy22')" class="p-1.5 text-gray-500 hover:text-violet hover:bg-violet-soft rounded-lg transition" title="Ver detalle">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    </button>
+                    <button onclick="editClient('roxy22')" class="p-1.5 text-gray-500 hover:text-ink hover:bg-line-soft rounded-lg transition" title="Editar">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    </button>
+                    <button onclick="deleteRow(this)" class="p-1.5 text-gray-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition" title="Eliminar">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- FILA 7 -->
+              <tr class="hover:bg-paper/60 transition group" data-name="susu" data-email="susu.med@gmail.com" data-phone="1164754683" data-status="Pendiente" data-plan="Nuevo">
+                <td class="p-4 text-center">
+                  <input type="checkbox" onchange="updateSelectedCount()" class="row-checkbox w-4 h-4 rounded border-line text-violet focus:ring-violet cursor-pointer">
+                </td>
+                <td class="p-4">
+                  <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-full bg-teal-100 text-teal-700 font-bold text-xs grid place-items-center uppercase">SU</div>
+                    <div>
+                      <span class="block font-bold text-ink leading-tight">susu</span>
+                      <span class="block text-[11px] text-muted">susu.med@gmail.com</span>
+                    </div>
+                  </div>
+                </td>
+                <td class="p-4 font-mono text-gray-700">1164754683</td>
+                <td class="p-4">
+                  <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                    Pendiente
+                  </span>
+                </td>
+                <td class="p-4">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-extrabold bg-orange-100 text-orange-700 uppercase">
+                    Nuevo
+                  </span>
+                </td>
+                <td class="p-4 text-gray-400 font-medium">—</td>
+                <td class="p-4 font-bold text-gray-400 tabular-nums text-sm">$0</td>
+                <td class="p-4 text-right">
+                  <div class="flex items-center justify-end gap-1">
+                    <button onclick="viewClient('susu')" class="p-1.5 text-gray-500 hover:text-violet hover:bg-violet-soft rounded-lg transition" title="Ver detalle">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    </button>
+                    <button onclick="editClient('susu')" class="p-1.5 text-gray-500 hover:text-ink hover:bg-line-soft rounded-lg transition" title="Editar">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    </button>
+                    <button onclick="deleteRow(this)" class="p-1.5 text-gray-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition" title="Eliminar">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- FILA 8 -->
+              <tr class="hover:bg-paper/60 transition group" data-name="TstwithRevoke" data-email="tst.revoke@gmail.com" data-phone="1100000005" data-status="Inactivo" data-plan="Standard">
+                <td class="p-4 text-center">
+                  <input type="checkbox" onchange="updateSelectedCount()" class="row-checkbox w-4 h-4 rounded border-line text-violet focus:ring-violet cursor-pointer">
+                </td>
+                <td class="p-4">
+                  <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-full bg-indigo-100 text-indigo-700 font-bold text-xs grid place-items-center uppercase">TR</div>
+                    <div>
+                      <span class="block font-bold text-ink leading-tight">TstwithRevoke</span>
+                      <span class="block text-[11px] text-muted">tst.revoke@gmail.com</span>
+                    </div>
+                  </div>
+                </td>
+                <td class="p-4 font-mono text-gray-700">1100000005</td>
+                <td class="p-4">
+                  <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-gray-100 text-gray-600">
+                    <span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span>
+                    Inactivo
+                  </span>
+                </td>
+                <td class="p-4">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-extrabold bg-gray-100 text-gray-700 uppercase">
+                    Standard
+                  </span>
+                </td>
+                <td class="p-4 text-gray-400 font-medium">—</td>
+                <td class="p-4 font-bold text-gray-400 tabular-nums text-sm">$0</td>
+                <td class="p-4 text-right">
+                  <div class="flex items-center justify-end gap-1">
+                    <button onclick="viewClient('TstwithRevoke')" class="p-1.5 text-gray-500 hover:text-violet hover:bg-violet-soft rounded-lg transition" title="Ver detalle">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    </button>
+                    <button onclick="editClient('TstwithRevoke')" class="p-1.5 text-gray-500 hover:text-ink hover:bg-line-soft rounded-lg transition" title="Editar">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    </button>
+                    <button onclick="deleteRow(this)" class="p-1.5 text-gray-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition" title="Eliminar">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ==========================================================================
+             6. PIE DE TABLA / PAGINACIÓN
+             ========================================================================== -->
+        <div class="px-6 py-4 bg-paper border-t border-line flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p id="tableInfo" class="text-xs font-semibold text-muted">Mostrando 1-8 de 128 clientes</p>
+          
+          <div class="flex items-center gap-1.5">
+            <button type="button" class="px-3 py-1.5 bg-white border border-line rounded-lg text-xs font-bold text-gray-600 hover:bg-line-soft transition">Anterior</button>
+            <button type="button" class="w-8 h-8 bg-violet text-white rounded-lg text-xs font-extrabold shadow-xs">1</button>
+            <button type="button" class="w-8 h-8 bg-white border border-line text-ink rounded-lg text-xs font-bold hover:bg-line-soft transition">2</button>
+            <button type="button" class="w-8 h-8 bg-white border border-line text-ink rounded-lg text-xs font-bold hover:bg-line-soft transition">3</button>
+            <span class="px-1 text-xs text-muted font-bold">...</span>
+            <button type="button" class="w-8 h-8 bg-white border border-line text-ink rounded-lg text-xs font-bold hover:bg-line-soft transition">13</button>
+            <button type="button" class="px-3 py-1.5 bg-white border border-line rounded-lg text-xs font-bold text-gray-600 hover:bg-line-soft transition">Siguiente</button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL: CREAR NUEVO CLIENTE
+       ========================================================================== -->
+  <div id="newClientModal" class="fixed inset-0 bg-ink/40 backdrop-blur-xs z-50 hidden grid place-items-center p-4">
+    <div class="bg-surface border border-line rounded-2xl max-w-md w-full p-6 shadow-2xl relative animate-in fade-in zoom-in duration-200">
+      
+      <div class="flex items-center justify-between mb-5">
+        <h3 class="font-display font-extrabold text-xl text-ink">Nuevo Cliente</h3>
+        <button onclick="closeModal()" class="text-muted hover:text-ink p-1 rounded-lg hover:bg-line-soft transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <form id="clientForm" onsubmit="saveNewClient(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-ink mb-1">Nombre Completo</label>
+          <input type="text" id="modalName" required placeholder="Ej. Mariana López" class="w-full h-10 px-3 text-xs bg-paper border border-line rounded-xl outline-none focus:border-violet focus:ring-2 focus:ring-violet/10">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-ink mb-1">Correo Electrónico</label>
+          <input type="email" id="modalEmail" required placeholder="mariana@gmail.com" class="w-full h-10 px-3 text-xs bg-paper border border-line rounded-xl outline-none focus:border-violet focus:ring-2 focus:ring-violet/10">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-ink mb-1">Teléfono</label>
+          <input type="tel" id="modalPhone" required placeholder="1122334455" class="w-full h-10 px-3 text-xs bg-paper border border-line rounded-xl outline-none focus:border-violet focus:ring-2 focus:ring-violet/10">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-ink mb-1">Estado</label>
+            <select id="modalStatus" class="w-full h-10 px-3 text-xs bg-paper border border-line rounded-xl outline-none focus:border-violet">
+              <option value="Activo">Activo</option>
+              <option value="Pendiente">Pendiente</option>
+              <option value="Inactivo">Inactivo</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-ink mb-1">Plan / Etiqueta</label>
+            <select id="modalPlan" class="w-full h-10 px-3 text-xs bg-paper border border-line rounded-xl outline-none focus:border-violet">
+              <option value="Nuevo">Nuevo</option>
+              <option value="Standard">Standard</option>
+              <option value="Pro">Pro</option>
+              <option value="VIP">VIP</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="pt-4 flex items-center justify-end gap-3 border-t border-line">
+          <button type="button" onclick="closeModal()" class="px-4 py-2 bg-paper hover:bg-line-soft text-ink font-bold text-xs rounded-xl transition">Cancelar</button>
+          <button type="submit" class="px-5 py-2 bg-violet hover:bg-violet-hover text-white font-extrabold text-xs rounded-xl shadow-md shadow-violet/20 transition">Guardar Cliente</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICACIÓN -->
+  <div id="toastNotification" class="fixed bottom-5 right-5 bg-ink text-white px-4 py-3 rounded-xl text-xs font-bold shadow-xl flex items-center gap-3 translate-y-20 opacity-0 transition-all duration-300 z-50">
+    <svg class="w-4 h-4 text-emerald" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+    <span id="toastText">Operación realizada con éxito</span>
+  </div>
+
+  <!-- LÓGICA JAVASCRIPT INTERACTIVA -->
+  <script>
+    // Alternar sidebar mobile
+    function toggleMobileSidebar() {
+      const sidebar = document.getElementById('globalSidebar');
+      sidebar.classList.toggle('hidden');
+      sidebar.classList.toggle('w-full');
+    }
+
+    // Filtrar clientes por búsqueda, estado y plan
+    function filterClients() {
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const statusFilter = document.getElementById('filterStatus').value;
+      const planFilter = document.getElementById('filterPlan').value;
+
+      const rows = document.querySelectorAll('#clientsTableBody tr');
+      let visibleCount = 0;
+
+      rows.forEach(row => {
+        const name = (row.dataset.name || '').toLowerCase();
+        const email = (row.dataset.email || '').toLowerCase();
+        const phone = (row.dataset.phone || '').toLowerCase();
+        const status = row.dataset.status || '';
+        const plan = row.dataset.plan || '';
+
+        const matchesSearch = name.includes(search) || email.includes(search) || phone.includes(search);
+        const matchesStatus = !statusFilter || status === statusFilter;
+        const matchesPlan = !planFilter || plan === planFilter;
+
+        if (matchesSearch && matchesStatus && matchesPlan) {
+          row.style.display = '';
+          visibleCount++;
+        } else {
+          row.style.display = 'none';
+        }
+      });
+
+      document.getElementById('tableInfo').innerText = `Mostrando ${visibleCount} cliente(s) filtrados`;
+    }
+
+    // Selección masiva
+    function toggleSelectAll(master) {
+      const checkboxes = document.querySelectorAll('.row-checkbox');
+      checkboxes.forEach(cb => {
+        if (cb.closest('tr').style.display !== 'none') {
+          cb.checked = master.checked;
+        }
+      });
+      updateSelectedCount();
+    }
+
+    function updateSelectedCount() {
+      const selected = document.querySelectorAll('.row-checkbox:checked').length;
+      const banner = document.getElementById('massActionBanner');
+      const countSpan = document.getElementById('selectedCount');
+
+      if (selected > 0) {
+        banner.classList.remove('hidden');
+        countSpan.innerText = `${selected} cliente(s) seleccionado(s)`;
+      } else {
+        banner.classList.add('hidden');
+      }
+    }
+
+    // Acciones masivas
+    function bulkAction(type) {
+      const selected = document.querySelectorAll('.row-checkbox:checked');
+      if (type === 'delete') {
+        selected.forEach(cb => cb.closest('tr').remove());
+        showToast('Clientes seleccionados eliminados.');
+      } else {
+        showToast(`Acción "${type}" ejecutada para ${selected.length} clientes.`);
+      }
+      document.getElementById('selectAll').checked = false;
+      updateSelectedCount();
+    }
+
+    // Eliminar fila individual
+    function deleteRow(button) {
+      if (confirm('¿Estás seguro de eliminar este cliente?')) {
+        const row = button.closest('tr');
+        row.style.opacity = '0';
+        setTimeout(() => {
+          row.remove();
+          filterClients();
+          showToast('Cliente eliminado correctamente.');
+        }, 200);
+      }
+    }
+
+    // Ver y editar cliente demo
+    function viewClient(name) {
+      showToast(`Viendo detalles de cliente: ${name}`);
+    }
+    function editClient(name) {
+      showToast(`Editando cliente: ${name}`);
+    }
+
+    // Modal nuevo cliente
+    function openModal() {
+      document.getElementById('newClientModal').classList.remove('hidden');
+    }
+    function closeModal() {
+      document.getElementById('newClientModal').classList.add('hidden');
+      document.getElementById('clientForm').reset();
+    }
+
+    // Guardar nuevo cliente
+    function saveNewClient(event) {
+      event.preventDefault();
+      const name = document.getElementById('modalName').value;
+      const email = document.getElementById('modalEmail').value;
+      const phone = document.getElementById('modalPhone').value;
+      const status = document.getElementById('modalStatus').value;
+      const plan = document.getElementById('modalPlan').value;
+
+      const initials = name.substring(0,2).toUpperCase();
+
+      const tbody = document.getElementById('clientsTableBody');
+      const newRow = document.createElement('tr');
+      newRow.className = 'hover:bg-paper/60 transition group';
+      newRow.dataset.name = name;
+      newRow.dataset.email = email;
+      newRow.dataset.phone = phone;
+      newRow.dataset.status = status;
+      newRow.dataset.plan = plan;
+
+      newRow.innerHTML = `
+        <td class="p-4 text-center">
+          <input type="checkbox" onchange="updateSelectedCount()" class="row-checkbox w-4 h-4 rounded border-line text-violet focus:ring-violet cursor-pointer">
+        </td>
+        <td class="p-4">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full bg-violet-soft text-violet font-bold text-xs grid place-items-center uppercase">${initials}</div>
+            <div>
+              <span class="block font-bold text-ink leading-tight">${name}</span>
+              <span class="block text-[11px] text-muted">${email}</span>
+            </div>
+          </div>
+        </td>
+        <td class="p-4 font-mono text-gray-700">${phone}</td>
+        <td class="p-4">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold ${status === 'Activo' ? 'bg-emerald-soft text-emerald' : status === 'Pendiente' ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-gray-100 text-gray-600'}">
+            <span class="w-1.5 h-1.5 rounded-full ${status === 'Activo' ? 'bg-emerald' : status === 'Pendiente' ? 'bg-amber-500' : 'bg-gray-400'}"></span>
+            ${status}
+          </span>
+        </td>
+        <td class="p-4">
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-extrabold bg-purple-100 text-purple-700 uppercase">
+            ${plan}
+          </span>
+        </td>
+        <td class="p-4 text-gray-600 font-medium">Hoy</td>
+        <td class="p-4 font-bold text-ink tabular-nums text-sm">$0</td>
+        <td class="p-4 text-right">
+          <div class="flex items-center justify-end gap-1">
+            <button onclick="viewClient('${name}')" class="p-1.5 text-gray-500 hover:text-violet hover:bg-violet-soft rounded-lg transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+            <button onclick="editClient('${name}')" class="p-1.5 text-gray-500 hover:text-ink hover:bg-line-soft rounded-lg transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+            <button onclick="deleteRow(this)" class="p-1.5 text-gray-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
+          </div>
+        </td>
+      `;
+
+      tbody.insertBefore(newRow, tbody.firstChild);
+      closeModal();
+      showToast(`Cliente ${name} agregado con éxito.`);
+      filterClients();
+    }
+
+    // Exportar CSV simulado
+    function exportCSV() {
+      showToast('Descargando archivo clientes.csv...');
+    }
+
+    // Mostrar Toast
+    function showToast(message) {
+      const toast = document.getElementById('toastNotification');
+      const toastText = document.getElementById('toastText');
+      toastText.innerText = message;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3000);
+    }
+  </script>
+</body>
+</html>
