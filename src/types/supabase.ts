@@ -686,6 +686,10 @@ export type Database = {
         Returns: Json
       }
       is_webmaster: { Args: never; Returns: boolean }
+      marcar_entregado: {
+        Args: { p_pedido_id: string; p_token: string }
+        Returns: Json
+      }
       registrar_pedido_checkout: {
         Args: {
           p_codigo_postal?: string

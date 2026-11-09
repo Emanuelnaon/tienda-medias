@@ -126,6 +126,19 @@ export default function PedidoDetallePage({ params }: PageProps) {
         }
     };
 
+    const handleCopiarLinkRepartidor = async () => {
+        if (!pedido?.token_seguimiento) return;
+
+        const link = `${window.location.origin}/delivery/${pedido.id}?t=${pedido.token_seguimiento}`;
+
+        try {
+            await navigator.clipboard.writeText(link);
+            toast.success('Link copiado');
+        } catch {
+            toast.error('No se pudo copiar el link');
+        }
+    };
+
     const handleEstadoCambiado = (estado: EstadoPedido) => {
         setPedido((previo) => (previo === null ? previo : { ...previo, estado }));
     };
@@ -183,6 +196,18 @@ export default function PedidoDetallePage({ params }: PageProps) {
                 estadoActual={pedido.estado}
                 onEstadoCambiado={handleEstadoCambiado}
             />
+
+            {pedido.estado === 'en_camino' && pedido.token_seguimiento && (
+                <div className="flex justify-end">
+                    <button
+                        type="button"
+                        onClick={handleCopiarLinkRepartidor}
+                        className="inline-flex items-center justify-center rounded-md border border-border bg-background px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted"
+                    >
+                        Copiar link del repartidor
+                    </button>
+                </div>
+            )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="rounded-lg border border-border bg-background p-4 space-y-3">

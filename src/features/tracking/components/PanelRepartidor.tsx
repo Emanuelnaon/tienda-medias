@@ -144,14 +144,15 @@ export function PanelRepartidor({ pedidoId, token, estado }: PanelRepartidorProp
         setEstaEntregando(true);
 
         try {
-            await actionMarcarEntregado(pedidoId, token);
+            const resultado = await actionMarcarEntregado(pedidoId, token);
+            if (!resultado.ok) {
+                toast.error(resultado.error);
+                return;
+            }
+
             detenerSeguimiento();
             setEstadoActual('entregado');
             toast.success('Entrega confirmada. Gracias.');
-        } catch (error) {
-            toast.error(
-                error instanceof Error ? error.message : 'No se pudo confirmar la entrega.',
-            );
         } finally {
             setEstaEntregando(false);
         }

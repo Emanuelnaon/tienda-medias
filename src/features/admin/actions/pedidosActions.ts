@@ -35,6 +35,7 @@ export type PedidoPendiente = {
 export type PedidoDetalle = Omit<PedidoPendiente, 'cliente'> & {
     readonly cliente: ClienteDetalle | null;
     readonly cliente_id: string | null;
+    readonly token_seguimiento: Database['public']['Tables']['pedidos']['Row']['token_seguimiento'];
 };
 
 const FILTRO_TODOS = 'todos';
