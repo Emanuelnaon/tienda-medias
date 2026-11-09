@@ -48,6 +48,7 @@ supabase/.temp/
 .kilo/worktrees/
 .kilo/plans/
 .kilo/playwright-report/
+.kilo/kilo.jsonc
 
 # testing
 /coverage
