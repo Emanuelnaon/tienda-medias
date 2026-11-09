@@ -1,0 +1,844 @@
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
+
+export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "14.15"
+  }
+  public: {
+    Tables: {
+      admin_users: {
+        Row: {
+          email: string
+          id: string
+          role: string
+          tenant_id: string | null
+          whatsapp: string | null
+        }
+        Insert: {
+          email: string
+          id: string
+          role?: string
+          tenant_id?: string | null
+          whatsapp?: string | null
+        }
+        Update: {
+          email?: string
+          id?: string
+          role?: string
+          tenant_id?: string | null
+          whatsapp?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_users_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      categorias: {
+        Row: {
+          created_at: string | null
+          es_preset: boolean
+          id: string
+          nombre: string
+          padre_id: string | null
+          slug: string
+          tenant_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          es_preset?: boolean
+          id?: string
+          nombre: string
+          padre_id?: string | null
+          slug: string
+          tenant_id: string
+        }
+        Update: {
+          created_at?: string | null
+          es_preset?: boolean
+          id?: string
+          nombre?: string
+          padre_id?: string | null
+          slug?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "categorias_padre_id_fkey"
+            columns: ["padre_id"]
+            isOneToOne: false
+            referencedRelation: "categorias"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "categorias_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clientes: {
+        Row: {
+          bloqueado: boolean
+          cantidad_pedidos: number | null
+          created_at: string | null
+          email: string | null
+          estado: string | null
+          id: string
+          nombre_completo: string
+          notas: string | null
+          telefono: string
+          tenant_id: string
+          total_gastado: number | null
+        }
+        Insert: {
+          bloqueado?: boolean
+          cantidad_pedidos?: number | null
+          created_at?: string | null
+          email?: string | null
+          estado?: string | null
+          id?: string
+          nombre_completo: string
+          notas?: string | null
+          telefono: string
+          tenant_id: string
+          total_gastado?: number | null
+        }
+        Update: {
+          bloqueado?: boolean
+          cantidad_pedidos?: number | null
+          created_at?: string | null
+          email?: string | null
+          estado?: string | null
+          id?: string
+          nombre_completo?: string
+          notas?: string | null
+          telefono?: string
+          tenant_id?: string
+          total_gastado?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clientes_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      delivery_tracking: {
+        Row: {
+          id: string
+          lat: number
+          lng: number
+          pedido_id: string
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          lat: number
+          lng: number
+          pedido_id: string
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          lat?: number
+          lng?: number
+          pedido_id?: string
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delivery_tracking_pedido_id_fkey"
+            columns: ["pedido_id"]
+            isOneToOne: true
+            referencedRelation: "pedidos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "delivery_tracking_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lista_espera: {
+        Row: {
+          created_at: string | null
+          email: string | null
+          id: string
+          producto_id: string
+          telefono: string
+          tenant_id: string
+          variante_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          producto_id: string
+          telefono: string
+          tenant_id: string
+          variante_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          producto_id?: string
+          telefono?: string
+          tenant_id?: string
+          variante_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_lista_espera_producto"
+            columns: ["producto_id"]
+            isOneToOne: false
+            referencedRelation: "productos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_lista_espera_tenant"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_lista_espera_variante"
+            columns: ["variante_id"]
+            isOneToOne: false
+            referencedRelation: "producto_variantes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pedidos: {
+        Row: {
+          cliente_id: string | null
+          codigo_postal: string | null
+          comprobante_numero: string | null
+          comprobante_url: string | null
+          costo_envio: number
+          created_at: string | null
+          direccion_entrega: string | null
+          estado: string | null
+          id: string
+          metodo_envio: string | null
+          nombre_contacto: string | null
+          tenant_id: string
+          token_seguimiento: string | null
+          total: number
+          zona_envio_id: string | null
+        }
+        Insert: {
+          cliente_id?: string | null
+          codigo_postal?: string | null
+          comprobante_numero?: string | null
+          comprobante_url?: string | null
+          costo_envio?: number
+          created_at?: string | null
+          direccion_entrega?: string | null
+          estado?: string | null
+          id?: string
+          metodo_envio?: string | null
+          nombre_contacto?: string | null
+          tenant_id: string
+          token_seguimiento?: string | null
+          total: number
+          zona_envio_id?: string | null
+        }
+        Update: {
+          cliente_id?: string | null
+          codigo_postal?: string | null
+          comprobante_numero?: string | null
+          comprobante_url?: string | null
+          costo_envio?: number
+          created_at?: string | null
+          direccion_entrega?: string | null
+          estado?: string | null
+          id?: string
+          metodo_envio?: string | null
+          nombre_contacto?: string | null
+          tenant_id?: string
+          token_seguimiento?: string | null
+          total?: number
+          zona_envio_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pedidos_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pedidos_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pedidos_zona_envio_fkey"
+            columns: ["zona_envio_id"]
+            isOneToOne: false
+            referencedRelation: "zonas_envio"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pedidos_historial: {
+        Row: {
+          changed_at: string
+          changed_by: string | null
+          estado_anterior: string | null
+          estado_nuevo: string
+          id: string
+          notas: string | null
+          origen: string
+          pedido_id: string
+          tenant_id: string
+        }
+        Insert: {
+          changed_at?: string
+          changed_by?: string | null
+          estado_anterior?: string | null
+          estado_nuevo: string
+          id?: string
+          notas?: string | null
+          origen?: string
+          pedido_id: string
+          tenant_id: string
+        }
+        Update: {
+          changed_at?: string
+          changed_by?: string | null
+          estado_anterior?: string | null
+          estado_nuevo?: string
+          id?: string
+          notas?: string | null
+          origen?: string
+          pedido_id?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pedidos_historial_pedido_id_fkey"
+            columns: ["pedido_id"]
+            isOneToOne: false
+            referencedRelation: "pedidos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pedidos_historial_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pedidos_items: {
+        Row: {
+          cantidad: number
+          id: string
+          nombre_producto: string
+          pedido_id: string | null
+          precio_unitario: number
+          producto_id: string | null
+          talle: string | null
+          variante_id: string | null
+        }
+        Insert: {
+          cantidad: number
+          id?: string
+          nombre_producto: string
+          pedido_id?: string | null
+          precio_unitario: number
+          producto_id?: string | null
+          talle?: string | null
+          variante_id?: string | null
+        }
+        Update: {
+          cantidad?: number
+          id?: string
+          nombre_producto?: string
+          pedido_id?: string | null
+          precio_unitario?: number
+          producto_id?: string | null
+          talle?: string | null
+          variante_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pedidos_items_pedido_id_fkey"
+            columns: ["pedido_id"]
+            isOneToOne: false
+            referencedRelation: "pedidos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pedidos_items_producto_id_fkey"
+            columns: ["producto_id"]
+            isOneToOne: false
+            referencedRelation: "productos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pedidos_items_variante_id_fkey"
+            columns: ["variante_id"]
+            isOneToOne: false
+            referencedRelation: "producto_variantes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      plan_features: {
+        Row: {
+          created_at: string
+          enabled: boolean
+          feature_key: string
+          plan: string
+        }
+        Insert: {
+          created_at?: string
+          enabled?: boolean
+          feature_key: string
+          plan: string
+        }
+        Update: {
+          created_at?: string
+          enabled?: boolean
+          feature_key?: string
+          plan?: string
+        }
+        Relationships: []
+      }
+      producto_variantes: {
+        Row: {
+          created_at: string | null
+          id: string
+          producto_id: string
+          sku: string | null
+          stock: number
+          talle: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          producto_id: string
+          sku?: string | null
+          stock?: number
+          talle: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          producto_id?: string
+          sku?: string | null
+          stock?: number
+          talle?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "producto_variantes_producto_id_fkey"
+            columns: ["producto_id"]
+            isOneToOne: false
+            referencedRelation: "productos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      productos: {
+        Row: {
+          categoria_id: string | null
+          codigo_corto: string | null
+          created_at: string
+          descripcion: string | null
+          galeria_imagenes: string[] | null
+          id: string
+          imagen_url: string | null
+          nombre: string
+          precio: number
+          stock: number
+          talles_disponibles: string[]
+          tenant_id: string
+          user_id: string | null
+        }
+        Insert: {
+          categoria_id?: string | null
+          codigo_corto?: string | null
+          created_at?: string
+          descripcion?: string | null
+          galeria_imagenes?: string[] | null
+          id?: string
+          imagen_url?: string | null
+          nombre: string
+          precio?: number
+          stock?: number
+          talles_disponibles?: string[]
+          tenant_id: string
+          user_id?: string | null
+        }
+        Update: {
+          categoria_id?: string | null
+          codigo_corto?: string | null
+          created_at?: string
+          descripcion?: string | null
+          galeria_imagenes?: string[] | null
+          id?: string
+          imagen_url?: string | null
+          nombre?: string
+          precio?: number
+          stock?: number
+          talles_disponibles?: string[]
+          tenant_id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "productos_categoria_id_fkey"
+            columns: ["categoria_id"]
+            isOneToOne: false
+            referencedRelation: "categorias"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "productos_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tenants: {
+        Row: {
+          activo: boolean
+          alias_bancario: string | null
+          banco: string | null
+          cbu: string | null
+          created_at: string
+          email: string | null
+          id: string
+          instagram_usuario: string | null
+          meta_pixel_id: string | null
+          nombre: string
+          plan: string
+          slug: string
+          titular_cuenta: string | null
+          whatsapp: string | null
+        }
+        Insert: {
+          activo?: boolean
+          alias_bancario?: string | null
+          banco?: string | null
+          cbu?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          instagram_usuario?: string | null
+          meta_pixel_id?: string | null
+          nombre: string
+          plan?: string
+          slug: string
+          titular_cuenta?: string | null
+          whatsapp?: string | null
+        }
+        Update: {
+          activo?: boolean
+          alias_bancario?: string | null
+          banco?: string | null
+          cbu?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          instagram_usuario?: string | null
+          meta_pixel_id?: string | null
+          nombre?: string
+          plan?: string
+          slug?: string
+          titular_cuenta?: string | null
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
+      zonas_envio: {
+        Row: {
+          activo: boolean
+          codigo_postal_desde: string | null
+          codigo_postal_hasta: string | null
+          costo: number
+          created_at: string
+          id: string
+          metodo: string
+          minimo_envio_gratis: number | null
+          nombre: string
+          tenant_id: string
+        }
+        Insert: {
+          activo?: boolean
+          codigo_postal_desde?: string | null
+          codigo_postal_hasta?: string | null
+          costo?: number
+          created_at?: string
+          id?: string
+          metodo: string
+          minimo_envio_gratis?: number | null
+          nombre: string
+          tenant_id: string
+        }
+        Update: {
+          activo?: boolean
+          codigo_postal_desde?: string | null
+          codigo_postal_hasta?: string | null
+          costo?: number
+          created_at?: string
+          id?: string
+          metodo?: string
+          minimo_envio_gratis?: number | null
+          nombre?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "zonas_envio_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      confirmar_pedido_transaccion: {
+        Args: { p_pedido_id: string }
+        Returns: Json
+      }
+      crear_cliente_checkout: {
+        Args: {
+          p_nombre_completo: string
+          p_telefono: string
+          p_tenant_id: string
+        }
+        Returns: string
+      }
+      crear_lista_espera: {
+        Args: {
+          p_email?: string
+          p_producto_id: string
+          p_telefono: string
+          p_tenant_id: string
+          p_variante_id?: string
+        }
+        Returns: string
+      }
+      crear_pedido_checkout: {
+        Args: {
+          p_cliente_id: string
+          p_codigo_postal?: string
+          p_costo_envio?: number
+          p_direccion_entrega?: string
+          p_items: Json
+          p_metodo_envio?: string
+          p_tenant_id: string
+          p_total: number
+          p_zona_envio_id?: string
+        }
+        Returns: string
+      }
+      get_delivery_position: {
+        Args: { p_pedido_id: string; p_token: string }
+        Returns: Json
+      }
+      get_my_tenant_id: { Args: never; Returns: string }
+      get_pedido_publico: { Args: { p_id: string }; Returns: Json }
+      get_pedido_tracking: {
+        Args: { p_pedido_id: string; p_token: string }
+        Returns: Json
+      }
+      is_webmaster: { Args: never; Returns: boolean }
+      registrar_pedido_checkout: {
+        Args: {
+          p_codigo_postal?: string
+          p_direccion?: string
+          p_items: Json
+          p_nombre: string
+          p_telefono: string
+          p_tenant_id: string
+        }
+        Returns: Json
+      }
+      tenant_tiene_feature: {
+        Args: { p_feature_key: string; p_tenant_id: string }
+        Returns: boolean
+      }
+      upsert_delivery_position: {
+        Args: {
+          p_lat: number
+          p_lng: number
+          p_pedido_id: string
+          p_token: string
+        }
+        Returns: undefined
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
+}
+
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+
+export type Tables<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never) = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
+
+export type TablesInsert<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never) = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
+
+export type TablesUpdate<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never) = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
+
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never) = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never) = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
+
+export const Constants = {
+  public: {
+    Enums: {},
+  },
+} as const
