@@ -116,6 +116,7 @@ export async function generarLinkWhatsApp(
     const numeroAdmin = (result.whatsapp ?? '').replace(/[^\d+]/g, '') || WHATSAPP_SUPPORT_NUMBER;
 
     let mensaje = '¡Hola! Quiero confirmar mi pedido.\n';
+    mensaje += `Nombre: ${cliente.nombre_completo}\n`;
     for (const item of result.items) {
         mensaje += `- ${item.cantidad}x ${item.nombre} ($${item.precio})\n`;
     }
