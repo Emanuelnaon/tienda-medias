@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { AxeBuilder } from '@axe-core/playwright';
 
 test.describe('Flujo principal de compra', () => {
     test('debe permitir agregar un producto al carrito y visualizar el botón de checkout', async ({ page }) => {
@@ -9,40 +10,32 @@ test.describe('Flujo principal de compra', () => {
         const primeraTarjeta = page.locator('a[href^="/producto/"]').first();
         await expect(primeraTarjeta).toBeVisible({ timeout: 15000 });
 
-        // 3. Forzar el hover sobre la tarjeta por si los botones dependen de group-hover
-        await primeraTarjeta.hover();
+        // 3. Buscar el botón "Comprar" dentro de la primera tarjeta
+        const primerBotonComprar = page.getByRole('button', { name: /comprar/i }).first();
+        await expect(primerBotonComprar).toBeVisible({ timeout: 5000 });
+        await primerBotonComprar.click();
 
-        // 4. Buscar el botón de agregar dentro de la primera tarjeta activa o en la grilla
-        const botonAgregar = page.getByRole('button', { name: /agregar al carrito/i }).first();
-
-        // Si el botón está presente, lo aseguramos en viewport y hacemos click
-        await botonAgregar.scrollIntoViewIfNeeded();
-        await expect(botonAgregar).toBeVisible({ timeout: 5000 });
-        await botonAgregar.click({ force: true });
-
-        // 5. Ir al Carrito
-        const linkCarrito = page.locator('a[href="/carrito"]').first();
+        // 4. Ir al Carrito
+        const linkCarrito = page.getByRole('link', { name: /carrito/i }).first();
         await expect(linkCarrito).toBeVisible();
         await linkCarrito.click();
 
         // Verificar URL
         await expect(page).toHaveURL(/\/carrito/);
 
-        // 6. Verificar elementos dentro del carrito
-        // Si el carrito usa ícono de basura o texto de eliminar
-        const botonEliminar = page
-            .locator('button')
-            .filter({ hasText: /eliminar/i })
-            .or(page.locator('button:has(svg)'))
-            .first();
-        await expect(botonEliminar).toBeVisible({ timeout: 5000 });
+        // 5. Verificar elementos dentro del carrito
+        const botónEliminar = page.getByRole('button', { name: /Eliminar/i }).first();
+        await expect(botónEliminar).toBeVisible({ timeout: 5000 });
 
-        // 7. Verificar que el botón de finalizar compra/checkout por WhatsApp exista
-        const botonFinalizar = page
-            .getByRole('link', { name: /comprar por whatsapp|finalizar/i })
-            .or(page.getByRole('button', { name: /comprar por whatsapp|finalizar/i }))
-            .first();
+        // 6. Verificar que el botón de finalizar compra/checkout por WhatsApp exista
+        const botónFinalizar = page.getByRole('button', {
+            name: /Finalizar compra por WhatsApp/i,
+        });
 
-        await expect(botonFinalizar).toBeVisible();
+        await expect(botónFinalizar).toBeVisible();
+
+        // 7. Auditoría de accesibilidad en la página del carrito
+        const accessibilityResults = await new AxeBuilder({ page }).analyze();
+        expect(accessibilityResults.violations).toEqual([]);
     });
 });
