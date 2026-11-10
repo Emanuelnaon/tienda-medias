@@ -67,15 +67,15 @@ export function AdminNavigation({ email, mobileOnly = false }: AdminNavigationPr
                     aria-controls="admin-mobile-menu"
                     aria-label={isOpen ? 'Cerrar menú de administración' : 'Abrir menú de administración'}
                     onClick={() => setIsOpen((open) => !open)}
-                    className="inline-flex size-10 items-center justify-center rounded-lg border border-slate-200 text-slate-700 transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    className="inline-flex size-10 items-center justify-center rounded-lg border border-border text-foreground transition hover:bg-border-soft focus:outline-none focus:ring-2 focus:ring-violet">
                     {isOpen ? <X size={20} /> : <Menu size={20} />}
                 </button>
                 {isOpen && (
                     <div
                         id="admin-mobile-menu"
-                        className="absolute right-0 top-12 z-20 w-72 rounded-xl border border-slate-200 bg-white p-2 shadow-xl">
+                        className="absolute right-0 top-12 z-20 w-72 rounded-xl border border-border bg-surface p-2 shadow-xl">
                         <NavigationLinks pathname={pathname} onNavigate={() => setIsOpen(false)} />
-                        <p className="mt-2 truncate border-t border-slate-100 px-3 pt-3 text-xs text-slate-500">
+                        <p className="mt-2 truncate border-t border-border px-3 pt-3 text-xs text-muted-foreground">
                             {email}
                         </p>
                     </div>
@@ -85,29 +85,30 @@ export function AdminNavigation({ email, mobileOnly = false }: AdminNavigationPr
     }
 
     return (
-        <aside className="hidden w-72 shrink-0 border-r border-slate-200 bg-white lg:flex lg:min-h-screen lg:flex-col">
-            <div className="border-b border-slate-100 px-6 py-6">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-emerald-600">Socks Store</p>
-                <h2 className="mt-2 text-xl font-bold tracking-tight text-slate-950">Panel de administración</h2>
-                <p className="mt-1 truncate text-xs text-slate-500">{email}</p>
+        <section className="hidden lg:block bg-surface border border-border rounded-2xl p-5 lg:p-6 mb-8 shadow-xs">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+                <div>
+                    <p className="text-[10px] font-extrabold tracking-widest text-muted-foreground uppercase">
+                        Socks Store
+                    </p>
+                    <h2 className="font-display font-extrabold text-2xl lg:text-3xl text-foreground tracking-tight">
+                        Panel de administración
+                    </h2>
+                </div>
+                <span className="text-xs font-medium text-muted-foreground bg-background px-3 py-1.5 rounded-lg border border-border self-start sm:self-auto">
+                    {email}
+                </span>
             </div>
-            <nav aria-label="Navegación de administración" className="flex-1 px-4 py-6">
-                <p className="px-3 pb-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-                    Gestión del negocio
-                </p>
+            <nav aria-label="Navegación de administración" className="flex gap-2 overflow-x-auto pb-1">
                 <NavigationLinks pathname={pathname} />
             </nav>
-            <div className="mx-4 mb-5 rounded-lg bg-slate-950 px-4 py-3 text-xs text-slate-300">
-                <p className="font-semibold text-white">Centro de operaciones</p>
-                <p className="mt-1">Todo tu negocio, en un solo lugar.</p>
-            </div>
-        </aside>
+        </section>
     );
 }
 
 function NavigationLinks({ pathname, onNavigate }: Readonly<{ pathname: string; onNavigate?: () => void }>) {
     return (
-        <div className="space-y-1">
+        <div className="space-y-1 lg:flex lg:gap-2 lg:space-y-0">
             {navigationItems.map(({ href, label, description, icon: Icon }) => {
                 const isActive = isActiveRoute(pathname, href);
 
@@ -117,16 +118,18 @@ function NavigationLinks({ pathname, onNavigate }: Readonly<{ pathname: string; 
                         href={href}
                         onClick={onNavigate}
                         aria-current={isActive ? 'page' : undefined}
-                        className={`group flex items-center gap-3 rounded-lg px-3 py-3 transition-colors ${
+                        className={`group flex items-center gap-3 rounded-lg px-3 py-3 transition-colors lg:shrink-0 ${
                             isActive
-                                ? 'bg-emerald-50 text-emerald-700'
-                                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-950'
+                                ? 'bg-violet-soft text-violet-soft-foreground'
+                                : 'border border-transparent text-muted-foreground hover:bg-border-soft hover:text-foreground'
                         }`}>
-                        <Icon size={19} strokeWidth={isActive ? 2.4 : 2} />
+                        <Icon size={19} strokeWidth={isActive ? 2.4 : 2} className={isActive ? 'text-violet-soft-foreground' : 'text-muted-foreground'} />
                         <span className="min-w-0">
-                            <span className="block text-sm font-semibold">{label}</span>
+                            <span className={`block text-sm font-semibold ${isActive ? 'text-violet-soft-foreground' : 'text-foreground'}`}>
+                                {label}
+                            </span>
                             <span
-                                className={`block truncate text-xs ${isActive ? 'text-emerald-600' : 'text-slate-400'}`}>
+                                className={`block truncate text-xs ${isActive ? 'text-violet-soft-foreground font-medium' : 'text-muted-foreground'}`}>
                                 {description}
                             </span>
                         </span>

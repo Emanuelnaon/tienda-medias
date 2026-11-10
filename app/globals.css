@@ -7,23 +7,42 @@
    ========================================================= */
 
 :root {
-  --background: #eaeaea;
-  --foreground: #09090b;
+  --background: #f7f4ed;
+  --foreground: #1d1a24;
 
-  --primary: #18181b;
-  --secondary: #36cb86;
+  --primary: #1d1a24;
+  --primary-foreground: #ffffff;
+  --secondary: #eeebff;
+  --secondary-foreground: #3c30c8;
 
-  --border: #272728;
+  --border: #e8e3d8;
+  --border-soft: #f0ebe1;
+  --sidebar: #fbf9f4;
+  --surface: #ffffff;
+  --violet: #4c3df0;
+  --violet-hover: #3d2ee0;
+  --violet-foreground: #ffffff;
+  --violet-soft: #eeebff;
+  --violet-soft-foreground: #3c30c8;
+  --emerald: #077c4b;
+  --emerald-hover: #056e41;
+  --emerald-foreground: #ffffff;
+  --emerald-soft: #e6f7ef;
+  --emerald-soft-foreground: #056e41;
 
   /* Estados */
   --success: #22c55e;
+  --success-foreground: #052e16;
   --warning: #f59e0b;
+  --warning-foreground: #451a03;
   --danger: #ef4444;
-  --info: #3b82f6;
+  --danger-foreground: #300707;
+  --info: #2563eb;
+  --info-foreground: #ffffff;
 
   /* Superficies */
-  --muted: #f4f4f5;
-  --muted-foreground: #5d5d65;
+  --muted: #f0ebe1;
+  --muted-foreground: #6a6472;
   --card: #ffffff;
 
   /* UI */
@@ -31,24 +50,43 @@
 }
 
 .dark {
-  --background: #09090b;
-  --foreground: #fffffa;
+  --background: #16141d;
+  --foreground: #f8f5ed;
 
-  --primary: #fafafa;
-  --secondary: #1313b0;
+  --primary: #f8f5ed;
+  --primary-foreground: #16141d;
+  --secondary: #312a53;
+  --secondary-foreground: #e7e0ff;
 
-  --border: #27272a;
+  --border: #48414e;
+  --border-soft: #38323f;
+  --sidebar: #211d28;
+  --surface: #26222d;
+  --violet: #a99fff;
+  --violet-hover: #c1baff;
+  --violet-foreground: #20184c;
+  --violet-soft: #312a53;
+  --violet-soft-foreground: #e7e0ff;
+  --emerald: #51dda1;
+  --emerald-hover: #7ce9b8;
+  --emerald-foreground: #063524;
+  --emerald-soft: #143a2c;
+  --emerald-soft-foreground: #a2efd0;
 
   /* Estados */
   --success: #22c55e;
+  --success-foreground: #052e16;
   --warning: #f59e0b;
+  --warning-foreground: #451a03;
   --danger: #ef4444;
+  --danger-foreground: #300707;
   --info: #60a5fa;
+  --info-foreground: #0c2448;
 
   /* Superficies */
-  --muted: #18181b;
-  --muted-foreground: #a1a1aa;
-  --card: #111113;
+  --muted: #312c38;
+  --muted-foreground: #c3bac8;
+  --card: #26222d;
 
   --radius: 0.75rem;
 }
@@ -62,20 +100,41 @@
   --color-foreground: var(--foreground);
 
   --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
 
   --color-border: var(--border);
+  --color-border-soft: var(--border-soft);
+  --color-sidebar: var(--sidebar);
+  --color-surface: var(--surface);
+  --color-violet: var(--violet);
+  --color-violet-hover: var(--violet-hover);
+  --color-violet-foreground: var(--violet-foreground);
+  --color-violet-soft: var(--violet-soft);
+  --color-violet-soft-foreground: var(--violet-soft-foreground);
+  --color-emerald: var(--emerald);
+  --color-emerald-hover: var(--emerald-hover);
+  --color-emerald-foreground: var(--emerald-foreground);
+  --color-emerald-soft: var(--emerald-soft);
+  --color-emerald-soft-foreground: var(--emerald-soft-foreground);
 
   --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
   --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
   --color-danger: var(--danger);
+  --color-danger-foreground: var(--danger-foreground);
   --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
 
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-card: var(--card);
 
   --radius: var(--radius);
+  --font-sans: var(--font-montserrat), sans-serif;
+  --font-display: var(--font-josefin), sans-serif;
 }
 
 /* =========================================================
@@ -96,15 +155,21 @@ body {
   background-color: var(--background);
   color: var(--foreground);
 
-  font-family:
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
+  font-family: var(--font-montserrat), sans-serif;
+  font-variant-numeric: tabular-nums lining-nums;
 
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-josefin), sans-serif;
+}
+
+.font-display {
+  font-family: var(--font-josefin), sans-serif;
 }
 
 /* Evita imágenes que desborden accidentalmente */

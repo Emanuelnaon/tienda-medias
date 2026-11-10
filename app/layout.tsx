@@ -1,6 +1,6 @@
 import { Toaster } from 'react-hot-toast';
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Josefin_Sans, Montserrat } from 'next/font/google';
 import './globals.css';
 import Link from 'next/link';
 import { Sidebar } from '@/src/components/layout/Sidebar';
@@ -12,14 +12,16 @@ import { MainLayoutWrapper } from '@/src/components/layout/MainLayoutWrapper';
 import { GoogleAnalytics } from '@next/third-parties/google';
 import { MetaPixelInit } from '@/src/features/tracking-pixel';
 
-const geistSans = Geist({
-    variable: '--font-geist-sans',
+const montserrat = Montserrat({
+    variable: '--font-montserrat',
     subsets: ['latin'],
+    display: 'swap',
 });
 
-const geistMono = Geist_Mono({
-    variable: '--font-geist-mono',
+const josefin = Josefin_Sans({
+    variable: '--font-josefin',
     subsets: ['latin'],
+    display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -35,7 +37,7 @@ export default function RootLayout({
     const metaPixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID;
 
     return (
-        <html lang="es" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`} suppressHydrationWarning>
+        <html lang="es" className={`${montserrat.variable} ${josefin.variable} h-full antialiased`} suppressHydrationWarning>
             <body className="h-screen overflow-hidden bg-background text-foreground flex flex-col lg:flex-row">
                 {/* Sidebar para desktop - Fijo a la izquierda */}
                 <ThemeProvider>
@@ -45,7 +47,7 @@ export default function RootLayout({
                     <div className="flex-1 h-full overflow-y-auto pb-16 lg:pb-0 lg:pl-64 bg-background flex flex-col justify-between">
                         <div>
                             {/* Header Superior Móvil */}
-                            <header className="lg:hidden flex items-center justify-between p-4 border-b border-border bg-background/95 backdrop-blur sticky top-0 z-45 gap-4">
+                            <header className="lg:hidden flex items-center justify-between p-4 border-b border-border bg-background sticky top-0 z-45 gap-4">
                                 <Link href="/" className="font-bold text-lg tracking-tight shrink-0 text-foreground">
                                     Socks Store
                                 </Link>

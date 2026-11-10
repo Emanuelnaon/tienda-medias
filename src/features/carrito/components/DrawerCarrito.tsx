@@ -31,7 +31,7 @@ export function DrawerCarrito({ isOpen, onClose }: DrawerCarritoProps) {
                 <button
                     type="button"
                     aria-label="Cerrar carrito"
-                    className="fixed inset-0 bg-foreground/60 backdrop-blur-sm z-99998 transition-opacity duration-300"
+                    className="fixed inset-0 bg-foreground/60 z-99998 transition-opacity duration-300"
                     onClick={onClose}
                 />
             )}

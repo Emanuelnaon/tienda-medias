@@ -1,16 +1,25 @@
 import { defineConfig, devices } from '@playwright/test';
+import { loadEnvConfig } from '@next/env';
+import { validateE2EEnvironment } from './tests/e2e/support/environment';
 
-// Destino por defecto: aplicación local (npm run dev en localhost:3000).
-// webServer arranca y espera a que esté listo antes de correr los tests.
+const projectRoot = __dirname;
+if (process.env.NODE_ENV && process.env.NODE_ENV !== 'development') {
+    throw new Error('Playwright local requiere NODE_ENV=development o sin definir.');
+}
+loadEnvConfig(projectRoot, true);
+validateE2EEnvironment('smoke');
+
+const baseURL = 'http://127.0.0.1:3100';
+
 export default defineConfig({
-    testDir: './tests',
+    testDir: './tests/e2e/smoke',
     fullyParallel: true,
     forbidOnly: !!process.env.CI,
     retries: process.env.CI ? 2 : 0,
     workers: process.env.CI ? 1 : undefined,
     reporter: 'html',
     use: {
-        baseURL: 'http://localhost:3000',
+        baseURL,
         trace: 'on-first-retry',
         screenshot: 'only-on-failure',
     },
@@ -21,14 +30,13 @@ export default defineConfig({
         },
     ],
     webServer: {
-        command: 'npm run dev',
-        url: 'http://localhost:3000',
-        reuseExistingServer: !process.env.CI,
+        command: 'npm run dev -- --hostname 127.0.0.1 --port 3100',
+        url: baseURL,
+        reuseExistingServer: false,
         timeout: 120 * 1000,
+        cwd: projectRoot,
+        env: {
+            NODE_ENV: 'development',
+        },
     },
 });
-
-// --- Alternativa: probar la branch desplegada en Vercel ---
-// Para usarla, descomenta la línea de `baseURL` y elimina o comenta el bloque `webServer`.
-// Los tests navegarán al despliegue remoto y no arrancarán un servidor local.
-// baseURL: 'https://tienda-medias-git-modeladoweb-emanuels-projects-fcfc95fa.vercel.app/',

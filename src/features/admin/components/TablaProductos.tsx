@@ -20,9 +20,9 @@ export type TablaProductosProps = Readonly<{
 }>;
 
 function obtenerColorBadgeStock(stock: number): string {
-    if (stock > 5) return 'text-foreground';
-    if (stock > 0) return 'text-foreground/80';
-    return 'text-foreground/50';
+    if (stock > 5) return 'bg-emerald-soft text-emerald-soft-foreground border-emerald';
+    if (stock > 0) return 'bg-warning text-warning-foreground border-warning';
+    return 'bg-muted text-muted-foreground border-border';
 }
 
 export function TablaProductos({ productosIniciales }: TablaProductosProps) {
@@ -76,12 +76,12 @@ export function TablaProductos({ productosIniciales }: TablaProductosProps) {
     };
 
     return (
-        <div className="flex flex-col gap-4 text-foreground bg-background">
-            <div className="flex justify-between items-center bg-background text-foreground">
-                <div className="text-sm text-foreground/70 font-medium">Total: {productos.length} productos</div>
+        <div className="flex min-w-0 w-full flex-col gap-5 text-foreground">
+            <div className="flex flex-col items-stretch justify-between gap-4 md:flex-row md:items-center">
+                <div className="text-xs font-bold text-muted-foreground tabular-nums md:text-sm">Total: {productos.length} productos</div>
                 <Link
                     href="/admin/nuevo"
-                    className="flex items-center gap-2 bg-foreground text-background px-4 py-2 rounded-md text-sm font-bold hover:opacity-90 transition-opacity cursor-pointer">
+                    className="flex min-h-11 items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground shadow-xs transition-colors hover:bg-violet hover:text-violet-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet motion-reduce:transition-none cursor-pointer">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
                     </svg>
@@ -89,10 +89,10 @@ export function TablaProductos({ productosIniciales }: TablaProductosProps) {
                 </Link>
             </div>
 
-            <div className="bg-background border border-border rounded-lg shadow-sm overflow-x-auto text-foreground">
-                <table className="w-full text-left border-collapse min-w-800px bg-background">
+            <div className="min-w-0 max-w-full overflow-x-auto rounded-2xl border border-border bg-surface text-foreground shadow-xs">
+                <table className="w-full min-w-208 border-collapse text-left text-sm">
                     <thead>
-                        <tr className="bg-background border-b border-border text-sm text-foreground/70 uppercase tracking-wider">
+                        <tr className="border-b border-border bg-background text-xs tracking-wider text-muted-foreground uppercase">
                             <th className="p-4 font-semibold">Imagen</th>
                             <th className="p-4 font-semibold">Nombre</th>
                             <th className="p-4 font-semibold">Precio</th>
@@ -101,19 +101,19 @@ export function TablaProductos({ productosIniciales }: TablaProductosProps) {
                             <th className="p-4 font-semibold text-right">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-border">
+                    <tbody className="divide-y divide-border-soft">
                         {productos.length === 0 ? (
                             <tr>
-                                <td colSpan={6} className="p-8 text-center text-foreground/60 bg-background">
+                                <td colSpan={6} className="px-4 py-12 text-center text-sm text-muted-foreground">
                                     No hay productos en el catálogo.
                                 </td>
                             </tr>
                         ) : (
                             productos.map((producto) => (
-                                <tr key={producto.id} className="hover:bg-foreground/5 transition-colors bg-background">
+                                <tr key={producto.id} className="bg-surface transition-colors hover:bg-background motion-reduce:transition-none">
                                     {/* Imagen */}
                                     <td className="p-4">
-                                        <div className="w-12 h-12 bg-transparent rounded overflow-hidden flex items-center justify-center border border-border">
+                                        <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl border border-border bg-background md:h-14 md:w-14">
                                             {producto.imagen_url ? (
                                                 /* eslint-disable-next-line @next/next/no-img-element */
                                                 <img
@@ -122,46 +122,46 @@ export function TablaProductos({ productosIniciales }: TablaProductosProps) {
                                                     className="w-full h-full object-cover"
                                                 />
                                             ) : (
-                                                <span className="text-[10px] text-foreground/50">Sin Img</span>
+                                                <span className="text-center text-xs text-muted-foreground">Sin Img</span>
                                             )}
                                         </div>
                                     </td>
 
                                     {/* Nombre + Talles */}
                                     <td className="p-4">
-                                        <div className="font-bold text-foreground">{producto.nombre}</div>
-                                        <div className="text-xs text-foreground/60 truncate max-w-200px">
+                                        <div className="min-w-40 max-w-64 break-words text-sm font-bold leading-snug text-foreground">{producto.nombre}</div>
+                                        <div className="mt-1 max-w-64 break-words text-xs font-medium text-muted-foreground">
                                             {producto.talles_disponibles?.join(', ') || 'Sin talles'}
                                         </div>
                                     </td>
 
                                     {/* Precio */}
-                                    <td className="p-4 font-mono font-medium text-foreground">
+                                    <td className="p-4 font-sans text-sm font-extrabold whitespace-nowrap text-foreground tabular-nums">
                                         ${Number(producto.precio).toLocaleString('es-AR')}
                                     </td>
 
                                     {/* Stock Total */}
                                     <td className="p-4">
                                         <span
-                                            className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold border border-border ${obtenerColorBadgeStock(producto.stock)}`}>
+                                            className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-bold whitespace-nowrap tabular-nums ${obtenerColorBadgeStock(producto.stock)}`}>
                                             {producto.stock} uds
                                         </span>
                                     </td>
 
                                     {/* Categoría */}
                                     <td className="p-4">
-                                        <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-muted text-foreground border border-border">
+                                        <span className="inline-flex max-w-48 items-center rounded-lg border border-border bg-background px-2.5 py-1 text-xs font-semibold break-words text-foreground">
                                             {producto.categorias?.nombre || 'Sin categoría'}
                                         </span>
                                     </td>
 
                                     {/* Acciones */}
                                     <td className="p-4 text-right">
-                                        <div className="flex justify-end gap-2">
+                                        <div className="flex items-center justify-end gap-1.5">
                                             <button
                                                 type="button"
                                                 onClick={() => handlePrepararPublicacion(producto)}
-                                                className="p-2 text-foreground/70 hover:text-foreground bg-transparent border border-border hover:bg-foreground/5 rounded transition-colors cursor-pointer"
+                                                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-border bg-surface text-muted-foreground transition-colors hover:border-violet hover:bg-violet-soft hover:text-violet-soft-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet motion-reduce:transition-none cursor-pointer"
                                                 title="Preparar Publicación (Instagram)">
                                                 <svg
                                                     className="w-4 h-4"
@@ -181,7 +181,7 @@ export function TablaProductos({ productosIniciales }: TablaProductosProps) {
                                                 type="button"
                                                 disabled={copiandoId === producto.id}
                                                 onClick={() => handleCopiarLink(producto.id)}
-                                                className="p-2 text-foreground/70 hover:text-foreground bg-transparent border border-border hover:bg-foreground/5 rounded transition-colors disabled:opacity-50 cursor-pointer"
+                                                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-border bg-surface text-muted-foreground transition-colors hover:border-emerald hover:bg-emerald-soft hover:text-emerald-soft-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet motion-reduce:transition-none disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
                                                 title="Copiar Link de WhatsApp">
                                                 {copiandoId === producto.id ? (
                                                     <div className="w-4 h-4 border-2 border-foreground/70 border-t-transparent rounded-full animate-spin" />
@@ -203,7 +203,7 @@ export function TablaProductos({ productosIniciales }: TablaProductosProps) {
 
                                             <Link
                                                 href={`/admin/editar/${producto.id}`}
-                                                className="p-2 text-foreground/70 hover:text-foreground bg-transparent border border-border hover:bg-foreground/5 rounded transition-colors cursor-pointer"
+                                                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-border bg-surface text-muted-foreground transition-colors hover:border-violet hover:bg-violet-soft hover:text-violet-soft-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet motion-reduce:transition-none cursor-pointer"
                                                 title="Editar variantes y datos">
                                                 <svg
                                                     className="w-4 h-4"
@@ -222,7 +222,7 @@ export function TablaProductos({ productosIniciales }: TablaProductosProps) {
                                             <button
                                                 type="button"
                                                 onClick={() => handleEliminar(producto.id, producto.nombre)}
-                                                className="p-2 text-foreground/70 hover:text-foreground bg-transparent border border-border hover:bg-foreground/5 rounded transition-colors cursor-pointer"
+                                                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-border bg-surface text-muted-foreground transition-colors hover:border-danger hover:bg-danger hover:text-danger-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet motion-reduce:transition-none cursor-pointer"
                                                 title="Eliminar">
                                                 <svg
                                                     className="w-4 h-4"

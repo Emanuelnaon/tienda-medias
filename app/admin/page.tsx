@@ -11,19 +11,19 @@ export default async function AdminPage() {
 
     if (error) {
         return (
-            <div className="p-4 bg-red-900/20 text-red-500 rounded-md border border-red-500/50">
+            <div className="min-w-0 rounded-2xl border border-danger bg-danger p-4 text-danger-foreground md:p-6">
                 <h3 className="font-bold">Error de conexión</h3>
-                <p>{error.message}</p>
+                <p className="mt-1 break-words text-sm">{error.message}</p>
             </div>
         );
     }
 
     return (
-        <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div>
-                    <h2 className="text-2xl font-bold text-foreground">Catálogo de Productos</h2>
-                    <p className="text-sm text-zinc-500">Gestiona el inventario, precios y detalles de tu tienda.</p>
+        <div className="min-w-0 w-full space-y-6">
+            <div className="flex min-w-0 flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div className="min-w-0">
+                    <h2 className="text-2xl font-extrabold tracking-tight text-foreground md:text-3xl">Catálogo de Productos</h2>
+                    <p className="mt-1 text-xs font-medium leading-relaxed text-muted-foreground md:text-sm">Gestiona el inventario, precios y detalles de tu tienda.</p>
                 </div>
             </div>
 

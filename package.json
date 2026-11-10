@@ -14,7 +14,8 @@
     "type-check": "tsc --noEmit",
     "test:unit": "vitest run",
     "test:unit:watch": "vitest",
-    "test:e2e": "playwright test",
+    "test:e2e": "playwright test --config playwright.config.ts",
+    "test:e2e:staging": "playwright test --config playwright.staging.config.ts",
     "check": "npm run type-check && npm run lint && npm run knip && npm run test:unit && npm run build",
     "prompt": "powershell -Command \"Set-Content -Path specs/prompt.md -Value $args\""
   },
@@ -41,6 +42,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
+    "@next/env": "16.2.12",
     "@playwright/test": "^1.62.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",

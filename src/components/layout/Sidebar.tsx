@@ -19,7 +19,7 @@ export function Sidebar() {
     if (!mounted) return null;
 
     return (
-        <aside className="hidden lg:flex flex-col w-64 h-screen fixed left-0 top-0 bg-background border-r border-border p-6 text-foreground">
+        <aside className="hidden lg:flex flex-col w-64 h-screen fixed left-0 top-0 bg-sidebar border-r border-border p-6 text-foreground">
             {/* Logo o Título */}
             <div className="mb-6">
                 <h1 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">

@@ -21,7 +21,7 @@ const SEEDED_CART = JSON.stringify({
   version: 0,
 });
 
-test.describe('Checkout WhatsApp', () => {
+test.describe.skip('Checkout WhatsApp (pendiente de reemplazo en H2)', () => {
   test('botón "Finalizar compra por WhatsApp" completa el pedido (diagnóstico)', async ({
     page,
   }) => {

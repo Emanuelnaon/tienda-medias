@@ -129,7 +129,7 @@ export function TarjetaProducto({ producto }: { producto: Producto }) {
                 {/* Info Textual (Título y Precio) */}
                 <div className="p-3 pb-0 flex flex-col">
                     <h3 className="text-sm font-semibold text-foreground line-clamp-1">{nombre}</h3>
-                    <span className="text-lg font-extrabold text-foreground mt-0.5">
+                    <span className="font-sans tabular-nums lining-nums text-lg font-extrabold text-foreground mt-0.5">
                         ${Number(precio).toLocaleString('es-AR')}
                     </span>
                 </div>
@@ -169,7 +169,7 @@ export function TarjetaProducto({ producto }: { producto: Producto }) {
                             handleQuickAdd(e);
                         }}
                         disabled={stock <= 0}
-                        className="shrink-0 flex items-center justify-center w-9 h-9 rounded-full bg-foreground text-secondary font-bold hover:bg-blue-500 hover:scale-105 active:scale-95 transition-all duration-200 animate-[pulse_2s_infinite] disabled:cursor-not-allowed cursor-pointer"
+                         className="shrink-0 flex items-center justify-center w-9 h-9 rounded-full bg-primary text-primary-foreground font-bold hover:bg-violet hover:text-violet-foreground hover:scale-105 active:scale-95 transition-all duration-200 animate-[pulse_2s_infinite] disabled:cursor-not-allowed cursor-pointer"
                         title={stock <= 0 ? 'Producto agotado' : 'Agregar al carrito'}>
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />
