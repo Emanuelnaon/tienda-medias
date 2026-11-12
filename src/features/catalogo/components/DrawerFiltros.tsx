@@ -68,10 +68,10 @@ export function DrawerFiltros() {
             {/* Botón Disparador (Se ubica arriba de la grilla) */}
             <button
                 onClick={() => setIsOpen(true)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold shadow-sm hover:shadow-md transition-all
+                className={`flex min-h-11 shrink-0 items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet motion-reduce:transition-none
                     ${hasActiveFilters
-                        ? 'bg-foreground text-background hover:opacity-90 border border-transparent'
-                        : 'bg-transparent text-foreground border border-border hover:border-foreground'
+                        ? 'bg-violet-soft text-violet-soft-foreground border border-violet'
+                        : 'bg-surface text-foreground border border-border hover:border-violet'
                     }`}>
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
@@ -95,15 +95,13 @@ export function DrawerFiltros() {
 
             {/* Bottom Sheet (Móvil) / Side Drawer (Desktop) */}
             <div
-                className={`fixed z-99999 bg-background text-foreground transition-transform duration-300 ease-in-out flex flex-col
-                    /* Mobile: Bottom Sheet */
-                    bottom-0 left-0 right-0 w-full rounded-t-2xl max-h-[85vh]
-                    /* Desktop: Side Drawer derecho */
+                className={`fixed z-99999 bg-surface text-foreground transition-transform duration-300 ease-in-out motion-reduce:transition-none flex flex-col
+                    bottom-0 left-0 right-0 w-full rounded-t-2xl max-h-dvh
                     md:top-0 md:bottom-0 md:left-auto md:right-0 md:w-96 md:rounded-none md:max-h-screen
                     ${isOpen ? 'translate-y-0 md:translate-x-0' : 'translate-y-full md:translate-x-full'}
                 `}>
                 {/* Cabecera del Drawer */}
-                <div className="flex items-center justify-between p-4 border-b border-border bg-background">
+                <div className="flex items-center justify-between p-4 border-b border-border bg-surface">
                     <h2 className="text-lg font-bold">Filtros</h2>
                     <button
                         onClick={() => setIsOpen(false)}
@@ -121,7 +119,7 @@ export function DrawerFiltros() {
                 </div>
 
                 {/* Contenido (Scrollable) */}
-                <div className="flex-1 overflow-y-auto p-4 space-y-6 bg-background">
+                <div className="min-h-0 flex-1 overflow-y-auto p-4 space-y-6 bg-surface">
                     {/* Sección: Talles */}
                     <div>
                         <h3 className="text-sm font-bold mb-3 uppercase tracking-wider">Talle</h3>
@@ -186,7 +184,7 @@ export function DrawerFiltros() {
                 <div className="p-4 border-t border-border bg-background flex flex-col gap-2">
                     <button
                         onClick={aplicarFiltros}
-                        className="w-full bg-foreground text-background py-3 rounded-xl font-bold text-sm hover:opacity-90 transition-opacity"
+                        className="min-h-11 w-full bg-violet text-violet-foreground py-3 rounded-xl font-bold text-sm hover:bg-violet-hover transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet motion-reduce:transition-none"
                         type="button">
                         Ver Resultados
                     </button>

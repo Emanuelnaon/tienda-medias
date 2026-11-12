@@ -8,22 +8,22 @@ interface EtiquetaInventarioProps {
 }
 
 export function EtiquetaInventario({ tipo, className }: EtiquetaInventarioProps) {
-    const baseStyles = "px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.15em] shadow-sm rounded-full w-fit h-fit";
+    const baseStyles = "w-fit h-fit rounded-full px-2.5 py-1 text-xs font-bold uppercase tracking-wide";
 
     let tipoStyles = "";
     let texto = "";
 
     switch (tipo) {
         case 'agotado':
-            tipoStyles = "bg-red-600 text-white";
+            tipoStyles = "bg-muted text-muted-foreground";
             texto = "Agotado";
             break;
         case 'ultimas_unidades':
-            tipoStyles = "bg-orange-600 text-white animate-pulse";
+            tipoStyles = "bg-warning text-warning-foreground";
             texto = "¡Últimas unidades!";
             break;
         case 'nuevo':
-            tipoStyles = "bg-green-600 text-white";
+            tipoStyles = "bg-emerald-soft text-emerald-soft-foreground";
             texto = "Nuevo";
             break;
     }

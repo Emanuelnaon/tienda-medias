@@ -53,7 +53,7 @@ export function MenuCategorias({ categorias }: MenuCategoriasProps) {
     };
 
     return (
-        <div className="relative flex items-center w-full my-4 bg-background border-y border-border py-2.5">
+        <div className="relative flex min-w-0 w-full items-center rounded-2xl border border-border bg-surface py-3">
             {/* Flecha Izquierda */}
             {showLeftArrow && (
                 <button
@@ -77,10 +77,10 @@ export function MenuCategorias({ categorias }: MenuCategoriasProps) {
                 {/* Categoría Todos */}
                 <button
                     onClick={() => handleCategoriaClick('Todos')}
-                    className={`whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-bold cursor-pointer transition-all border hover:active:scale-95
+                    className={`min-h-11 whitespace-nowrap px-4 py-2 rounded-xl text-sm font-bold cursor-pointer transition-colors border focus-visible:outline-2 focus-visible:outline-violet motion-reduce:transition-none
                         ${categoriaActiva === 'Todos'
-                            ? 'bg-foreground text-background border-foreground'
-                            : 'bg-transparent text-foreground border-border hover:border-foreground'
+                            ? 'bg-violet-soft text-violet-soft-foreground border-violet'
+                            : 'bg-surface text-muted-foreground border-border hover:border-violet hover:text-foreground'
                         }`}
                 >
                     Todos
@@ -91,10 +91,10 @@ export function MenuCategorias({ categorias }: MenuCategoriasProps) {
                     <button
                         key={cat}
                         onClick={() => handleCategoriaClick(cat)}
-                        className={`whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-bold cursor-pointer transition-all border hover:active:scale-95
+                        className={`min-h-11 whitespace-nowrap px-4 py-2 rounded-xl text-sm font-bold cursor-pointer transition-colors border focus-visible:outline-2 focus-visible:outline-violet motion-reduce:transition-none
                             ${categoriaActiva === cat
-                                ? 'bg-foreground text-background border-foreground'
-                                : 'bg-transparent text-foreground border-border hover:border-foreground'
+                                ? 'bg-violet-soft text-violet-soft-foreground border-violet'
+                                : 'bg-surface text-muted-foreground border-border hover:border-violet hover:text-foreground'
                             }`}
                     >
                         {cat}

@@ -42,10 +42,10 @@ export async function GrillaProductos({ parametros }: GrillaProductosProps) {
     );
 
     return (
-        <div className="flex flex-col gap-4">
+        <div className="flex min-w-0 flex-col gap-6">
             {/* Cabecera: Título y Botón de Filtros */}
-            <div className="flex items-center justify-between mb-1">
-                <h1 className="text-2xl font-extrabold text-foreground">Encuntra algo especial</h1>
+            <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+                <h1 className="text-2xl font-extrabold tracking-tight text-foreground md:text-3xl">Encuntra algo especial</h1>
                 <DrawerFiltros />
             </div>
 
@@ -54,11 +54,11 @@ export async function GrillaProductos({ parametros }: GrillaProductosProps) {
 
             {/* Renderizado condicional: Mensaje de vacío o Grilla */}
             {!productos || productos.length === 0 ? (
-                <div className="p-8 text-center bg-zinc-50 dark:bg-zinc-900 rounded-lg border border-border text-zinc-500 mt-4">
+                <div className="rounded-2xl border border-border bg-surface px-6 py-12 text-center text-muted-foreground">
                     No encontramos medias con esos filtros.
                 </div>
             ) : (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 lg:gap-8">
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     {productos.map((producto: Producto) => (
                         <TarjetaProducto key={producto.id} producto={producto} />
                     ))}

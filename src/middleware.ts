@@ -19,10 +19,10 @@ export async function middleware(request: NextRequest) {
             "default-src 'self'",
             "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://vercel.live https://connect.facebook.net",
             "style-src 'self' 'unsafe-inline'",
-            "img-src 'self' data: blob: https://adauxoedgfvaadkvvifu.supabase.co https://www.google-analytics.com https://*.googletagmanager.com https://www.facebook.com",
+            "img-src 'self' data: blob: https://wausvgfkelnmvpmpvaph.supabase.co https://www.google-analytics.com https://*.googletagmanager.com https://www.facebook.com",
 
             // Agregamos https://vercel.live aquí para los WebSockets de telemetría y hot-reload
-            "connect-src 'self' https://adauxoedgfvaadkvvifu.supabase.co wss://adauxoedgfvaadkvvifu.supabase.co https://wa.me https://www.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://vercel.live https://connect.facebook.net https://www.facebook.com",
+            "connect-src 'self' https://wausvgfkelnmvpmpvaph.supabase.co wss://wausvgfkelnmvpmpvaph.supabase.co https://wa.me https://www.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://vercel.live https://connect.facebook.net https://www.facebook.com",
 
             "font-src 'self' data:",
             "object-src 'none'",

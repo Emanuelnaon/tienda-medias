@@ -92,20 +92,19 @@ export function TarjetaProducto({ producto }: { producto: Producto }) {
     };
 
     return (
-        /* Efectos 3D de Tailwind: hover:-translate-y-1 hover:shadow-xl */
-        <div className="group flex flex-col bg-background border border-border rounded-xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 w-full overflow-hidden relative">
+        <div className="group relative flex min-w-0 w-full flex-col overflow-hidden rounded-2xl border border-border bg-surface p-4 transition-shadow duration-200 hover:shadow-md motion-reduce:transition-none">
             <Link href={`/producto/${id}`} className="flex-1 flex flex-col">
                 {/* Contenedor de Imagen */}
-                <div className="relative w-full aspect-4/5 bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center overflow-hidden">
+                <div className="relative flex aspect-square w-full items-center justify-center overflow-hidden rounded-xl border border-border-soft bg-muted">
                     {imagen_url ? (
                         /* eslint-disable-next-line @next/next/no-img-element */
                         <img
                             src={imagen_url}
                             alt={nombre}
-                            className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
+                            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105 motion-reduce:transform-none motion-reduce:transition-none"
                         />
                     ) : (
-                        <span className="text-xs text-zinc-400">Sin imagen</span>
+                        <span className="text-xs text-muted-foreground">Sin imagen</span>
                     )}
 
                     {renderEtiqueta()}
@@ -116,10 +115,10 @@ export function TarjetaProducto({ producto }: { producto: Producto }) {
                             e.stopPropagation();
                             toggleFavorito(producto);
                         }}
-                        className={`absolute top-2 right-2 z-20 p-2 rounded-full transition-all duration-200 active:scale-90 cursor-pointer shadow-sm ${
+                        className={`absolute top-2 right-2 z-20 flex h-11 w-11 items-center justify-center rounded-full border border-border transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet motion-reduce:transition-none cursor-pointer ${
                             isFavorito
-                                ? 'bg-white dark:bg-zinc-900 text-red-500 fill-red-500'
-                                : 'bg-white/80 dark:bg-zinc-900/80 text-gray-600 hover:text-red-500'
+                                ? 'bg-violet-soft text-violet-soft-foreground fill-violet-soft-foreground'
+                                : 'bg-surface text-muted-foreground hover:bg-violet-soft hover:text-violet-soft-foreground'
                         }`}
                         title={isFavorito ? 'Quitar de favoritos' : 'Añadir a favoritos'}>
                         <Heart className="w-5 h-5" />
@@ -127,8 +126,8 @@ export function TarjetaProducto({ producto }: { producto: Producto }) {
                 </div>
 
                 {/* Info Textual (Título y Precio) */}
-                <div className="p-3 pb-0 flex flex-col">
-                    <h3 className="text-sm font-semibold text-foreground line-clamp-1">{nombre}</h3>
+                <div className="flex flex-col gap-1 pt-4">
+                    <h3 className="line-clamp-2 text-lg font-bold leading-snug text-foreground">{nombre}</h3>
                     <span className="font-sans tabular-nums lining-nums text-lg font-extrabold text-foreground mt-0.5">
                         ${Number(precio).toLocaleString('es-AR')}
                     </span>
@@ -136,7 +135,7 @@ export function TarjetaProducto({ producto }: { producto: Producto }) {
             </Link>
 
             {/* Zona de Acción (Quick Add CRO + Talles) */}
-            <div className="p-3 flex flex-col gap-3 mt-auto">
+            <div className="mt-auto flex flex-col gap-3 pt-4">
                 <div className="flex items-center justify-between gap-2">
                     {/* Selector de Talles (Píldoras) */}
                     {talles_disponibles && talles_disponibles.length > 0 && (
@@ -149,10 +148,10 @@ export function TarjetaProducto({ producto }: { producto: Producto }) {
                                         e.stopPropagation();
                                         setTalleSeleccionado(talle);
                                     }}
-                                    className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-200 border cursor-pointer ${
+                                    className={`flex h-11 min-w-11 items-center justify-center rounded-lg border px-2 text-xs font-bold transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet motion-reduce:transition-none cursor-pointer ${
                                         talleSeleccionado === talle
-                                            ? 'bg-foreground text-background border-foreground shadow-md'
-                                            : 'bg-transparent text-zinc-500 border-border hover:border-foreground hover:text-foreground'
+                                            ? 'bg-violet-soft text-violet-soft-foreground border-violet'
+                                            : 'bg-surface text-muted-foreground border-border hover:border-violet hover:text-foreground'
                                     }`}>
                                     {talle}
                                 </button>
@@ -169,7 +168,7 @@ export function TarjetaProducto({ producto }: { producto: Producto }) {
                             handleQuickAdd(e);
                         }}
                         disabled={stock <= 0}
-                         className="shrink-0 flex items-center justify-center w-9 h-9 rounded-full bg-primary text-primary-foreground font-bold hover:bg-violet hover:text-violet-foreground hover:scale-105 active:scale-95 transition-all duration-200 animate-[pulse_2s_infinite] disabled:cursor-not-allowed cursor-pointer"
+                        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-violet-soft font-bold text-violet-soft-foreground transition-colors hover:bg-violet hover:text-violet-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet motion-reduce:transition-none disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
                         title={stock <= 0 ? 'Producto agotado' : 'Agregar al carrito'}>
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />
@@ -177,11 +176,11 @@ export function TarjetaProducto({ producto }: { producto: Producto }) {
                     </button>
                 </div>
 
-                {/* CTA Full Width: Botón Comprar destacado con animación de glow/pulse sutil */}
+            {/* CTA de compra */}
                 <button
                     onClick={handleAgregarCarrito}
                     disabled={stock <= 0}
-                    className="w-full flex items-center justify-center gap-2 rounded-lg bg-linear-to-r from-blue-600 to-indigo-600 px-4 py-3 text-sm font-extrabold text-white shadow-md shadow-blue-500/20 transition-all duration-300 hover:from-blue-700 hover:to-indigo-700 hover:shadow-blue-500/40 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none">
+                    className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-violet px-4 py-3 text-sm font-bold text-violet-foreground transition-colors hover:bg-violet-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet motion-reduce:transition-none disabled:cursor-not-allowed disabled:opacity-50">
                     {stock <= 0 ? 'Agotado' : 'Comprar'}
                 </button>
             </div>
