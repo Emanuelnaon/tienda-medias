@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
         remotePatterns: [
             {
                 protocol: 'https',
-                hostname: 'adauxoedgfvaadkvvifu.supabase.co',
+                hostname: 'wausvgfkelnmvpmpvaph.supabase.co',
                 port: '',
                 pathname: '/storage/v1/object/public/**',
             },
@@ -38,7 +38,7 @@ const nextConfig: NextConfig = {
                     },
                     {
                         key: 'Content-Security-Policy',
-                        value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://adauxoedgfvaadkvvifu.supabase.co; connect-src 'self' https://adauxoedgfvaadkvvifu.supabase.co wss://adauxoedgfvaadkvvifu.supabase.co https://wa.me; font-src 'self' data:; object-src 'none';",
+                        value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://wausvgfkelnmvpmpvaph.supabase.co; connect-src 'self' https://wausvgfkelnmvpmpvaph.supabase.co wss://wausvgfkelnmvpmpvaph.supabase.co https://wa.me; font-src 'self' data:; object-src 'none';",
                     },
                 ],
             },
