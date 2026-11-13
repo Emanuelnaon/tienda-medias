@@ -20,7 +20,7 @@ async function TablaClientesWrapper() {
 
     if (errorMessage) {
         return (
-            <div className="rounded-md border border-red-500/50 bg-red-500/10 p-4 text-red-700 dark:text-red-300">
+            <div className="rounded-xl border border-danger/40 bg-danger p-4 text-danger-foreground">
                 {errorMessage}
             </div>
         );
@@ -34,9 +34,9 @@ async function FeatureGateWrapper() {
 
     if (!featureHabilitada) {
         return (
-            <div className="rounded-md border border-amber-500/50 bg-amber-500/10 p-4 text-amber-700 dark:text-amber-300">
+            <div className="rounded-xl border border-warning/40 bg-warning p-4 text-warning-foreground">
                 <p className="font-semibold">Feature no disponible</p>
-                <p className="text-sm mt-1">
+                <p className="mt-1 text-sm">
                     La funcionalidad CRM Clientes no está habilitada para tu plan actual.
                 </p>
             </div>
@@ -44,7 +44,7 @@ async function FeatureGateWrapper() {
     }
 
     return (
-        <Suspense fallback={<p className="text-sm text-foreground/60">Cargando clientes...</p>}>
+        <Suspense fallback={<p className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">Cargando clientes...</p>}>
             <TablaClientesWrapper />
         </Suspense>
     );
@@ -53,9 +53,9 @@ async function FeatureGateWrapper() {
 export default async function ClientesPage() {
     return (
         <section className="space-y-6">
-            <header>
-                <h2 className="text-2xl font-bold">CRM Clientes</h2>
-                <p className="text-sm text-foreground/70">
+            <header className="rounded-2xl border border-border bg-card p-5 sm:p-6">
+                <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">CRM Clientes</h1>
+                <p className="mt-2 max-w-3xl text-sm text-muted-foreground">
                     Visualización y gestión de la base de datos de clientes, historial de compras y métricas.
                 </p>
             </header>

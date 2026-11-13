@@ -24,7 +24,7 @@ export function TablaClientes({ clientesIniciales }: TablaClientesProps) {
 
     if (clientesIniciales.length === 0) {
         return (
-            <div className="rounded-lg border border-border p-10 text-center text-foreground/60">
+            <div className="rounded-2xl border border-border bg-card p-10 text-center text-muted-foreground">
                 No hay clientes registrados todavía.
             </div>
         );
@@ -32,7 +32,7 @@ export function TablaClientes({ clientesIniciales }: TablaClientesProps) {
 
     return (
         <div className="space-y-4">
-            <div className="flex items-center gap-3">
+            <div className="rounded-2xl border border-border bg-card p-4">
                 <label htmlFor="buscador-clientes" className="sr-only">
                     Buscar clientes
                 </label>
@@ -42,51 +42,51 @@ export function TablaClientes({ clientesIniciales }: TablaClientesProps) {
                     placeholder="Buscar por nombre o teléfono..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full max-w-sm bg-transparent text-foreground border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-foreground transition-colors"
+                    className="w-full max-w-sm rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-violet focus:outline-none focus:ring-2 focus:ring-violet/20"
                 />
             </div>
 
-            <div className="overflow-x-auto rounded-lg border border-border bg-background">
+            <div className="overflow-x-auto rounded-2xl border border-border bg-card">
                 <table className="w-full min-w-full text-left text-sm">
                     <thead>
-                        <tr className="border-b border-border bg-muted/30 text-foreground/70 uppercase tracking-wider">
-                            <th className="px-4 py-3 font-semibold">Nombre</th>
-                            <th className="px-4 py-3 font-semibold">Teléfono</th>
-                            <th className="px-4 py-3 font-semibold">Email</th>
-                            <th className="px-4 py-3 font-semibold text-center">Cant. Pedidos</th>
-                            <th className="px-4 py-3 font-semibold text-right">Total Gastado</th>
-                            <th className="px-4 py-3 font-semibold">Etiqueta</th>
+                        <tr className="border-b border-border bg-muted text-xs uppercase tracking-wider text-muted-foreground">
+                            <th className="px-4 py-4 font-semibold">Nombre</th>
+                            <th className="px-4 py-4 font-semibold">Teléfono</th>
+                            <th className="px-4 py-4 font-semibold">Email</th>
+                            <th className="px-4 py-4 text-center font-semibold">Cant. Pedidos</th>
+                            <th className="px-4 py-4 text-right font-semibold">Total Gastado</th>
+                            <th className="px-4 py-4 font-semibold">Etiqueta</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-border">
                         {clientesFiltrados.map((cliente) => (
-                            <tr key={cliente.id} className="hover:bg-foreground/5 transition-colors">
-                                <td className="px-4 py-3">
+                            <tr key={cliente.id} className="transition-colors hover:bg-muted/60">
+                                <td className="px-4 py-4">
                                     <Link
                                         href={`/admin/clientes/${cliente.id}`}
-                                        className="font-medium text-foreground hover:underline"
+                                        className="font-semibold text-foreground underline-offset-4 hover:text-violet hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet"
                                     >
                                         {cliente.nombre_completo}
                                     </Link>
                                 </td>
-                                <td className="px-4 py-3 text-foreground/70">{cliente.telefono}</td>
-                                <td className="px-4 py-3 text-foreground/70">{cliente.email ?? '—'}</td>
-                                <td className="px-4 py-3 text-center">{cliente.cantidad_pedidos ?? 0}</td>
-                                <td className="px-4 py-3 text-right font-mono">
+                                <td className="px-4 py-4 text-muted-foreground">{cliente.telefono}</td>
+                                <td className="px-4 py-4 text-muted-foreground">{cliente.email ?? '—'}</td>
+                                <td className="px-4 py-4 text-center tabular-nums">{cliente.cantidad_pedidos ?? 0}</td>
+                                <td className="px-4 py-4 text-right font-medium tabular-nums">
                                     $ {Number(cliente.total_gastado ?? 0).toLocaleString('es-AR')}
                                 </td>
-                                <td className="px-4 py-3">
+                                <td className="px-4 py-4">
                                     {cliente.etiqueta ? (
                                         <span
                                             className={cn(
-                                                'inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-semibold',
+                                                'inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold',
                                                 cliente.etiqueta.estilos,
                                             )}
                                         >
                                             {cliente.etiqueta.texto}
                                         </span>
                                     ) : (
-                                        <span className="text-xs text-foreground/50">—</span>
+                                        <span className="text-xs text-muted-foreground">—</span>
                                     )}
                                 </td>
                             </tr>
@@ -96,7 +96,7 @@ export function TablaClientes({ clientesIniciales }: TablaClientesProps) {
             </div>
 
             {clientesFiltrados.length === 0 && searchTerm && (
-                <p className="text-sm text-foreground/60">
+                <p className="text-sm text-muted-foreground">
                     No se encontraron clientes que coincidan con &quot;{searchTerm}&quot;.
                 </p>
             )}

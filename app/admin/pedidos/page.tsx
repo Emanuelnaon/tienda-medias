@@ -19,10 +19,10 @@ export default async function PedidosPage({ searchParams }: PageProps) {
     const estadoResolved = estado ?? 'pendiente';
 
     return (
-        <section className="space-y-6">
-            <header>
-                <h2 className="text-2xl font-bold">Pedidos pendientes</h2>
-                <p className="text-sm text-foreground/70">Revisa las acreditaciones y confirma cada venta.</p>
+        <section className="space-y-5 sm:space-y-6">
+            <header className="space-y-2">
+                <h1 className="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">Pedidos pendientes</h1>
+                <p className="max-w-2xl text-sm leading-6 text-muted-foreground">Revisa las acreditaciones y confirma cada venta.</p>
             </header>
 
             <FiltrosPedidos estadoActivo={estadoResolved} />

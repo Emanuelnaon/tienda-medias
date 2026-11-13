@@ -63,22 +63,22 @@ export function SelectorEstadoPedido({
 
     if (estadosDisponibles.length === 0) {
         return (
-            <div className="rounded-lg border border-border bg-background p-4">
-                <h2 className="text-sm font-semibold text-foreground/70 uppercase tracking-wider">
+            <div className="rounded-2xl border border-border bg-card p-5 sm:p-6">
+                <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                     Estado del pedido
                 </h2>
-                <p className="mt-2 text-sm text-foreground/60">Sin estados disponibles</p>
+                <p className="mt-2 text-sm text-muted-foreground">Sin estados disponibles</p>
             </div>
         );
     }
 
     return (
-        <div className="rounded-lg border border-border bg-background p-4 space-y-3">
-            <h2 className="text-sm font-semibold text-foreground/70 uppercase tracking-wider">
+        <div className="space-y-4 rounded-2xl border border-border bg-card p-5 sm:p-6">
+            <h2 className="border-b border-border pb-3 text-xs font-bold uppercase tracking-wider text-muted-foreground">
                 Cambiar estado del pedido
             </h2>
 
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                 <select
                     value={estadoSeleccionado}
                     onChange={(evento) => {
@@ -88,7 +88,7 @@ export function SelectorEstadoPedido({
                         }
                     }}
                     aria-label="Nuevo estado del pedido"
-                    className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-foreground sm:w-auto"
+                    className="min-h-11 w-full rounded-xl border border-border bg-background px-3.5 py-2 text-sm font-medium text-foreground outline-none transition-colors focus:border-violet focus:ring-2 focus:ring-violet/20 sm:w-auto"
                 >
                     <option value="">Elegí el próximo estado</option>
                     {estadosDisponibles.map((estado) => (
@@ -102,7 +102,7 @@ export function SelectorEstadoPedido({
                     type="button"
                     disabled={isPending || estadoSeleccionado === ''}
                     onClick={handleConfirmar}
-                    className="w-full rounded-md bg-foreground px-4 py-2 text-sm font-bold text-background transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+                    className="min-h-11 w-full rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground transition-colors hover:bg-violet hover:text-violet-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
                 >
                     {isPending ? 'Guardando...' : 'Actualizar estado'}
                 </button>
@@ -110,7 +110,7 @@ export function SelectorEstadoPedido({
 
             {esCancelacion && (
                 <div className="flex flex-col gap-1.5">
-                    <label htmlFor="notas_cancelacion" className="text-sm font-bold">
+                    <label htmlFor="notas_cancelacion" className="text-sm font-bold text-foreground">
                         Motivo de la cancelación (obligatorio)
                     </label>
                     <textarea
@@ -120,7 +120,7 @@ export function SelectorEstadoPedido({
                         rows={3}
                         placeholder="Ej. El cliente pidió cancelar por falta de stock"
                         className={cn(
-                            'w-full rounded-md border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-foreground',
+                            'min-h-24 w-full rounded-xl border bg-background px-3.5 py-2 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-violet focus:ring-2 focus:ring-violet/20',
                             notasInvalidas ? 'border-destructive' : 'border-border',
                         )}
                     />

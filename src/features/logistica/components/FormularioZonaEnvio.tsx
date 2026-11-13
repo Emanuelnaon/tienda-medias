@@ -15,7 +15,7 @@ const OPCIONES_METODO: ReadonlyArray<MetodoEnvio> = [
 ];
 
 const inputClass =
-    'w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-foreground disabled:cursor-not-allowed disabled:bg-muted';
+    'min-h-11 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-violet focus-visible:ring-2 focus-visible:ring-violet disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground';
 
 export function FormularioZonaEnvio() {
     const {
@@ -61,10 +61,10 @@ export function FormularioZonaEnvio() {
     };
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="w-full space-y-4">
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div className="md:col-span-2">
-                    <label htmlFor="zona_nombre" className="mb-1 block text-sm font-semibold text-foreground">
+        <form onSubmit={handleSubmit(onSubmit)} className="w-full space-y-5">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div className="sm:col-span-2">
+                    <label htmlFor="zona_nombre" className="mb-1.5 block text-sm font-semibold text-foreground">
                         Nombre de la zona
                     </label>
                     <input
@@ -74,11 +74,11 @@ export function FormularioZonaEnvio() {
                         placeholder="Ej. CABA y近郊"
                         className={inputClass}
                     />
-                    {errors.nombre && <p className="mt-1 text-xs text-red-600">{errors.nombre.message}</p>}
+                    {errors.nombre && <p className="mt-1 rounded-md bg-danger px-2.5 py-1.5 text-xs font-medium text-danger-foreground">{errors.nombre.message}</p>}
                 </div>
 
                 <div>
-                    <label htmlFor="zona_metodo" className="mb-1 block text-sm font-semibold text-foreground">
+                    <label htmlFor="zona_metodo" className="mb-1.5 block text-sm font-semibold text-foreground">
                         Método de envío
                     </label>
                     <select
@@ -93,11 +93,11 @@ export function FormularioZonaEnvio() {
                             </option>
                         ))}
                     </select>
-                    {errors.metodo && <p className="mt-1 text-xs text-red-600">{errors.metodo.message}</p>}
+                    {errors.metodo && <p className="mt-1 rounded-md bg-danger px-2.5 py-1.5 text-xs font-medium text-danger-foreground">{errors.metodo.message}</p>}
                 </div>
 
                 <div>
-                    <label htmlFor="zona_costo" className="mb-1 block text-sm font-semibold text-foreground">
+                    <label htmlFor="zona_costo" className="mb-1.5 block text-sm font-semibold text-foreground">
                         Costo de envío
                     </label>
                     <input
@@ -110,15 +110,15 @@ export function FormularioZonaEnvio() {
                         className={inputClass}
                     />
                     {esRetiro && (
-                        <p className="mt-1 text-xs text-foreground/60">
+                        <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
                             El retiro en el local siempre tiene costo 0.
                         </p>
                     )}
-                    {errors.costo && <p className="mt-1 text-xs text-red-600">{errors.costo.message}</p>}
+                    {errors.costo && <p className="mt-1 rounded-md bg-danger px-2.5 py-1.5 text-xs font-medium text-danger-foreground">{errors.costo.message}</p>}
                 </div>
 
                 <div>
-                    <label htmlFor="zona_cp_desde" className="mb-1 block text-sm font-semibold text-foreground">
+                    <label htmlFor="zona_cp_desde" className="mb-1.5 block text-sm font-semibold text-foreground">
                         Código postal desde
                     </label>
                     <input
@@ -131,12 +131,12 @@ export function FormularioZonaEnvio() {
                         className={inputClass}
                     />
                     {errors.codigo_postal_desde && (
-                        <p className="mt-1 text-xs text-red-600">{errors.codigo_postal_desde.message}</p>
+                        <p className="mt-1 rounded-md bg-danger px-2.5 py-1.5 text-xs font-medium text-danger-foreground">{errors.codigo_postal_desde.message}</p>
                     )}
                 </div>
 
                 <div>
-                    <label htmlFor="zona_cp_hasta" className="mb-1 block text-sm font-semibold text-foreground">
+                    <label htmlFor="zona_cp_hasta" className="mb-1.5 block text-sm font-semibold text-foreground">
                         Código postal hasta
                     </label>
                     <input
@@ -149,14 +149,14 @@ export function FormularioZonaEnvio() {
                         className={inputClass}
                     />
                     {errors.codigo_postal_hasta && (
-                        <p className="mt-1 text-xs text-red-600">{errors.codigo_postal_hasta.message}</p>
+                        <p className="mt-1 rounded-md bg-danger px-2.5 py-1.5 text-xs font-medium text-danger-foreground">{errors.codigo_postal_hasta.message}</p>
                     )}
                 </div>
 
-                <div className="md:col-span-2">
+                <div className="sm:col-span-2">
                     <label
                         htmlFor="zona_minimo_gratis"
-                        className="mb-1 block text-sm font-semibold text-foreground"
+                        className="mb-1.5 block text-sm font-semibold text-foreground"
                     >
                         Envío gratis desde (opcional)
                     </label>
@@ -170,7 +170,7 @@ export function FormularioZonaEnvio() {
                         className={inputClass}
                     />
                     {errors.minimo_envio_gratis && (
-                        <p className="mt-1 text-xs text-red-600">{errors.minimo_envio_gratis.message}</p>
+                        <p className="mt-1 rounded-md bg-danger px-2.5 py-1.5 text-xs font-medium text-danger-foreground">{errors.minimo_envio_gratis.message}</p>
                     )}
                 </div>
             </div>
@@ -178,7 +178,7 @@ export function FormularioZonaEnvio() {
             <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full rounded-md bg-emerald-600 px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50 md:w-auto"
+                className="min-h-11 w-full rounded-lg bg-emerald px-4 py-3 text-sm font-bold text-emerald-foreground transition-colors hover:bg-emerald-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
             >
                 {isSubmitting ? 'Guardando...' : 'Agregar zona de envío'}
             </button>

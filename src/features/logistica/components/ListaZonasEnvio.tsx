@@ -71,17 +71,17 @@ export function ListaZonasEnvio({ zonasIniciales }: ListaZonasEnvioProps) {
 
     if (zonas.length === 0) {
         return (
-            <p className="rounded-md border border-dashed border-border p-6 text-center text-sm text-foreground/60">
+            <p className="rounded-lg border border-dashed border-border bg-surface p-6 text-center text-sm leading-relaxed text-muted-foreground">
                 Todavía no cargaste zonas de envío. Agregá la primera con el formulario.
             </p>
         );
     }
 
     return (
-        <div className="overflow-x-auto rounded-lg border border-border">
+        <div className="overflow-x-auto rounded-lg border border-border bg-surface">
             <table className="w-full min-w-full text-left text-sm">
                 <thead>
-                    <tr className="border-b border-border bg-muted/30 text-foreground/70 uppercase tracking-wider">
+                    <tr className="border-b border-border bg-muted text-xs uppercase tracking-wider text-muted-foreground">
                         <th className="px-4 py-3 font-semibold">Nombre</th>
                         <th className="px-4 py-3 font-semibold">Rango CP</th>
                         <th className="px-4 py-3 font-semibold">Método</th>
@@ -97,17 +97,17 @@ export function ListaZonasEnvio({ zonasIniciales }: ListaZonasEnvioProps) {
 
                         return (
                             <tr key={zona.id} className={cn(!zona.activo && 'opacity-60')}>
-                                <td className="px-4 py-3 font-medium">{zona.nombre}</td>
-                                <td className="px-4 py-3 font-mono text-foreground/70">
+                                <td className="px-4 py-3 font-semibold">{zona.nombre}</td>
+                                <td className="px-4 py-3 font-sans tabular-nums text-muted-foreground">
                                     {formatearRango(zona)}
                                 </td>
-                                <td className="px-4 py-3 text-foreground/70">
+                                <td className="px-4 py-3 text-muted-foreground">
                                     {ETIQUETAS_METODO_ENVIO[zona.metodo]}
                                 </td>
-                                <td className="px-4 py-3 text-right font-mono">
+                                <td className="px-4 py-3 text-right font-sans tabular-nums">
                                     ${Number(zona.costo).toLocaleString('es-AR')}
                                 </td>
-                                <td className="px-4 py-3 text-right font-mono text-foreground/70">
+                                <td className="px-4 py-3 text-right font-sans tabular-nums text-muted-foreground">
                                     {zona.minimo_envio_gratis === null
                                         ? '—'
                                         : `$${Number(zona.minimo_envio_gratis).toLocaleString('es-AR')}`}
@@ -123,13 +123,13 @@ export function ListaZonasEnvio({ zonasIniciales }: ListaZonasEnvioProps) {
                                         className={cn(
                                             'inline-flex h-6 w-11 items-center rounded-full border transition-colors disabled:cursor-not-allowed disabled:opacity-50',
                                             zona.activo
-                                                ? 'border-emerald-500 bg-emerald-500'
+                                                ? 'border-emerald bg-emerald'
                                                 : 'border-border bg-muted',
                                         )}
                                     >
                                         <span
                                             className={cn(
-                                                'inline-block h-4 w-4 rounded-full bg-background transition-transform',
+                                                'inline-block h-4 w-4 rounded-full bg-surface transition-transform',
                                                 zona.activo ? 'translate-x-6' : 'translate-x-1',
                                             )}
                                         />
@@ -145,14 +145,14 @@ export function ListaZonasEnvio({ zonasIniciales }: ListaZonasEnvioProps) {
                                                 type="button"
                                                 disabled={estaEnProceso}
                                                 onClick={() => handleEliminar(zona)}
-                                                className="rounded-md bg-destructive px-2.5 py-1 text-xs font-bold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+                                            className="min-h-9 rounded-md bg-danger px-3 py-1 text-xs font-bold text-danger-foreground transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger disabled:opacity-50"
                                             >
                                                 Sí
                                             </button>
                                             <button
                                                 type="button"
                                                 onClick={() => setZonaPorConfirmar(null)}
-                                                className="rounded-md border border-border px-2.5 py-1 text-xs font-bold text-foreground transition-colors hover:border-foreground"
+                                                className="min-h-9 rounded-md border border-border px-3 py-1 text-xs font-bold text-foreground transition-colors hover:border-violet focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet"
                                             >
                                                 No
                                             </button>
@@ -162,7 +162,7 @@ export function ListaZonasEnvio({ zonasIniciales }: ListaZonasEnvioProps) {
                                             type="button"
                                             disabled={estaEnProceso}
                                             onClick={() => setZonaPorConfirmar(zona.id)}
-                                            className="text-xs font-bold text-destructive transition-opacity hover:opacity-80 disabled:opacity-50"
+                                            className="min-h-9 rounded-md px-3 text-xs font-bold text-danger transition-colors hover:bg-danger hover:text-danger-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger disabled:opacity-50"
                                         >
                                             Eliminar
                                         </button>

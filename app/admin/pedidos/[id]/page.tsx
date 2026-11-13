@@ -167,23 +167,23 @@ export default function PedidoDetallePage({ params }: PageProps) {
     );
 
     return (
-        <div className="space-y-6">
-            <header className="flex items-center justify-between pb-4 border-b border-border">
-                <div className="flex items-center gap-4">
+        <div className="space-y-5 sm:space-y-6">
+            <header className="flex flex-col gap-4 border-b border-border pb-5 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex min-w-0 items-start gap-3 sm:items-center sm:gap-4">
                     <Link
                         href="/admin/pedidos"
-                        className="px-4 py-2 text-sm font-semibold text-foreground bg-transparent border border-border rounded-lg hover:border-foreground transition-colors"
+                        className="inline-flex min-h-11 shrink-0 items-center rounded-xl border border-border bg-card px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet"
                     >
                         ← Volver
                     </Link>
-                    <div>
-                        <h1 className="text-2xl font-bold">Pedido #{pedido.id.slice(0, 8)}</h1>
-                        <p className="text-sm text-foreground/70">{formatearFecha(pedido.created_at)}</p>
+                    <div className="min-w-0">
+                        <h1 className="break-words text-2xl font-bold tracking-tight text-foreground sm:text-3xl">Pedido #{pedido.id.slice(0, 8)}</h1>
+                        <p className="mt-1 text-sm text-muted-foreground">{formatearFecha(pedido.created_at)}</p>
                     </div>
                 </div>
                 <span
                     className={cn(
-                        'inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold',
+                        'inline-flex min-h-8 items-center self-start rounded-full px-3 py-1 text-xs font-semibold sm:self-auto',
                         badgeEstadoPedido(pedido.estado).estilos,
                     )}
                 >
@@ -198,40 +198,40 @@ export default function PedidoDetallePage({ params }: PageProps) {
             />
 
             {pedido.estado === 'en_camino' && pedido.token_seguimiento && (
-                <div className="flex justify-end">
+                <div className="flex justify-start sm:justify-end">
                     <button
                         type="button"
                         onClick={handleCopiarLinkRepartidor}
-                        className="inline-flex items-center justify-center rounded-md border border-border bg-background px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted"
+                        className="inline-flex min-h-11 w-full items-center justify-center rounded-xl border border-border bg-card px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet sm:w-auto"
                     >
                         Copiar link del repartidor
                     </button>
                 </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="rounded-lg border border-border bg-background p-4 space-y-3">
-                    <h2 className="text-sm font-semibold text-foreground/70 uppercase tracking-wider">
+            <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2">
+                <div className="space-y-4 rounded-2xl border border-border bg-card p-5 sm:p-6">
+                    <h2 className="border-b border-border pb-3 text-xs font-bold uppercase tracking-wider text-muted-foreground">
                         Datos del cliente
                     </h2>
                     <div>
-                        <span className="text-xs text-foreground/60">Nombre</span>
-                        <p className="font-medium">
+                        <span className="text-xs text-muted-foreground">Nombre</span>
+                        <p className="break-words font-medium">
                             {cliente?.nombre_completo ?? 'Cliente sin nombre'}
                         </p>
                     </div>
                     <div>
-                        <span className="text-xs text-foreground/60">Teléfono</span>
-                        <p className="font-medium">{cliente?.telefono ?? 'Sin teléfono'}</p>
+                        <span className="text-xs text-muted-foreground">Teléfono</span>
+                        <p className="break-words font-medium tabular-nums">{cliente?.telefono ?? 'Sin teléfono'}</p>
                     </div>
                     {cliente?.email && (
                         <div>
-                            <span className="text-xs text-foreground/60">Email</span>
-                            <p className="font-medium">{cliente.email}</p>
+                            <span className="text-xs text-muted-foreground">Email</span>
+                            <p className="break-all font-medium">{cliente.email}</p>
                         </div>
                     )}
                     <div>
-                        <span className="text-xs text-foreground/60">Estado del cliente</span>
+                        <span className="text-xs text-muted-foreground">Estado del cliente</span>
                         <span
                             className={cn(
                                 'inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-semibold',
@@ -243,58 +243,60 @@ export default function PedidoDetallePage({ params }: PageProps) {
                     </div>
                 </div>
 
-                <div className="rounded-lg border border-border bg-background p-4 space-y-3">
-                    <h2 className="text-sm font-semibold text-foreground/70 uppercase tracking-wider">
+                <div className="flex flex-col justify-between space-y-4 rounded-2xl border border-border bg-card p-5 sm:p-6">
+                    <h2 className="border-b border-border pb-3 text-xs font-bold uppercase tracking-wider text-muted-foreground">
                         Resumen del pedido
                     </h2>
                     <div className="flex justify-between py-1">
-                        <span className="text-foreground/70">Subtotal</span>
-                        <span className="font-mono">${Number(itemsSubtotal).toLocaleString('es-AR')}</span>
+                        <span className="text-muted-foreground">Subtotal</span>
+                        <span className="font-sans font-semibold tabular-nums">${Number(itemsSubtotal).toLocaleString('es-AR')}</span>
                     </div>
-                    <div className="flex justify-between py-1 border-t border-border font-bold">
+                    <div className="flex justify-between border-t border-border pt-4 font-bold">
                         <span>Total</span>
-                        <span className="font-mono">${Number(pedido.total).toLocaleString('es-AR')}</span>
+                        <span className="font-sans text-xl font-bold tabular-nums lining-nums">${Number(pedido.total).toLocaleString('es-AR')}</span>
                     </div>
                 </div>
             </div>
 
-            <div className="rounded-lg border border-border bg-background overflow-hidden">
-                <table className="w-full text-sm">
-                    <thead>
-                        <tr className="border-b border-border bg-muted/30 text-foreground/70 uppercase tracking-wider">
-                            <th className="px-4 py-3 text-left font-semibold">Producto</th>
-                            <th className="px-4 py-3 text-left font-semibold">Talle</th>
-                            <th className="px-4 py-3 text-center font-semibold">Cant.</th>
-                            <th className="px-4 py-3 text-right font-semibold">Precio unit.</th>
-                            <th className="px-4 py-3 text-right font-semibold">Subtotal</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-border">
-                        {pedido.items.map((item) => (
-                            <tr key={item.id}>
-                                <td className="px-4 py-3">{item.nombre_producto}</td>
-                                <td className="px-4 py-3 text-foreground/70">
-                                    {item.talle ?? '-'}
-                                </td>
-                                <td className="px-4 py-3 text-center">{item.cantidad}</td>
-                                <td className="px-4 py-3 text-right font-mono">
-                                    ${Number(item.precio_unitario).toLocaleString('es-AR')}
-                                </td>
-                                <td className="px-4 py-3 text-right font-mono">
-                                    ${(Number(item.precio_unitario) * item.cantidad).toLocaleString('es-AR')}
-                                </td>
+            <div className="overflow-hidden rounded-2xl border border-border bg-card">
+                <div className="overflow-x-auto overscroll-x-contain">
+                    <table className="w-full min-w-max text-sm">
+                        <thead>
+                            <tr className="border-b border-border bg-muted/60 text-xs uppercase tracking-wider text-muted-foreground">
+                                <th scope="col" className="px-4 py-3 text-left font-semibold sm:px-5">Producto</th>
+                                <th scope="col" className="px-4 py-3 text-left font-semibold sm:px-5">Talle</th>
+                                <th scope="col" className="px-4 py-3 text-center font-semibold sm:px-5">Cant.</th>
+                                <th scope="col" className="px-4 py-3 text-right font-semibold sm:px-5">Precio unit.</th>
+                                <th scope="col" className="px-4 py-3 text-right font-semibold sm:px-5">Subtotal</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody className="divide-y divide-border">
+                            {pedido.items.map((item) => (
+                                <tr key={item.id} className="transition-colors hover:bg-muted/50">
+                                    <td className="max-w-64 px-4 py-4 font-semibold sm:px-5">{item.nombre_producto}</td>
+                                    <td className="px-4 py-4 text-muted-foreground sm:px-5">
+                                        {item.talle ?? '-'}
+                                    </td>
+                                    <td className="px-4 py-4 text-center tabular-nums sm:px-5">{item.cantidad}</td>
+                                    <td className="px-4 py-4 text-right font-sans tabular-nums sm:px-5">
+                                        ${Number(item.precio_unitario).toLocaleString('es-AR')}
+                                    </td>
+                                    <td className="px-4 py-4 text-right font-sans font-semibold tabular-nums sm:px-5">
+                                        ${(Number(item.precio_unitario) * item.cantidad).toLocaleString('es-AR')}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
-            <div className="rounded-lg border border-border bg-background p-4 space-y-4">
-                <h2 className="text-sm font-semibold text-foreground/70 uppercase tracking-wider">
+            <div className="space-y-5 rounded-2xl border border-border bg-card p-5 sm:p-6">
+                <h2 className="border-b border-border pb-3 text-xs font-bold uppercase tracking-wider text-muted-foreground">
                     Comprobante de acreditación
                 </h2>
 
-                <div className="flex flex-col gap-1.5">
+                <div className="flex max-w-xl flex-col gap-2">
                     <label htmlFor="comprobante_numero" className="text-sm font-bold">
                         Número de comprobante
                     </label>
@@ -305,7 +307,7 @@ export default function PedidoDetallePage({ params }: PageProps) {
                         onChange={(e) => setComprobanteInput(e.target.value)}
                         placeholder="Ej. 12345-AE, MP-5678-ABCD"
                         disabled={pedido.estado === 'confirmado'}
-                        className="w-full bg-transparent text-foreground border border-border rounded-lg p-2.5 focus:outline-none focus:border-foreground transition-colors disabled:opacity-50"
+                        className="min-h-11 w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-violet focus:ring-2 focus:ring-violet/20 disabled:cursor-not-allowed disabled:opacity-50"
                     />
                 </div>
 
@@ -313,7 +315,7 @@ export default function PedidoDetallePage({ params }: PageProps) {
                     type="button"
                     onClick={handleGuardarComprobante}
                     disabled={guardandoComprobante || pedido.estado === 'confirmado'}
-                    className="inline-flex items-center justify-center rounded-md bg-foreground px-4 py-2 text-sm font-bold text-background transition-opacity hover:opacity-90 disabled:opacity-50 cursor-pointer"
+                    className="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground transition-colors hover:bg-violet hover:text-violet-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
                 >
                     {guardandoComprobante ? (
                         <>
@@ -330,7 +332,7 @@ export default function PedidoDetallePage({ params }: PageProps) {
                         type="button"
                         onClick={handleConfirmar}
                         disabled={confirmando}
-                        className="inline-flex items-center justify-center rounded-md bg-emerald-600 px-4 py-2 text-sm font-bold text-background transition-opacity hover:opacity-90 disabled:opacity-50 cursor-pointer"
+                        className="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-emerald px-4 py-2 text-sm font-bold text-emerald-foreground transition-colors hover:bg-emerald-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
                     >
                         {confirmando ? (
                             <>

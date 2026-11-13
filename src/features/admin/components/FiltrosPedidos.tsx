@@ -44,7 +44,7 @@ export function FiltrosPedidos({ estadoActivo }: FiltrosPedidosProps) {
 
     return (
         <>
-            <nav className="hidden gap-2 border-b border-border md:flex">
+            <nav aria-label="Filtrar pedidos por estado" className="hidden gap-1 overflow-x-auto border-b border-border md:flex">
                 {FILTROS.map((filtro) => {
                     const isActive = estadoActivo === filtro;
                     return (
@@ -53,10 +53,10 @@ export function FiltrosPedidos({ estadoActivo }: FiltrosPedidosProps) {
                             type="button"
                             onClick={() => handleFiltrar(filtro)}
                             className={cn(
-                                'px-4 py-2 text-sm font-semibold rounded-t-lg border-b-2 transition-colors cursor-pointer',
+                                'whitespace-nowrap rounded-t-lg border-b-2 px-4 py-3 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet',
                                 isActive
-                                    ? 'border-foreground text-foreground'
-                                    : 'border-transparent text-foreground/60 hover:text-foreground hover:border-foreground/30',
+                                    ? 'border-violet text-violet-soft-foreground'
+                                    : 'border-transparent text-muted-foreground hover:border-border hover:text-foreground',
                             )}
                         >
                             {ETIQUETAS_FILTROS[filtro]}
@@ -65,15 +65,15 @@ export function FiltrosPedidos({ estadoActivo }: FiltrosPedidosProps) {
                 })}
             </nav>
 
-            <div className="flex flex-col gap-1 md:hidden">
-                <label htmlFor="filtro_estado_pedido" className="text-sm font-semibold text-foreground">
+            <div className="flex flex-col gap-2 md:hidden">
+                <label htmlFor="filtro_estado_pedido" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                     Filtrar por estado
                 </label>
                 <select
                     id="filtro_estado_pedido"
                     value={estadoActivo}
                     onChange={(evento) => handleFiltrar(evento.target.value as FiltroEstado)}
-                    className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-foreground"
+                    className="min-h-11 w-full rounded-xl border border-border bg-card px-4 py-2 text-sm font-semibold text-foreground outline-none transition-colors focus:border-violet focus:ring-2 focus:ring-violet/20"
                 >
                     {FILTROS.map((filtro) => (
                         <option key={filtro} value={filtro}>

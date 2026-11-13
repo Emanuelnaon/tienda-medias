@@ -44,16 +44,16 @@ export function FormularioDatosBancarios({ datosIniciales, isWebmaster }: Formul
     };
 
     const inputClass =
-        'w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-foreground disabled:cursor-not-allowed disabled:bg-muted';
+        'min-h-11 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-violet focus-visible:ring-2 focus-visible:ring-violet disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground';
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="w-full space-y-4">
-            <p className="text-xs text-foreground/70">
+        <form onSubmit={handleSubmit(onSubmit)} className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2">
+            <p className="col-span-full text-sm leading-relaxed text-muted-foreground">
                 Estos datos se mostrarán al comprador en la página de confirmación de pedido para poder abonar.
             </p>
 
             <div>
-                <label htmlFor="cbu" className="mb-1 block text-sm font-semibold text-foreground">
+                <label htmlFor="cbu" className="mb-1.5 block text-sm font-semibold text-foreground">
                     CBU
                 </label>
                 <input
@@ -67,11 +67,11 @@ export function FormularioDatosBancarios({ datosIniciales, isWebmaster }: Formul
                     placeholder="22 dígitos numéricos"
                     className={inputClass}
                 />
-                {errors.cbu && <p className="mt-1 text-xs text-red-600">{errors.cbu.message}</p>}
+                {errors.cbu && <p className="mt-1 rounded-md bg-danger px-2.5 py-1.5 text-xs font-medium text-danger-foreground">{errors.cbu.message}</p>}
             </div>
 
             <div>
-                <label htmlFor="alias_bancario" className="mb-1 block text-sm font-semibold text-foreground">
+                <label htmlFor="alias_bancario" className="mb-1.5 block text-sm font-semibold text-foreground">
                     Alias bancario
                 </label>
                 <input
@@ -85,12 +85,12 @@ export function FormularioDatosBancarios({ datosIniciales, isWebmaster }: Formul
                     className={inputClass}
                 />
                 {errors.alias_bancario && (
-                    <p className="mt-1 text-xs text-red-600">{errors.alias_bancario.message}</p>
+                    <p className="mt-1 rounded-md bg-danger px-2.5 py-1.5 text-xs font-medium text-danger-foreground">{errors.alias_bancario.message}</p>
                 )}
             </div>
 
             <div>
-                <label htmlFor="banco" className="mb-1 block text-sm font-semibold text-foreground">
+                <label htmlFor="banco" className="mb-1.5 block text-sm font-semibold text-foreground">
                     Banco
                 </label>
                 <input
@@ -102,11 +102,11 @@ export function FormularioDatosBancarios({ datosIniciales, isWebmaster }: Formul
                     placeholder="Ej. Banco Galicia"
                     className={inputClass}
                 />
-                {errors.banco && <p className="mt-1 text-xs text-red-600">{errors.banco.message}</p>}
+                {errors.banco && <p className="mt-1 rounded-md bg-danger px-2.5 py-1.5 text-xs font-medium text-danger-foreground">{errors.banco.message}</p>}
             </div>
 
             <div>
-                <label htmlFor="titular_cuenta" className="mb-1 block text-sm font-semibold text-foreground">
+                <label htmlFor="titular_cuenta" className="mb-1.5 block text-sm font-semibold text-foreground">
                     Titular de la cuenta
                 </label>
                 <input
@@ -119,12 +119,12 @@ export function FormularioDatosBancarios({ datosIniciales, isWebmaster }: Formul
                     className={inputClass}
                 />
                 {errors.titular_cuenta && (
-                    <p className="mt-1 text-xs text-red-600">{errors.titular_cuenta.message}</p>
+                    <p className="mt-1 rounded-md bg-danger px-2.5 py-1.5 text-xs font-medium text-danger-foreground">{errors.titular_cuenta.message}</p>
                 )}
             </div>
 
             <div>
-                <label htmlFor="meta_pixel_id" className="mb-1 block text-sm font-semibold text-foreground">
+                <label htmlFor="meta_pixel_id" className="mb-1.5 block text-sm font-semibold text-foreground">
                     Meta Pixel ID (opcional)
                 </label>
                 <input
@@ -137,12 +137,12 @@ export function FormularioDatosBancarios({ datosIniciales, isWebmaster }: Formul
                     className={inputClass}
                 />
                 {errors.meta_pixel_id && (
-                    <p className="mt-1 text-xs text-red-600">{errors.meta_pixel_id.message}</p>
+                    <p className="mt-1 rounded-md bg-danger px-2.5 py-1.5 text-xs font-medium text-danger-foreground">{errors.meta_pixel_id.message}</p>
                 )}
             </div>
 
             {isWebmaster ? (
-                <div className="rounded-md border border-border bg-muted p-4 text-sm text-muted-foreground">
+                <div className="col-span-full rounded-lg border border-border bg-muted p-4 text-sm leading-relaxed text-muted-foreground">
                     <p className="font-semibold">Modo solo lectura</p>
                     <p>
                         Un webmaster solo puede visualizar los datos bancarios del tenant.{' '}
@@ -155,7 +155,7 @@ export function FormularioDatosBancarios({ datosIniciales, isWebmaster }: Formul
                 <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full rounded-md bg-emerald-600 px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50">
+                    className="col-span-full min-h-11 w-full rounded-lg bg-emerald text-sm font-bold text-emerald-foreground transition-colors hover:bg-emerald-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald disabled:cursor-not-allowed disabled:opacity-50">
                     {isSubmitting ? 'Guardando...' : 'Guardar datos bancarios'}
                 </button>
             )}

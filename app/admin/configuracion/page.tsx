@@ -31,34 +31,34 @@ export default async function ConfiguracionPage() {
     }
 
     return (
-        <div className="flex flex-col gap-6 w-full max-w-6xl mx-auto text-foreground bg-background">
-            <header className="flex items-center justify-between pb-4 border-b border-border">
-                <div>
-                    <h1 className="text-2xl font-bold">Configuración Global</h1>
-                    <p className="text-sm text-foreground/70 mt-1">
+        <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 bg-background text-foreground">
+            <header className="flex flex-col items-start justify-between gap-4 border-b border-border pb-5 sm:flex-row sm:items-center">
+                <div className="min-w-0">
+                    <h1 className="font-display text-3xl font-bold leading-tight">Configuración Global</h1>
+                    <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
                         Configurá los datos de pago, los envíos y los métodos de cobro de tu tienda.
                     </p>
                 </div>
                 <Link
                     href="/admin"
-                    className="px-4 py-2 text-sm font-semibold text-foreground bg-transparent border border-border rounded-lg hover:border-foreground transition-colors"
+                    className="inline-flex min-h-11 w-full items-center justify-center rounded-lg border border-border bg-surface px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:border-violet hover:text-violet-soft-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet sm:w-auto"
                 >
                     Volver al Dashboard
                 </Link>
             </header>
 
-            <section className="border border-border rounded-xl bg-background p-6">
-                <h2 className="text-lg font-semibold mb-1">Datos bancarios</h2>
-                <p className="text-sm text-foreground/60 mb-4">
+            <section className="rounded-xl border border-border bg-surface p-4 shadow-sm sm:p-6">
+                <h2 className="mb-1 font-display text-xl font-bold">Datos bancarios</h2>
+                <p className="mb-5 text-sm leading-relaxed text-muted-foreground">
                     Estos datos se mostrarán al comprador en la página de confirmación de pedido para poder abonar.
                 </p>
                 <FormularioDatosBancarios datosIniciales={datos} isWebmaster={isWebmaster} />
             </section>
 
-            <section className="border border-border rounded-xl bg-background p-6 space-y-6">
+            <section className="space-y-5 rounded-xl border border-border bg-surface p-4 shadow-sm sm:p-6">
                 <div>
-                    <h2 className="text-lg font-semibold mb-1">Zonas de envío</h2>
-                    <p className="text-sm text-foreground/60">
+                    <h2 className="mb-1 font-display text-xl font-bold">Zonas de envío</h2>
+                    <p className="text-sm leading-relaxed text-muted-foreground">
                         Definí las zonas por código postal, su método de envío y su costo. El comprador
                         ve el estimado al ingresar su código postal en el checkout.
                     </p>
@@ -70,9 +70,9 @@ export default async function ConfiguracionPage() {
                         <ListaZonasEnvio zonasIniciales={zonas} />
                     </>
                 ) : (
-                    <div className="rounded-md border border-amber-500/50 bg-amber-500/10 p-4 text-amber-700 dark:text-amber-300">
+                    <div className="rounded-lg border border-warning bg-warning p-4 text-warning-foreground">
                         <p className="font-semibold">Feature no disponible</p>
-                        <p className="text-sm mt-1">
+                        <p className="mt-1 text-sm leading-relaxed">
                             {isWebmaster
                                 ? 'Como webmaster tenés acceso de solo lectura: no podés modificar las zonas de envío del tenant.'
                                 : 'La gestión de zonas de envío no está habilitada para tu plan actual.'}
