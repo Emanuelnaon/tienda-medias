@@ -54,7 +54,7 @@ supabase/.temp/
 /coverage
 /playwright-report/
 /test-results/
-/fixtures/productos/
+/tests/e2e/fixtures/productos/
 
 
 # editor backups
