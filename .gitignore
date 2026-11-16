@@ -54,6 +54,8 @@ supabase/.temp/
 /coverage
 /playwright-report/
 /test-results/
+/fixtures/productos/
+
 
 # editor backups
 .gitignore~
