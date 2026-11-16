@@ -4,7 +4,6 @@ import toast from 'react-hot-toast';
 import { useState } from 'react';
 import { useCarritoStore } from '@/src/features/carrito/store';
 import type { Database } from '@/src/types/supabase';
-import { Share2 } from 'lucide-react';
 
 type CategoriaResumen = Pick<
     Database['public']['Tables']['categorias']['Row'],
@@ -44,36 +43,8 @@ export function SelectorProducto({ producto }: Props) {
         toast.success('¡Agregado al carrito!');
     };
 
-    const handleCompartir = async () => {
-        const url = window.location.href;
-        if (navigator.share) {
-            try {
-                await navigator.share({
-                    title: producto.nombre,
-                    text: `¡Mira esto en nuestra tienda! ${producto.nombre}`,
-                    url: url,
-                });
-            } catch (error) {
-                console.log('Error al compartir', error);
-            }
-        } else {
-            // Fallback: copiar al portapapeles
-            await navigator.clipboard.writeText(url);
-            toast.success('Enlace copiado al portapapeles');
-        }
-    };
-
     return (
         <div className="mt-6 flex flex-col gap-6">
-            <div className="flex items-center justify-between">
-                <button
-                    onClick={handleCompartir}
-                    className="flex items-center gap-2 rounded-full border border-border px-3 py-1.5 text-sm text-foreground transition-colors hover:bg-foreground hover:text-background">
-                    <Share2 className="h-4 w-4" />
-                    <span>Compartir</span>
-                </button>
-            </div>
-
             {producto.stock > 0 && producto.stock < 5 && (
                 <span className="w-fit rounded-full bg-red-600 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.15em] text-white shadow-sm">
                     ¡Últimas unidades!

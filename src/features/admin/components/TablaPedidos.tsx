@@ -24,6 +24,16 @@ function badgeEstado(estado: string | null): string {
     return 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400';
 }
 
+const ESTADOS_FILTRO_PEDIDOS = new Set([
+    'pendiente',
+    'confirmado',
+    'preparando',
+    'en_camino',
+    'entregado',
+    'cancelado',
+    'todos',
+]);
+
 export function TablaPedidos({ pedidosIniciales, estadoInicial }: TablaPedidosProps) {
     const [pedidos, setPedidos] = useState<ReadonlyArray<PedidoPendiente>>(pedidosIniciales);
     const [pedidoConfirmandoId, setPedidoConfirmandoId] = useState<string | null>(null);
@@ -74,7 +84,7 @@ export function TablaPedidos({ pedidosIniciales, estadoInicial }: TablaPedidosPr
                             </td>
                             <td className="max-w-56 px-4 py-4 sm:px-5">
                                 <Link
-                                    href={`/admin/pedidos/${pedido.id}`}
+                                    href={`/admin/pedidos/${pedido.id}?estado=${encodeURIComponent(ESTADOS_FILTRO_PEDIDOS.has(estadoInicial) ? estadoInicial : 'pendiente')}`}
                                     className="font-semibold text-foreground underline-offset-4 hover:text-violet hover:underline focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet"
                                 >
                                     {pedido.cliente?.nombre_completo ?? 'Cliente sin nombre'}

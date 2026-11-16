@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { createClient } from '@/src/lib/supabase/client';
-import { TarjetaProducto } from '@/src/features/catalogo/components/TarjetaProducto';
-import { Grid, Filter } from 'lucide-react';
+import Link from 'next/link';
+import { Grid } from 'lucide-react';
 import type { Database } from '@/src/types/supabase';
 
 type CategoriaResumen = Pick<
@@ -13,11 +13,13 @@ type CategoriaResumen = Pick<
 type ProductoConCategoria = Database['public']['Tables']['productos']['Row'] & {
     categorias: CategoriaResumen | null;
 };
+type CategoriaDisponible = {
+    readonly nombre: string;
+    readonly imagenUrl: string | null;
+};
 
 export default function CatalogoPage() {
-    const [productos, setProductos] = useState<ProductoConCategoria[]>([]);
-    const [categorias, setCategorias] = useState<string[]>(['Todas']);
-    const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<string>('Todas');
+    const [categorias, setCategorias] = useState<CategoriaDisponible[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
@@ -30,13 +32,20 @@ export default function CatalogoPage() {
 
                 if (data) {
                     const productosData = data as ProductoConCategoria[];
-                    setProductos(productosData);
+                    const categoriasPorNombre = new Map<string, CategoriaDisponible>();
+                    for (const producto of productosData) {
+                        const nombre = producto.categorias?.nombre;
+                        if (!nombre) continue;
 
-                    // Extraer categorías únicas
-                    const categoriasUnicas = Array.from(
-                        new Set(productosData.map((p) => p.categorias?.nombre).filter((cat): cat is string => Boolean(cat))),
-                    );
-                    setCategorias(['Todas', ...categoriasUnicas]);
+                        const categoriaExistente = categoriasPorNombre.get(nombre);
+                        if (!categoriaExistente || (!categoriaExistente.imagenUrl && producto.imagen_url)) {
+                            categoriasPorNombre.set(nombre, {
+                                nombre,
+                                imagenUrl: categoriaExistente?.imagenUrl ?? producto.imagen_url,
+                            });
+                        }
+                    }
+                    setCategorias(Array.from(categoriasPorNombre.values()));
                 }
             } catch (error) {
                 console.error('Error al cargar productos:', error);
@@ -48,64 +57,55 @@ export default function CatalogoPage() {
         fetchProductos();
     }, []);
 
-    const handleSelectCategoria = (cat: string) => {
-        setCategoriaSeleccionada(cat);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-
-    const productosFiltrados: ProductoConCategoria[] =
-        categoriaSeleccionada === 'Todas'
-            ? productos
-            : productos.filter((p: ProductoConCategoria) => p.categorias?.nombre === categoriaSeleccionada);
-
     return (
         <div className="container mx-auto px-4 py-8 min-h-screen">
-            <header className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <header className="mb-8">
                 <div>
-                    <h1 className="text-3xl font-extrabold text-foreground">Catálogo de Productos</h1>
-                    <p className="text-muted-foreground mt-1">Explora nuestra selección de productos</p>
-                </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                    <Filter className="w-5 h-5" />
-                    <span className="text-sm font-medium">{productosFiltrados.length} productos encontrados</span>
+                    <h1 className="text-3xl font-extrabold text-foreground">Categorías</h1>
+                    <p className="text-muted-foreground mt-1">Explora nuestros productos por categoría</p>
                 </div>
             </header>
 
-            {/* Menú de Categorías */}
-            <div className="flex flex-wrap gap-2 mb-8">
-                {categorias.map((cat: string) => (
-                    <button
-                        key={cat}
-                        type="button"
-                        onClick={() => handleSelectCategoria(cat)}
-                        className={`px-4 py-2 rounded-full text-sm font-medium cursor-pointer transition-all duration-200 active:scale-95 ${
-                            categoriaSeleccionada === cat
-                                ? 'bg-foreground text-background border-foreground'
-                                : 'bg-secondary text-secondary-foreground hover:bg-violet-soft'
-                        }`}>
-                        {cat}
-                    </button>
-                ))}
-            </div>
-
-            {/* Grilla de Productos */}
             {loading ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {[...Array(8)].map((_, i) => (
                         <div key={i} className="h-100 bg-muted animate-pulse rounded-xl" />
                     ))}
                 </div>
-            ) : productosFiltrados.length > 0 ? (
+            ) : categorias.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    {productosFiltrados.map((producto: ProductoConCategoria) => (
-                        <TarjetaProducto key={producto.id} producto={producto} />
+                    {categorias.map((categoria) => (
+                        <Link
+                            key={categoria.nombre}
+                            href={`/?categoria=${encodeURIComponent(categoria.nombre)}`}
+                            className="group overflow-hidden rounded-2xl border border-border bg-surface transition-shadow hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet"
+                        >
+                            <div className="relative aspect-square overflow-hidden bg-muted">
+                                {categoria.imagenUrl && (
+                                    /* eslint-disable-next-line @next/next/no-img-element */
+                                    <img
+                                        src={categoria.imagenUrl}
+                                        alt=""
+                                        onError={(event) => {
+                                            event.currentTarget.style.display = 'none';
+                                            event.currentTarget.nextElementSibling?.classList.remove('hidden');
+                                        }}
+                                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105 motion-reduce:transform-none motion-reduce:transition-none"
+                                    />
+                                )}
+                                <div className={`${categoria.imagenUrl ? 'hidden ' : ''}absolute inset-0 flex items-center justify-center`}>
+                                    <Grid aria-hidden="true" className="h-12 w-12 text-muted-foreground/40" />
+                                </div>
+                            </div>
+                            <h2 className="px-4 py-4 text-lg font-bold text-foreground">{categoria.nombre}</h2>
+                        </Link>
                     ))}
                 </div>
             ) : (
                 <div className="flex flex-col items-center justify-center py-20 text-center">
                     <Grid className="w-16 h-16 text-muted-foreground/20 mb-4" />
-                    <h2 className="text-2xl font-bold text-foreground">No se encontraron productos</h2>
-                    <p className="text-muted-foreground mt-1">Intenta con otra categoría o vuelve más tarde.</p>
+                    <h2 className="text-2xl font-bold text-foreground">No hay categorías disponibles</h2>
+                    <p className="text-muted-foreground mt-1">Vuelve más tarde para explorar nuestros productos.</p>
                 </div>
             )}
         </div>

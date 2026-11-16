@@ -3,7 +3,6 @@ import { SelectorProducto } from '@/src/features/productos/components/SelectorPr
 import { SliderProducto } from '@/src/features/productos/components/SliderProducto';
 import ProductoSugeridos from '@/src/features/productos/components/ProductoSugeridos';
 import { FormularioListaEspera } from '@/src/features/productos/components/FormularioListaEspera';
-import { BotonesCompartir } from '@/src/features/productos/components/BotonesCompartir';
 import { calcularEtiquetasInventario } from '@/src/features/catalogo/utils';
 import { EtiquetaInventario } from '@/src/features/catalogo/components/EtiquetaInventario';
 import { PixelViewContent } from './PixelViewContent';
@@ -91,11 +90,6 @@ export default async function ProductoPage({ params }: Props) {
                          <SelectorProducto producto={producto} />
                      )}
 
-                    <BotonesCompartir
-                        productoId={producto.id}
-                        productoNombre={producto.nombre}
-                        productoPrecio={producto.precio}
-                    />
                 </div>
             </div>
 

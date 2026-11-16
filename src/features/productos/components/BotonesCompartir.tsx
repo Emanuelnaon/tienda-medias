@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import toast from 'react-hot-toast';
+import { MessageCircle, Share2 } from 'lucide-react';
 
 interface BotonesCompartirProps {
     readonly productoNombre: string;
@@ -16,9 +17,8 @@ export function BotonesCompartir({
 }: BotonesCompartirProps) {
     const [copiando, setCopiando] = useState(false);
 
-    const url = `${window.location.origin}/producto/${productoId}`;
-
     const handleCompartirWhatsApp = () => {
+        const url = `${window.location.origin}/producto/${productoId}`;
         const texto = `${productoNombre} - $${productoPrecio}\n${url}`;
         window.open(
             `https://wa.me/?text=${encodeURIComponent(texto)}`,
@@ -27,7 +27,23 @@ export function BotonesCompartir({
         );
     };
 
-    const handleCopiarLink = async () => {
+    const handleCompartir = async () => {
+        const url = `${window.location.origin}/producto/${productoId}`;
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: productoNombre,
+                    text: `¡Mira esto en nuestra tienda! ${productoNombre}`,
+                    url,
+                });
+            } catch (error) {
+                if (!(error instanceof DOMException && error.name === 'AbortError')) {
+                    toast.error('No se pudo compartir el enlace');
+                }
+            }
+            return;
+        }
+
         setCopiando(true);
         try {
             if (navigator.clipboard && window.isSecureContext) {
@@ -42,31 +58,35 @@ export function BotonesCompartir({
                 document.execCommand('copy');
                 document.body.removeChild(textarea);
             }
-            toast.success('Link copiado');
+            toast.success('Enlace copiado al portapapeles');
         } catch {
-            toast.error('No se pudo copiar el link');
+            toast.error('No se pudo copiar el enlace');
         } finally {
             setCopiando(false);
         }
     };
 
     return (
-        <section className="flex flex-wrap gap-3 pt-4">
+        <div className="absolute right-3 top-3 z-10 flex gap-2">
             <button
                 type="button"
                 onClick={handleCompartirWhatsApp}
-                className="inline-flex items-center justify-center rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white transition-opacity hover:bg-green-700"
+                aria-label="Compartir por WhatsApp"
+                title="Compartir por WhatsApp"
+                className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-emerald text-emerald-foreground shadow-md transition-colors hover:bg-emerald-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald focus-visible:ring-offset-2"
             >
-                Compartir WhatsApp
+                <MessageCircle aria-hidden="true" className="h-5 w-5" />
             </button>
             <button
                 type="button"
-                onClick={handleCopiarLink}
+                onClick={handleCompartir}
                 disabled={copiando}
-                className="inline-flex items-center justify-center rounded-md border border-border bg-background px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted disabled:opacity-50"
+                aria-label="Compartir producto"
+                title="Compartir producto"
+                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-border bg-background text-foreground shadow-md transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 disabled:cursor-wait disabled:opacity-50"
             >
-                {copiando ? 'Copiando...' : 'Copiar link'}
+                <Share2 aria-hidden="true" className="h-5 w-5" />
             </button>
-        </section>
+        </div>
     );
 }
