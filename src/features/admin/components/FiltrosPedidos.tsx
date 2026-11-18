@@ -30,15 +30,22 @@ const ETIQUETAS_FILTROS: Record<FiltroEstado, string> = {
 
 interface FiltrosPedidosProps {
     readonly estadoActivo: string;
+    readonly ordenActivo: string;
 }
 
-export function FiltrosPedidos({ estadoActivo }: FiltrosPedidosProps) {
+export function FiltrosPedidos({ estadoActivo, ordenActivo }: FiltrosPedidosProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
 
     const handleFiltrar = (filtro: FiltroEstado) => {
         const params = new URLSearchParams(searchParams.toString());
         params.set('estado', filtro);
+        router.push(`?${params.toString()}`);
+    };
+
+    const handleOrdenar = (orden: string) => {
+        const params = new URLSearchParams(searchParams.toString());
+        params.set('orden', orden);
         router.push(`?${params.toString()}`);
     };
 
@@ -80,6 +87,23 @@ export function FiltrosPedidos({ estadoActivo }: FiltrosPedidosProps) {
                             {ETIQUETAS_FILTROS[filtro]}
                         </option>
                     ))}
+                </select>
+            </div>
+
+            <div className="flex items-center gap-3">
+                <label htmlFor="orden_pedidos" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                    Ordenar
+                </label>
+                <select
+                    id="orden_pedidos"
+                    value={ordenActivo}
+                    onChange={(evento) => handleOrdenar(evento.target.value)}
+                    className="min-h-11 rounded-xl border border-border bg-card px-4 py-2 text-sm font-semibold text-foreground outline-none transition-colors focus:border-violet focus:ring-2 focus:ring-violet/20"
+                >
+                    <option value="recientes">Más recientes</option>
+                    <option value="antiguos">Más antiguos</option>
+                    <option value="total_desc">Total: mayor a menor</option>
+                    <option value="total_asc">Total: menor a mayor</option>
                 </select>
             </div>
         </>

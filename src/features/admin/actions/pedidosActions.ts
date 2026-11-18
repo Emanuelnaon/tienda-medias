@@ -39,6 +39,14 @@ export type PedidoDetalle = Omit<PedidoPendiente, 'cliente'> & {
 };
 
 const FILTRO_TODOS = 'todos';
+type OrdenPedidos = 'recientes' | 'antiguos' | 'total_desc' | 'total_asc';
+
+const ORDENES_PEDIDOS: ReadonlyArray<OrdenPedidos> = [
+    'recientes',
+    'antiguos',
+    'total_desc',
+    'total_asc',
+];
 
 const ESTADOS_PEDIDO_WHITELIST: ReadonlyArray<string> = [
     'pendiente',
@@ -50,7 +58,10 @@ const ESTADOS_PEDIDO_WHITELIST: ReadonlyArray<string> = [
     FILTRO_TODOS,
 ];
 
-export async function listarPedidosPendientes(estado?: string): Promise<PedidoPendiente[]> {
+export async function listarPedidosPendientes(
+    estado?: string,
+    orden?: string,
+): Promise<PedidoPendiente[]> {
     const supabase = await verificarAdministrador('gestionar pedidos');
     const tenantId = await obtenerTenantIdAdmin();
 
@@ -58,13 +69,27 @@ export async function listarPedidosPendientes(estado?: string): Promise<PedidoPe
         throw new Error(`Estado de pedido inválido: ${estado}.`);
     }
 
+    const ordenSeguro: OrdenPedidos = orden && ORDENES_PEDIDOS.includes(orden as OrdenPedidos)
+        ? orden as OrdenPedidos
+        : 'recientes';
+
     let query = supabase
         .from('pedidos')
         .select(
             'id, created_at, total, estado, comprobante_url, comprobante_numero, cliente:clientes(nombre_completo, telefono, estado), items:pedidos_items(id, nombre_producto, talle, cantidad, precio_unitario)',
         )
-        .eq('tenant_id', tenantId)
-        .order('created_at', { ascending: true });
+        .eq('tenant_id', tenantId);
+
+    if (ordenSeguro === 'total_desc' || ordenSeguro === 'total_asc') {
+        query = query.order('total', { ascending: ordenSeguro === 'total_asc' });
+    }
+
+    query = query
+        .order('created_at', {
+            ascending: ordenSeguro === 'antiguos',
+            nullsFirst: false,
+        })
+        .order('id', { ascending: true });
 
     if (estado && estado !== FILTRO_TODOS) {
         query = query.eq('estado', estado);
@@ -97,6 +122,19 @@ export async function confirmarPedido(pedidoId: string): Promise<Json> {
 
         if (error) {
             throw new Error(`Error en base de datos: ${error.message}`);
+        }
+
+        if (
+            data === null ||
+            typeof data !== 'object' ||
+            Array.isArray(data) ||
+            data.success !== true
+        ) {
+            const mensaje = typeof data === 'object' && data !== null && !Array.isArray(data)
+                && typeof data.mensaje === 'string'
+                ? data.mensaje
+                : 'La acreditación no se completó.';
+            throw new Error(mensaje);
         }
 
         revalidatePath('/admin/pedidos');
@@ -193,6 +231,10 @@ export async function actionCambiarEstadoPedido(
 
     if (!esEstadoPedido(nuevoEstado)) {
         throw new Error(`Estado de pedido inválido: ${nuevoEstado}.`);
+    }
+
+    if (nuevoEstado === 'confirmado') {
+        throw new Error('Usá la acción Confirmar acreditación para confirmar este pedido.');
     }
 
     const notasNormalizadas = typeof notas === 'string' ? notas.trim() : '';

@@ -20,7 +20,7 @@ import {
 
 interface PageProps {
     readonly params: Promise<{ id: string }>;
-    readonly searchParams: Promise<{ estado?: string }>;
+    readonly searchParams: Promise<{ estado?: string; orden?: string }>;
 }
 
 const ESTADOS_FILTRO_PEDIDOS = new Set([
@@ -32,6 +32,8 @@ const ESTADOS_FILTRO_PEDIDOS = new Set([
     'cancelado',
     'todos',
 ]);
+
+const ORDENES_PEDIDOS = new Set(['recientes', 'antiguos', 'total_desc', 'total_asc']);
 
 const ESTILOS_BADGE_ESTADO: Record<EstadoPedido, string> = {
     pendiente: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400',
@@ -77,7 +79,7 @@ function formatearFecha(fecha: string | null): string {
 
 export default function PedidoDetallePage({ params, searchParams }: PageProps) {
     const { id } = use(params);
-    const { estado } = use(searchParams);
+    const { estado, orden } = use(searchParams);
     const router = useRouter();
     const [pedido, setPedido] = useState<PedidoDetalle | null>(null);
     const [cargando, setCargando] = useState(true);
@@ -178,13 +180,14 @@ export default function PedidoDetallePage({ params, searchParams }: PageProps) {
         0,
     );
     const estadoOrigen = estado && ESTADOS_FILTRO_PEDIDOS.has(estado) ? estado : 'pendiente';
+    const ordenOrigen = orden && ORDENES_PEDIDOS.has(orden) ? orden : 'recientes';
 
     return (
         <div className="space-y-5 sm:space-y-6">
             <header className="flex flex-col gap-4 border-b border-border pb-5 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex min-w-0 items-start gap-3 sm:items-center sm:gap-4">
                     <Link
-                        href={`/admin/pedidos?estado=${encodeURIComponent(estadoOrigen)}`}
+                        href={`/admin/pedidos?estado=${encodeURIComponent(estadoOrigen)}&orden=${encodeURIComponent(ordenOrigen)}`}
                         className="inline-flex min-h-11 shrink-0 items-center rounded-xl border border-border bg-card px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet"
                     >
                         ← Volver

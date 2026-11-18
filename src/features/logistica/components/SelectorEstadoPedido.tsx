@@ -21,7 +21,7 @@ export function SelectorEstadoPedido({
     onEstadoCambiado,
 }: SelectorEstadoPedidoProps) {
     const estadoNormalizado = esEstadoPedido(estadoActual) ? estadoActual : null;
-    const estadosDisponibles = proximosEstados(estadoNormalizado);
+    const estadosDisponibles = proximosEstados(estadoNormalizado).filter((estado) => estado !== 'confirmado');
 
     const [estadoSeleccionado, setEstadoSeleccionado] = useState<EstadoPedido | ''>('');
     const [notas, setNotas] = useState('');
