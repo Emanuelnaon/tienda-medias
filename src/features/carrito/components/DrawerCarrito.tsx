@@ -31,14 +31,14 @@ export function DrawerCarrito({ isOpen, onClose }: DrawerCarritoProps) {
                 <button
                     type="button"
                     aria-label="Cerrar carrito"
-                    className="fixed inset-0 bg-foreground/60 z-99998 transition-opacity duration-300"
+                    className="fixed inset-0 bg-foreground/60 z-99998 transition-opacity duration-300 motion-reduce:transition-none"
                     onClick={onClose}
                 />
             )}
 
             {/* Bottom Sheet / Side Drawer */}
             <div
-                className={`fixed z-99999 bg-background text-foreground transition-transform duration-300 ease-in-out flex flex-col
+                className={`fixed z-99999 bg-background text-foreground transition-transform duration-300 ease-in-out motion-reduce:transition-none flex flex-col
                     bottom-0 left-0 right-0 w-full rounded-t-2xl max-h-[85vh]
                     md:top-0 md:bottom-0 md:left-auto md:right-0 md:w-96 md:rounded-none md:max-h-screen
                     ${isOpen ? 'translate-y-0 md:translate-x-0' : 'translate-y-full md:translate-x-full'}
@@ -48,7 +48,7 @@ export function DrawerCarrito({ isOpen, onClose }: DrawerCarritoProps) {
                     <h2 className="text-lg font-bold flex items-center gap-2">Resumen del Pedido 🛒</h2>
                     <button
                         onClick={onClose}
-                        className="p-2 bg-transparent text-foreground border border-border hover:border-foreground rounded-full transition-colors"
+                        className="min-h-10 min-w-10 p-2 bg-transparent text-foreground border border-border hover:border-foreground rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                         aria-label="Cerrar carrito">
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path
@@ -77,7 +77,7 @@ export function DrawerCarrito({ isOpen, onClose }: DrawerCarritoProps) {
                             {items.map((item) => (
                                 <div
                                     key={`${item.id}-${item.talle_seleccionado}`}
-                                    className="flex items-center justify-between p-3 border border-border rounded-lg bg-background">
+                                    className="flex items-center justify-between gap-2 p-3 border border-border rounded-lg bg-background">
                                     <div className="flex flex-col gap-1">
                                         <span className="font-semibold text-foreground text-sm line-clamp-1">
                                             {item.nombre}
@@ -95,10 +95,10 @@ export function DrawerCarrito({ isOpen, onClose }: DrawerCarritoProps) {
                                                             item.cantidad - 1,
                                                         )
                                                     }
-                                                    className="text-foreground hover:opacity-80 disabled:opacity-30 font-bold text-xs px-1">
+                                                    className="min-h-10 min-w-10 px-1 font-bold text-xs text-foreground hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-30">
                                                     -
                                                 </button>
-                                                <span className="font-semibold text-foreground text-xs">
+                                                <span className="font-sans font-semibold text-foreground text-xs tabular-nums lining-nums">
                                                     {item.cantidad}
                                                 </span>
                                                 <button
@@ -109,19 +109,19 @@ export function DrawerCarrito({ isOpen, onClose }: DrawerCarritoProps) {
                                                             item.cantidad + 1,
                                                         )
                                                     }
-                                                    className="text-foreground hover:opacity-80 font-bold text-xs px-1">
+                                                    className="min-h-10 min-w-10 px-1 font-bold text-xs text-foreground hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background">
                                                     +
                                                 </button>
                                             </div>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-3">
-                                        <span className="font-bold text-foreground text-sm">
+                                        <span className="font-sans font-bold text-foreground text-sm tabular-nums lining-nums">
                                             ${item.precio * item.cantidad}
                                         </span>
                                         <button
                                             onClick={() => removerItem(item.id, item.talle_seleccionado)}
-                                            className="text-destructive hover:opacity-80 font-medium text-[11px] p-1">
+                                            className="min-h-10 rounded-md bg-danger px-2 text-xs font-medium text-danger-foreground hover:underline transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background">
                                             Eliminar
                                         </button>
                                     </div>
@@ -136,7 +136,7 @@ export function DrawerCarrito({ isOpen, onClose }: DrawerCarritoProps) {
                     <div className="p-4 border-t border-border bg-background flex flex-col gap-3">
                         <div className="flex items-center justify-between text-lg">
                             <span className="text-foreground font-medium">Total:</span>
-                            <span className="font-extrabold text-blue-600">${obtenerTotal()}</span>
+                            <span className="font-sans font-extrabold text-foreground tabular-nums lining-nums">${obtenerTotal()}</span>
                         </div>
                         <FormularioCheckout onCompleted={onClose} />
                     </div>

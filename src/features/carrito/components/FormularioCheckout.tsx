@@ -48,7 +48,7 @@ type FormularioCheckoutProps = Readonly<{
 }>;
 
 const inputClass =
-    'w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-foreground disabled:cursor-not-allowed disabled:bg-muted';
+    'w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus-visible:border-foreground focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:bg-muted';
 
 export function FormularioCheckout({ onCompleted }: FormularioCheckoutProps) {
     const items = useCarritoStore((state) => state.items);
@@ -265,7 +265,9 @@ export function FormularioCheckout({ onCompleted }: FormularioCheckoutProps) {
                     className={inputClass}
                 />
                 {errors.nombre_completo && (
-                    <p className="mt-1 text-xs text-red-600">{errors.nombre_completo.message}</p>
+                    <p className="mt-1 inline-block rounded-md bg-danger px-2 py-1 text-xs text-danger-foreground">
+                        {errors.nombre_completo.message}
+                    </p>
                 )}
             </div>
             <div>
@@ -279,7 +281,11 @@ export function FormularioCheckout({ onCompleted }: FormularioCheckoutProps) {
                     placeholder="Ej. 11 1234 5678"
                     className={inputClass}
                 />
-                {errors.telefono && <p className="mt-1 text-xs text-red-600">{errors.telefono.message}</p>}
+                {errors.telefono && (
+                    <p className="mt-1 inline-block rounded-md bg-danger px-2 py-1 text-xs text-danger-foreground">
+                        {errors.telefono.message}
+                    </p>
+                )}
             </div>
             {hayZonasActivas && (
                 <>
@@ -303,18 +309,23 @@ export function FormularioCheckout({ onCompleted }: FormularioCheckoutProps) {
                             className={inputClass}
                         />
                         {errors.codigo_postal && (
-                            <p className="mt-1 text-xs text-red-600">{errors.codigo_postal.message}</p>
+                            <p className="mt-1 inline-block rounded-md bg-danger px-2 py-1 text-xs text-danger-foreground">
+                                {errors.codigo_postal.message}
+                            </p>
                         )}
                         {cotizando && (
                             <p className="mt-1 text-xs text-foreground/60">Calculando envío...</p>
                         )}
                         {!cotizando && estimado !== null && (
-                            <p className="mt-1 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
-                                Envío: ${estimado.costo} · {ETIQUETAS_METODO_ENVIO[estimado.metodo]}
+                            <p className="mt-1 inline-block rounded-md bg-emerald-soft px-2 py-1 text-xs font-semibold text-emerald-soft-foreground">
+                                Envío: <span className="font-sans tabular-nums lining-nums">${estimado.costo}</span> ·{' '}
+                                {ETIQUETAS_METODO_ENVIO[estimado.metodo]}
                             </p>
                         )}
                         {!cotizando && errorEnvio !== null && (
-                            <p className="mt-1 text-xs text-red-600">{errorEnvio}</p>
+                            <p className="mt-1 inline-block rounded-md bg-danger px-2 py-1 text-xs text-danger-foreground">
+                                {errorEnvio}
+                            </p>
                         )}
                     </div>
                     <div>
@@ -332,7 +343,9 @@ export function FormularioCheckout({ onCompleted }: FormularioCheckoutProps) {
                             className={inputClass}
                         />
                         {errors.direccion_entrega && (
-                            <p className="mt-1 text-xs text-red-600">{errors.direccion_entrega.message}</p>
+                            <p className="mt-1 inline-block rounded-md bg-danger px-2 py-1 text-xs text-danger-foreground">
+                                {errors.direccion_entrega.message}
+                            </p>
                         )}
                     </div>
                 </>
@@ -340,7 +353,7 @@ export function FormularioCheckout({ onCompleted }: FormularioCheckoutProps) {
             <button
                 type="submit"
                 disabled={isPending || items.length === 0}
-                className="w-full rounded-md bg-green-600 px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50">
+                className="w-full rounded-md bg-emerald px-4 py-3 text-sm font-bold text-emerald-foreground transition-colors hover:bg-emerald-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:transition-none disabled:cursor-not-allowed disabled:opacity-50">
                 {isPending ? 'Registrando pedido...' : 'Finalizar compra por WhatsApp'}
             </button>
         </form>

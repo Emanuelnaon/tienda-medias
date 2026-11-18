@@ -29,7 +29,7 @@ export default function CarritoPage() {
                 {items.map((item) => (
                     <div
                         key={`${item.id}-${item.talle_seleccionado}`}
-                        className="flex items-center justify-between p-4 border border-border rounded-lg bg-background">
+                        className="flex flex-col items-start justify-between gap-3 p-4 border border-border rounded-lg bg-background sm:flex-row sm:items-center">
                         <div className="flex flex-col gap-1.5">
                             <span className="font-semibold text-foreground text-lg">{item.nombre}</span>
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -41,7 +41,7 @@ export default function CarritoPage() {
                                         onClick={() =>
                                             actualizarCantidad(item.id, item.talle_seleccionado, item.cantidad - 1)
                                         }
-                                        className="text-foreground hover:opacity-80 disabled:opacity-30 px-1 font-bold cursor-pointer"
+                                        className="min-h-10 min-w-10 px-1 font-bold text-foreground hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-30 cursor-pointer"
                                         title="Reducir cantidad">
                                         -
                                     </button>
@@ -50,7 +50,7 @@ export default function CarritoPage() {
                                         onClick={() =>
                                             actualizarCantidad(item.id, item.talle_seleccionado, item.cantidad + 1)
                                         }
-                                        className="text-foreground hover:opacity-80 px-1 font-bold cursor-pointer"
+                                        className="min-h-10 min-w-10 px-1 font-bold text-foreground hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background cursor-pointer"
                                         title="Aumentar cantidad">
                                         +
                                     </button>
@@ -66,14 +66,14 @@ export default function CarritoPage() {
                                         {item.categoria}
                                     </span>
                                 )}
-                                <span className="font-bold text-foreground text-lg">
+                                <span className="font-sans font-bold text-foreground text-lg tabular-nums lining-nums">
                                     ${item.precio * item.cantidad}
                                 </span>
                             </div>
 
                             <button
                                 onClick={() => removerItem(item.id, item.talle_seleccionado)}
-                                className="text-destructive hover:opacity-80 font-medium text-sm transition-colors p-2 cursor-pointer"
+                                className="min-h-10 rounded-md bg-danger px-2 text-sm font-medium text-danger-foreground hover:underline transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background cursor-pointer"
                                 title="Eliminar producto">
                                 Eliminar
                             </button>
@@ -86,7 +86,7 @@ export default function CarritoPage() {
             <div className="mt-8 p-6 border border-border rounded-lg bg-muted flex flex-col items-end gap-4">
                 <div className="flex items-center gap-4 text-2xl">
                     <span className="text-foreground">Total:</span>
-                    <span className="font-extrabold text-blue-600">${obtenerTotal()}</span>
+                    <span className="font-sans font-extrabold text-foreground tabular-nums lining-nums">${obtenerTotal()}</span>
                 </div>
 
                 <FormularioCheckout />
