@@ -89,30 +89,61 @@ async function upsertProductoBase(
 }
 
 /**
- * Reemplazo atómico de variantes de producto
+ * Sincroniza variantes conservando los IDs que puedan estar referenciados
+ * por pedidos históricos.
  */
-async function reemplazarVariantesProducto(
+async function sincronizarVariantesProducto(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     supabase: any,
     productoId: string,
     variantes: ReadonlyArray<{ readonly talle: string; readonly stock: number }>,
 ) {
-    const { error: deleteError } = await supabase.from('producto_variantes').delete().eq('producto_id', productoId);
+    const { data: variantesExistentes, error: selectError } = await supabase
+        .from('producto_variantes')
+        .select('id, talle')
+        .eq('producto_id', productoId);
 
-    if (deleteError) {
-        throw new Error(`Error al limpiar variantes anteriores: ${deleteError.message}`);
+    if (selectError) {
+        throw new Error(`Error al consultar variantes anteriores: ${selectError.message}`);
     }
 
-    const variantesData: VarianteInsert[] = variantes.map((v) => ({
-        producto_id: productoId,
-        talle: v.talle,
-        stock: v.stock,
-    }));
+    const existentesPorTalle = new Map<string, string>(
+        (variantesExistentes ?? []).map((variante: { id: string; talle: string }) => [
+            variante.talle,
+            variante.id,
+        ]),
+    );
+    const tallesActivos = new Set(variantes.map((variante) => variante.talle));
 
-    const { error: insertVariantesError } = await supabase.from('producto_variantes').insert(variantesData);
+    for (const variante of variantes) {
+        const varianteId = existentesPorTalle.get(variante.talle);
+        const consulta = varianteId
+            ? supabase.from('producto_variantes').update({ stock: variante.stock }).eq('id', varianteId)
+            : supabase.from('producto_variantes').insert({
+                producto_id: productoId,
+                talle: variante.talle,
+                stock: variante.stock,
+            } satisfies VarianteInsert);
+        const { error } = await consulta;
 
-    if (insertVariantesError) {
-        throw new Error(`Error al insertar variantes: ${insertVariantesError.message}`);
+        if (error) {
+            throw new Error(`Error al guardar la variante ${variante.talle}: ${error.message}`);
+        }
+    }
+
+    const idsInactivos = (variantesExistentes ?? [])
+        .filter((variante: { id: string; talle: string }) => !tallesActivos.has(variante.talle))
+        .map((variante: { id: string; talle: string }) => variante.id);
+
+    if (idsInactivos.length > 0) {
+        const { error: desactivarError } = await supabase
+            .from('producto_variantes')
+            .update({ stock: 0 })
+            .in('id', idsInactivos);
+
+        if (desactivarError) {
+            throw new Error(`Error al desactivar variantes anteriores: ${desactivarError.message}`);
+        }
     }
 }
 
@@ -137,8 +168,8 @@ export async function guardarProductoConVariantes(
         // 1. Guardar/Actualizar cabecera del producto
         const productoId = await upsertProductoBase(supabase, datos, tenantId);
 
-        // 2. Reemplazar variantes por talle
-        await reemplazarVariantesProducto(supabase, productoId, datos.variantes);
+        // 2. Sincronizar variantes sin romper referencias de pedidos históricos
+        await sincronizarVariantesProducto(supabase, productoId, datos.variantes);
 
         // 3. Revalidación
         revalidarRutasProductos(productoId);
@@ -158,9 +189,13 @@ export async function guardarProductoConVariantes(
 /**
  * Eliminar un producto y sus variantes atómicamente desde el Server (SSOT)
  */
-export async function eliminarProductoAction(id: string): Promise<{ success: boolean }> {
+export type ResultadoEliminarProducto =
+    | { readonly success: true }
+    | { readonly success: false; readonly mensaje: string };
+
+export async function eliminarProductoAction(id: string): Promise<ResultadoEliminarProducto> {
     if (!id) {
-        throw new Error('Se requiere un ID de producto válido.');
+        return { success: false, mensaje: 'No se pudo identificar el producto.' };
     }
 
     try {
@@ -169,7 +204,16 @@ export async function eliminarProductoAction(id: string): Promise<{ success: boo
         const { error } = await supabase.from('productos').delete().eq('id', id);
 
         if (error) {
-            throw new Error(`Error al eliminar producto: ${error.message}`);
+            if (error.code === '23503') {
+                return {
+                    success: false,
+                    mensaje: 'No se puede eliminar porque forma parte de pedidos históricos.',
+                };
+            }
+            return {
+                success: false,
+                mensaje: 'No se pudo eliminar el producto. Actualizá la lista y volvé a intentar.',
+            };
         }
 
         revalidarRutasProductos(id);
@@ -178,6 +222,9 @@ export async function eliminarProductoAction(id: string): Promise<{ success: boo
     } catch (error) {
         const mensaje = error instanceof Error ? error.message : 'Error al eliminar producto.';
         console.error('Error en eliminarProductoAction:', mensaje);
-        throw new Error(mensaje);
+        return {
+            success: false,
+            mensaje: 'No se pudo eliminar el producto. Actualizá la lista y volvé a intentar.',
+        };
     }
 }

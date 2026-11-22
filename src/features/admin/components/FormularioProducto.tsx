@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/src/lib/supabase/client';
 import {
@@ -9,31 +9,45 @@ import {
 } from '@/src/features/admin/actions/productosActions';
 import toast from 'react-hot-toast';
 import imageCompression from 'browser-image-compression';
+import type { Database } from '@/src/types/supabase';
+
+type CategoriaResumen = Pick<
+    Database['public']['Tables']['categorias']['Row'],
+    'id' | 'nombre' | 'slug'
+>;
 
 export function FormularioProducto() {
     const router = useRouter();
-    const supabase = createClient();
+    const [supabase] = useState(createClient);
 
     const [nombre, setNombre] = useState('');
     const [codigoCorto, setCodigoCorto] = useState('');
     const [descripcion, setDescripcion] = useState('');
     const [precio, setPrecio] = useState('');
-    const [categoria, setCategoria] = useState('');
+    const [categoriaId, setCategoriaId] = useState('');
+    const [categoriasDisponibles, setCategoriasDisponibles] = useState<CategoriaResumen[]>([]);
     const [archivosImagenes, setArchivosImagenes] = useState<File[]>([]);
     const [tallesDisponibles, setTallesDisponibles] = useState<string[]>([]);
     const [stockPorTalle, setStockPorTalle] = useState<Record<string, number>>({});
     const [subiendo, setSubiendo] = useState(false);
 
     const opcionesTalles = ['S', 'M', 'L', 'XL', 'Único'];
-    const opcionesCategorias = [
-        'Medias Invisibles',
-        'Soketes',
-        'Medias Cortas',
-        'Medias ¾',
-        'Bucaneras',
-        'Deportivas',
-        'Otras',
-    ];
+    useEffect(() => {
+        const cargarCategorias = async () => {
+            const { data, error } = await supabase
+                .from('categorias')
+                .select('id, nombre, slug')
+                .order('nombre');
+
+            if (error) {
+                toast.error('No se pudieron cargar las categorías.');
+                return;
+            }
+            setCategoriasDisponibles((data ?? []) as CategoriaResumen[]);
+        };
+
+        void cargarCategorias();
+    }, [supabase]);
 
     // Lógica exclusiva: "Único" no puede coexistir con talles numéricos/letras
     const toggleTalle = (talleSeleccionado: string) => {
@@ -123,21 +137,6 @@ export function FormularioProducto() {
 
             const primeraImagen = urlsPublicas[0] ?? null;
 
-            // Resolver categoria_id desde el nombre seleccionado
-            let categoriaId: string | null = null;
-            if (categoria) {
-                const { data: catData, error: catError } = await supabase
-                    .from('categorias')
-                    .select('id')
-                    .eq('nombre', categoria)
-                    .maybeSingle();
-
-                if (catError) {
-                    throw new Error(`Error al resolver categoría: ${catError.message}`);
-                }
-                categoriaId = catData?.id ?? null;
-            }
-
             // Construir array de variantes
             const variantes = tallesDisponibles.map((talle) => ({
                 talle,
@@ -152,7 +151,7 @@ export function FormularioProducto() {
                 precio: Number.parseFloat(precio),
                 imagenUrl: primeraImagen,
                 galeriaImagenes: urlsPublicas.length > 0 ? urlsPublicas : null,
-                categoriaId: categoriaId,
+                categoriaId: categoriaId || null,
                 tallesDisponibles,
                 variantes,
             };
@@ -260,13 +259,13 @@ export function FormularioProducto() {
                     <label htmlFor="categoria" className="text-sm font-bold">Categoría</label>
                     <select
                         id="categoria"
-                        value={categoria}
-                        onChange={(e) => setCategoria(e.target.value)}
+                        value={categoriaId}
+                        onChange={(e) => setCategoriaId(e.target.value)}
                         className="w-full bg-background text-foreground border border-border rounded-lg p-2.5 focus:outline-none focus:border-foreground transition-colors cursor-pointer">
                         <option value="">Selecciona una categoría...</option>
-                        {opcionesCategorias.map((cat) => (
-                            <option key={cat} value={cat}>
-                                {cat}
+                        {categoriasDisponibles.map((categoria) => (
+                            <option key={categoria.id} value={categoria.id}>
+                                {categoria.nombre}
                             </option>
                         ))}
                     </select>

@@ -34,7 +34,11 @@ export function TablaProductos({ productosIniciales }: TablaProductosProps) {
         if (!confirmar) return;
 
         try {
-            await eliminarProductoAction(id);
+            const resultado = await eliminarProductoAction(id);
+            if (!resultado.success) {
+                toast.error(resultado.mensaje);
+                return;
+            }
             setProductos((prev) => prev.filter((p) => p.id !== id));
             toast.success(`"${nombre}" eliminado del catálogo.`);
         } catch (error: unknown) {

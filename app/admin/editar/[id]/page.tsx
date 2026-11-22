@@ -28,14 +28,15 @@ interface PageProps {
 export default function EditarProductoPage({ params }: PageProps) {
     const { id } = use(params);
     const router = useRouter();
-    const supabase = createClient();
+    const [supabase] = useState(createClient);
 
     const [nombre, setNombre] = useState('');
     const [codigoCorto, setCodigoCorto] = useState('');
     const [descripcion, setDescripcion] = useState('');
     const [precio, setPrecio] = useState('');
     const [stockPorTalle, setStockPorTalle] = useState<Record<string, number>>({});
-    const [categoria, setCategoria] = useState('');
+    const [categoriaId, setCategoriaId] = useState('');
+    const [categoriasDisponibles, setCategoriasDisponibles] = useState<CategoriaResumen[]>([]);
     const [archivosImagenes, setArchivosImagenes] = useState<File[]>([]);
     const [imagenUrlExistente, setImagenUrlExistente] = useState('');
     const [galeriaExistente, setGaleriaExistente] = useState<string[]>([]);
@@ -44,27 +45,23 @@ export default function EditarProductoPage({ params }: PageProps) {
     const [guardando, setGuardando] = useState(false);
 
     const opcionesTalles = ['S', 'M', 'L', 'XL', 'Único'];
-    const opcionesCategorias = [
-        'Medias Invisibles',
-        'Soketes',
-        'Medias Cortas',
-        'Medias ¾',
-        'Bucaneras',
-        'Deportivas',
-        'Otras',
-    ];
-
     useEffect(() => {
         const cargarProducto = async () => {
             try {
-                const { data, error } = await supabase
+                const [{ data, error }, { data: categoriasData, error: categoriasError }] = await Promise.all([
+                    supabase
                     .from('productos')
                     .select('*, categorias:categorias(id,nombre,slug), producto_variantes(talle,stock)')
                     .eq('id', id)
-                    .single();
+                    .single(),
+                    supabase.from('categorias').select('id, nombre, slug').order('nombre'),
+                ]);
 
                 if (error || !data) {
                     throw new Error('No se pudo cargar el producto');
+                }
+                if (categoriasError) {
+                    throw new Error('No se pudieron cargar las categorías');
                 }
 
                 const prod = data as Producto;
@@ -72,7 +69,8 @@ export default function EditarProductoPage({ params }: PageProps) {
                 setCodigoCorto(prod.codigo_corto || '');
                 setDescripcion(prod.descripcion || '');
                 setPrecio(String(prod.precio));
-                setCategoria(prod.categorias?.nombre || '');
+                setCategoriaId(prod.categoria_id || '');
+                setCategoriasDisponibles((categoriasData ?? []) as CategoriaResumen[]);
                 setImagenUrlExistente(prod.imagen_url || '');
                 setGaleriaExistente(Array.isArray(prod.galeria_imagenes) ? prod.galeria_imagenes.filter(Boolean) : []);
 
@@ -187,21 +185,6 @@ export default function EditarProductoPage({ params }: PageProps) {
                 finalImageUrl = urlsNuevas[0] ?? finalImageUrl;
             }
 
-            // Resolver categoria_id desde el nombre seleccionado
-            let categoriaId: string | null = null;
-            if (categoria) {
-                const { data: catData, error: catError } = await supabase
-                    .from('categorias')
-                    .select('id')
-                    .eq('nombre', categoria)
-                    .maybeSingle();
-
-                if (catError) {
-                    throw new Error(`Error al resolver categoría: ${catError.message}`);
-                }
-                categoriaId = catData?.id ?? null;
-            }
-
             await guardarProductoConVariantes({
                 id,
                 nombre,
@@ -210,7 +193,7 @@ export default function EditarProductoPage({ params }: PageProps) {
                 precio: Number.parseFloat(precio),
                 imagenUrl: finalImageUrl || null,
                 galeriaImagenes: galeriaFinal.length > 0 ? galeriaFinal : null,
-                categoriaId,
+                categoriaId: categoriaId || null,
                 tallesDisponibles,
                 variantes: tallesDisponibles.map((talle) => ({
                     talle,
@@ -354,13 +337,13 @@ export default function EditarProductoPage({ params }: PageProps) {
                         <label htmlFor="categoria" className="text-sm font-bold">Categoría</label>
                         <select
                             id="categoria"
-                            value={categoria}
-                            onChange={(e) => setCategoria(e.target.value)}
+                            value={categoriaId}
+                            onChange={(e) => setCategoriaId(e.target.value)}
                             className="w-full bg-background text-foreground border border-border rounded-lg p-2.5 focus:outline-none focus:border-foreground transition-colors cursor-pointer">
                             <option value="">Selecciona una categoría...</option>
-                            {opcionesCategorias.map((cat) => (
-                                <option key={cat} value={cat}>
-                                    {cat}
+                            {categoriasDisponibles.map((categoria) => (
+                                <option key={categoria.id} value={categoria.id}>
+                                    {categoria.nombre}
                                 </option>
                             ))}
                         </select>
