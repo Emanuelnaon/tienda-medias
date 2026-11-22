@@ -254,7 +254,7 @@ COPY "auth"."webauthn_credentials" ("id", "user_id", "credential_id", "public_ke
 --
 
 COPY "public"."tenants" ("id", "nombre", "slug", "plan", "whatsapp", "email", "activo", "created_at", "cbu", "alias_bancario", "banco", "titular_cuenta", "meta_pixel_id", "instagram_usuario") FROM stdin;
-b0749fbd-74a9-48a4-b92f-6df33bc59e0c	Socks Store	default	basico	+5491172396962		t	2026-09-19 19:59:40.187817+00	1122334455667788991230	prueba	falso	prueba	\N	\N
+b0749fbd-74a9-48a4-b92f-6df33bc59e0c	Socks Store	default	basico	+5431128555582		t	2026-09-19 19:59:40.187817+00	1122334455667788991230	prueba	falso	prueba	\N	\N
 \.
 
 
@@ -264,7 +264,7 @@ b0749fbd-74a9-48a4-b92f-6df33bc59e0c	Socks Store	default	basico	+5491172396962		
 
 COPY "public"."admin_users" ("id", "email", "whatsapp", "role", "tenant_id") FROM stdin;
 996bd19d-a0ee-4c2b-b83b-8194f6d84424	emanuelnaon@gmail.com	5491128555582	webmaster	\N
-9fab00b8-c2c3-42aa-9cce-215806a22146	subli.cat.insumos@gmail.com	+5491172396962	admin	b0749fbd-74a9-48a4-b92f-6df33bc59e0c
+9fab00b8-c2c3-42aa-9cce-215806a22146	subli.cat.insumos@gmail.com	+5431128555582	admin	b0749fbd-74a9-48a4-b92f-6df33bc59e0c
 \.
 
 
