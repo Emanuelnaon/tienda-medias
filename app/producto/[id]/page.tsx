@@ -37,7 +37,7 @@ export default async function ProductoPage({ params }: Props) {
     if (error || !data) {
         return (
             <div className="p-8 text-center bg-background text-foreground flex-1 flex flex-col items-center justify-center">
-                <h2 className="text-2xl font-bold text-red-500 mb-4">No se pudo cargar el producto</h2>
+                <h2 className="text-2xl font-bold text-danger mb-4">No se pudo cargar el producto</h2>
                 <p>Verifica que el producto exista en la base de datos.</p>
             </div>
         );
@@ -66,7 +66,7 @@ export default async function ProductoPage({ params }: Props) {
 
                 <div className="w-full md:w-1/2 flex flex-col">
                     <h1 className="text-3xl font-bold text-foreground">{producto.nombre}</h1>
-                    <p className="text-2xl font-extrabold text-blue-600 mt-4">
+                    <p className="mt-4 font-sans text-2xl font-extrabold lining-nums tabular-nums text-foreground">
                         ${Number(producto.precio).toLocaleString('es-AR', { minimumFractionDigits: 2 })}
                     </p>
                     
@@ -75,7 +75,7 @@ export default async function ProductoPage({ params }: Props) {
                         {secondary && <EtiquetaInventario tipo={secondary} />}
                     </div>
 
-                    <p className="text-zinc-800 dark:text-zinc-600 mt-4 flex-1">
+                    <p className="mt-4 flex-1 text-muted-foreground">
                         {producto.descripcion || 'Sin descripción disponible.'}
                     </p>
 

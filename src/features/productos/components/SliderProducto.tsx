@@ -56,7 +56,7 @@ export function SliderProducto({ producto }: SliderProductoProps) {
     return (
         <div className="w-full md:w-1/2">
             <div
-                className={`relative aspect-square w-full overflow-hidden rounded-xl border border-border shadow-sm ${imagenes.length === 0 ? 'bg-zinc-200 text-zinc-500 dark:bg-zinc-800' : 'bg-zinc-100 dark:bg-zinc-900'}`}
+                className={`relative aspect-square w-full overflow-hidden rounded-xl border border-border shadow-sm ${imagenes.length === 0 ? 'bg-muted text-muted-foreground' : 'bg-surface'}`}
                 onTouchStart={manejarTouchStart}
                 onTouchEnd={manejarTouchEnd}>
                 {imagenes.length === 0 ? (
@@ -78,14 +78,14 @@ export function SliderProducto({ producto }: SliderProductoProps) {
                                     type="button"
                                     aria-label="Imagen anterior"
                                     onClick={() => irAImagen(imagenActiva - 1)}
-                                    className="absolute left-3 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full border border-white/70 bg-black/25 text-white shadow-lg backdrop-blur-sm transition hover:bg-black/40">
+                                    className="absolute left-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-surface text-foreground shadow-md transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet">
                                     <ArrowLeft className="h-4 w-4" />
                                 </button>
                                 <button
                                     type="button"
                                     aria-label="Imagen siguiente"
                                     onClick={() => irAImagen(imagenActiva + 1)}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full border border-white/70 bg-black/25 text-white shadow-lg backdrop-blur-sm transition hover:bg-black/40">
+                                    className="absolute right-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-surface text-foreground shadow-md transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet">
                                     <ArrowRight className="h-4 w-4" />
                                 </button>
                             </>

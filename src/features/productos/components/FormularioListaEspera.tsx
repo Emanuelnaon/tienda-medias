@@ -84,9 +84,9 @@ export function FormularioListaEspera({ productoId, tenantId, productoNombre, va
     };
 
     return (
-        <div className="w-full bg-zinc-50 dark:bg-zinc-900 border border-border rounded-xl p-5 mt-6">
-            <h3 className="text-base font-bold text-foreground mb-1">Producto Agotado</h3>
-            <p className="text-xs text-muted-foreground mb-4">
+        <div className="mt-6 w-full rounded-xl border border-border bg-surface p-5">
+            <h3 className="mb-1 text-base font-bold text-foreground">Producto Agotado</h3>
+            <p className="mb-4 text-sm text-muted-foreground">
                 Déjanos tus datos de contacto y te avisaremos inmediatamente cuando {productoNombre} vuelva a estar disponible.
             </p>
 
@@ -108,7 +108,7 @@ export function FormularioListaEspera({ productoId, tenantId, productoNombre, va
                                         className={`px-3 py-1.5 text-xs font-bold border rounded-lg transition-all active:scale-95 cursor-pointer ${
                                             seleccionado
                                                 ? 'bg-foreground text-background border-foreground shadow-sm'
-                                                : 'bg-transparent text-zinc-500 border-border hover:border-foreground hover:text-foreground'
+                                                : 'bg-background text-muted-foreground border-border hover:border-violet hover:text-foreground'
                                         }`}>
                                         {v.talle}
                                     </button>
@@ -128,10 +128,10 @@ export function FormularioListaEspera({ productoId, tenantId, productoNombre, va
                         type="tel"
                         {...register('telefono')}
                         placeholder="Ej. 11 1234 5678"
-                        className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-foreground focus:ring-1 focus:ring-foreground transition-all"
+                        className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none transition-colors focus:border-violet focus:ring-1 focus:ring-violet"
                     />
                     {errors.telefono && (
-                        <p className="mt-1 text-xs text-red-600 font-medium">{errors.telefono.message}</p>
+                        <p className="mt-1 rounded-md bg-danger px-2 py-1 text-xs font-medium text-danger-foreground">{errors.telefono.message}</p>
                     )}
                 </div>
 
@@ -145,10 +145,10 @@ export function FormularioListaEspera({ productoId, tenantId, productoNombre, va
                         type="email"
                         {...register('email')}
                         placeholder="tu@email.com"
-                        className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-foreground focus:ring-1 focus:ring-foreground transition-all"
+                        className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none transition-colors focus:border-violet focus:ring-1 focus:ring-violet"
                     />
                     {errors.email && (
-                        <p className="mt-1 text-xs text-red-600 font-medium">{errors.email.message}</p>
+                        <p className="mt-1 rounded-md bg-danger px-2 py-1 text-xs font-medium text-danger-foreground">{errors.email.message}</p>
                     )}
                 </div>
 
@@ -156,7 +156,7 @@ export function FormularioListaEspera({ productoId, tenantId, productoNombre, va
                 <button
                     type="submit"
                     disabled={isPending}
-                    className="w-full rounded-lg bg-linear-to-r from-blue-600 to-indigo-600 px-4 py-3 text-sm font-bold text-white shadow-md shadow-blue-500/10 transition-all duration-300 hover:from-blue-700 hover:to-indigo-700 disabled:cursor-not-allowed disabled:opacity-50">
+                    className="w-full rounded-xl bg-violet px-4 py-3 text-sm font-bold text-violet-foreground transition-colors hover:bg-violet-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet disabled:cursor-not-allowed disabled:opacity-50">
                     {isPending ? 'Uniéndote...' : 'Avisarme cuando haya Stock'}
                 </button>
             </form>

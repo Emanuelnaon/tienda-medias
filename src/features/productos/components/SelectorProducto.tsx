@@ -46,7 +46,7 @@ export function SelectorProducto({ producto }: Props) {
     return (
         <div className="mt-6 flex flex-col gap-6">
             {producto.stock > 0 && producto.stock < 5 && (
-                <span className="w-fit rounded-full bg-red-600 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.15em] text-white shadow-sm">
+                <span className="w-fit rounded-full bg-warning px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-warning-foreground">
                     ¡Últimas unidades!
                 </span>
             )}
@@ -72,7 +72,7 @@ export function SelectorProducto({ producto }: Props) {
             <button
                 onClick={handleAgregar}
                 disabled={producto.stock <= 0}
-                className="w-full rounded-md bg-foreground py-4 font-semibold text-background transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50">
+                className="w-full rounded-xl bg-violet px-4 py-4 font-semibold text-violet-foreground transition-colors hover:bg-violet-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet disabled:cursor-not-allowed disabled:opacity-50">
                 {producto.stock <= 0 ? 'Agotado' : 'Agregar al Carrito'}
             </button>
         </div>

@@ -20,7 +20,7 @@ export default async function ProductoSugeridos({ categoria, productoId }: Produ
     return (
         <section className="mt-12 border-t border-border pt-8">
             <div className="mb-5">
-                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-foreground/60">
+                <p className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
                     También te puede interesar
                 </p>
                 <h2 className="mt-2 text-2xl font-bold text-foreground">Productos relacionados</h2>
