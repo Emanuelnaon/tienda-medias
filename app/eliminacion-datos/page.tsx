@@ -1,6 +1,6 @@
 export default function EliminacionDatosPage() {
     return (
-        <main className="w-full max-w-3xl mx-auto py-12 px-4 md:px-8">
+        <div className="w-full max-w-3xl mx-auto py-12 px-4 md:px-8">
             <article className="prose prose-slate max-w-none text-foreground">
                 <header className="mb-10 border-b border-border pb-6">
                     <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">
@@ -57,7 +57,7 @@ export default function EliminacionDatosPage() {
                             Envía un correo a{' '}
                             <a
                                 href="mailto:emanuel_naon@hotmail.com.ar"
-                                className="text-blue-600 hover:underline font-medium">
+                                className="font-medium text-violet underline-offset-4 hover:text-violet-hover hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet focus-visible:ring-offset-2 focus-visible:ring-offset-background">
                                 {' '}
                                 emanuel_naon@hotmail.com.ar{' '}
                             </a>
@@ -81,13 +81,13 @@ export default function EliminacionDatosPage() {
                 <section className="border-t border-border pt-6">
                     <p className="text-base leading-relaxed text-center text-muted-foreground">
                         ¿Volver a la
-                        <a href="/privacidad" className="text-blue-600 hover:underline font-medium">
+                        <a href="/privacidad" className="font-medium text-violet underline-offset-4 hover:text-violet-hover hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet focus-visible:ring-offset-2 focus-visible:ring-offset-background">
                             Política de Privacidad
                         </a>
                         ?
                     </p>
                 </section>
             </article>
-        </main>
+        </div>
     );
 }

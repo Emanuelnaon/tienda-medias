@@ -49,7 +49,7 @@ export function GeneradorQrPago({ cbu, aliasBancario, titularCuenta, numeroOrden
             width={200}
             height={200}
             unoptimized
-            className="mx-auto max-w-[240px] rounded-xl border border-border bg-white"
+            className="mx-auto h-auto w-48 max-w-full rounded-xl border border-border bg-white"
         />
     );
 }

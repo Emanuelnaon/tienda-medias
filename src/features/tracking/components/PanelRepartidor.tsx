@@ -14,12 +14,12 @@ const EDAD_MAXIMA_POSICION_MS = 10_000;
 const TIMEOUT_GEOLOCALIZACION_MS = 30_000;
 
 const CLASES_POR_COLOR: Record<string, string> = {
-    yellow: 'bg-yellow-100 text-yellow-800',
-    blue: 'bg-blue-100 text-blue-800',
-    purple: 'bg-purple-100 text-purple-800',
-    orange: 'bg-orange-100 text-orange-800',
-    green: 'bg-green-100 text-green-800',
-    red: 'bg-red-100 text-red-800',
+    yellow: 'bg-warning text-warning-foreground',
+    blue: 'bg-info text-info-foreground',
+    purple: 'bg-violet text-violet-foreground',
+    orange: 'bg-warning text-warning-foreground',
+    green: 'bg-success text-success-foreground',
+    red: 'bg-danger text-danger-foreground',
 };
 
 type EnvioRealizado = {
@@ -165,12 +165,15 @@ export function PanelRepartidor({ pedidoId, token, estado }: PanelRepartidorProp
         <div className="space-y-6">
             <section
                 aria-labelledby="titulo-panel-repartidor"
-                className={cn('rounded-lg border border-border p-6 text-center', clasesEstado)}
+                className="rounded-lg border border-border bg-surface p-6 text-center"
             >
                 <p className="text-xs font-semibold uppercase tracking-widest opacity-80">
                     Estado del pedido
                 </p>
-                <h1 id="titulo-panel-repartidor" className="mt-2 text-3xl font-bold text-foreground">
+                <h1
+                    id="titulo-panel-repartidor"
+                    className={cn('mt-2 inline-flex rounded-full px-4 py-2 text-3xl font-bold', clasesEstado)}
+                >
                     {ESTADOS_PEDIDO[estadoActual].label}
                 </h1>
                 <p className="mt-2 text-sm opacity-90">Pedido #{pedidoId.split('-')[0]}</p>
@@ -208,7 +211,7 @@ export function PanelRepartidor({ pedidoId, token, estado }: PanelRepartidorProp
                 <button
                     type="button"
                     onClick={handleMarcarEntregado}
-                    className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-emerald-600 px-4 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-md bg-emerald px-4 py-3 text-sm font-semibold text-emerald-foreground transition-colors hover:bg-emerald-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:transition-none disabled:cursor-not-allowed disabled:opacity-50"
                     disabled={estaCerrado || estaEntregando}
                 >
                     {estaEntregando ? (

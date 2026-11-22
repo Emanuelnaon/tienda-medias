@@ -27,8 +27,8 @@ export default async function PedidosPage({ searchParams }: PageProps) {
     return (
         <section className="space-y-5 sm:space-y-6">
             <header className="space-y-2">
-                <h1 className="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">Pedidos pendientes</h1>
-                <p className="max-w-2xl text-sm leading-6 text-muted-foreground">Revisa las acreditaciones y confirma cada venta.</p>
+                <h1 className="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">Gestión de pedidos</h1>
+                <p className="max-w-2xl text-sm leading-6 text-muted-foreground">Filtra, ordena y actualiza el estado de cada pedido.</p>
             </header>
 
             <FiltrosPedidos estadoActivo={estadoResolved} ordenActivo={ordenResolved} />

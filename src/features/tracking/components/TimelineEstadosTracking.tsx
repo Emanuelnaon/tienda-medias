@@ -37,12 +37,12 @@ const ICONOS_ESTADO: Record<EstadoPedido, LucideIcon> = {
 };
 
 const CLASES_POR_COLOR: Record<string, string> = {
-    yellow: 'bg-yellow-100 text-yellow-800',
-    blue: 'bg-blue-100 text-blue-800',
-    purple: 'bg-purple-100 text-purple-800',
-    orange: 'bg-orange-100 text-orange-800',
-    green: 'bg-green-100 text-green-800',
-    red: 'bg-red-100 text-red-800',
+    yellow: 'bg-warning text-warning-foreground',
+    blue: 'bg-info text-info-foreground',
+    purple: 'bg-violet text-violet-foreground',
+    orange: 'bg-warning text-warning-foreground',
+    green: 'bg-success text-success-foreground',
+    red: 'bg-danger text-danger-foreground',
 };
 
 const ETIQUETAS_ORIGEN: Record<string, string> = {
@@ -125,7 +125,7 @@ export function TimelineEstadosTracking({
                     Seguimiento del pedido
                 </h2>
                 {estaDegradado && (
-                    <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-300 bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-800">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-warning px-2.5 py-1 text-xs font-medium text-warning-foreground">
                         <RefreshCw className="h-3 w-3" aria-hidden="true" />
                         Actualización manual
                     </span>

@@ -45,7 +45,7 @@ export function ResumenPedido({ pedido }: ResumenPedidoProps) {
 
             <div className="flex items-center justify-between border-t border-border pt-3">
                 <span className="text-sm text-muted-foreground">Total</span>
-                <span className="text-xl font-extrabold text-foreground">
+                <span className="font-sans text-xl font-extrabold tabular-nums lining-nums text-foreground">
                     ${pedido.total}
                 </span>
             </div>

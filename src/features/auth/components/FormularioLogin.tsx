@@ -36,7 +36,7 @@ export function FormularioLogin() {
     return (
         <div className="w-full max-w-md mx-auto p-6 bg-background rounded-2xl border border-border shadow-sm">
             <div className="text-center mb-6">
-                <h2 className="text-2xl font-bold tracking-tight text-foreground">Bienvenido a tu espacio</h2>
+                <h1 className="text-2xl font-bold tracking-tight text-foreground">Bienvenido a tu espacio</h1>
                 <p className="text-sm text-muted-foreground mt-2">
                     Ingresa tu correo y contraseña para acceder al panel de administración.
                 </p>
@@ -54,7 +54,7 @@ export function FormularioLogin() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="tu@ejemplo.com"
-                        className="w-full px-4 py-2.5 rounded-lg border border-border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                        className="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                         disabled={isPending}
                         required
                     />
@@ -71,7 +71,7 @@ export function FormularioLogin() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="••••••••"
-                        className="w-full px-4 py-2.5 rounded-lg border border-border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                        className="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                         disabled={isPending}
                         required
                     />
@@ -79,11 +79,11 @@ export function FormularioLogin() {
 
                 <button
                     type="submit"
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg text-sm transition-colors duration-200 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed shadow-sm cursor-pointer"
+                    className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50"
                     disabled={isPending}>
                     {isPending ? (
                         <>
-                            <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                            <svg className="h-5 w-5 animate-spin text-primary-foreground motion-reduce:animate-none" fill="none" viewBox="0 0 24 24" aria-hidden="true">
                                 <circle
                                     className="opacity-25"
                                     cx="12"

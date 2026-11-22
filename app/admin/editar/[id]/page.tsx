@@ -215,7 +215,7 @@ export default function EditarProductoPage({ params }: PageProps) {
     if (cargando) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[50vh] text-foreground bg-background">
-                <div className="w-10 h-10 border-4 border-foreground border-t-transparent rounded-full animate-spin mb-4" />
+                <div className="mb-4 h-10 w-10 animate-spin rounded-full border-4 border-violet border-t-transparent motion-reduce:animate-none" />
                 <p className="text-sm font-semibold">Cargando datos del producto...</p>
             </div>
         );
@@ -227,7 +227,7 @@ export default function EditarProductoPage({ params }: PageProps) {
                 <h1 className="text-3xl font-bold">Editar Producto</h1>
                 <Link
                     href="/admin"
-                    className="text-sm font-medium border border-border hover:border-foreground px-4 py-2 rounded-lg transition-colors cursor-pointer">
+                    className="min-h-11 cursor-pointer rounded-lg border border-border bg-surface px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-violet hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:transition-none">
                     Volver
                 </Link>
             </div>
@@ -237,7 +237,7 @@ export default function EditarProductoPage({ params }: PageProps) {
                     {/* Campo: Nombre */}
                     <div className="flex flex-col gap-1.5">
                         <label htmlFor="nombre" className="text-sm font-bold">
-                            Nombre <span className="text-red-500">*</span>
+                            Nombre <span className="text-danger">*</span>
                         </label>
                         <input
                             id="nombre"
@@ -245,7 +245,7 @@ export default function EditarProductoPage({ params }: PageProps) {
                             value={nombre}
                             onChange={(e) => setNombre(e.target.value)}
                             placeholder="Ej. Medias de Algodón Clásicas"
-                            className="w-full bg-transparent text-foreground border border-border rounded-lg p-2.5 focus:outline-none focus:border-foreground transition-colors"
+                            className="w-full rounded-lg border border-border bg-surface p-2.5 text-foreground transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                             required
                         />
                     </div>
@@ -259,7 +259,7 @@ export default function EditarProductoPage({ params }: PageProps) {
                             value={codigoCorto}
                             onChange={(e) => setCodigoCorto(e.target.value)}
                             placeholder="Ej. 102, OFERTA-1"
-                            className="w-full bg-transparent text-foreground border border-border rounded-lg p-2.5 focus:outline-none focus:border-foreground transition-colors"
+                            className="w-full rounded-lg border border-border bg-surface p-2.5 text-foreground transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                         />
                     </div>
 
@@ -272,7 +272,7 @@ export default function EditarProductoPage({ params }: PageProps) {
                             onChange={(e) => setDescripcion(e.target.value)}
                             placeholder="Escribe una breve descripción del producto..."
                             rows={3}
-                            className="w-full bg-transparent text-foreground border border-border rounded-lg p-2.5 focus:outline-none focus:border-foreground transition-colors resize-none"
+                            className="w-full resize-none rounded-lg border border-border bg-surface p-2.5 text-foreground transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                         />
                     </div>
 
@@ -280,7 +280,7 @@ export default function EditarProductoPage({ params }: PageProps) {
                         {/* Campo: Precio */}
                         <div className="flex flex-col gap-1.5">
                             <label htmlFor="precio" className="text-sm font-bold">
-                                Precio ($) <span className="text-red-500">*</span>
+                                Precio ($) <span className="text-danger">*</span>
                             </label>
                             <input
                                 id="precio"
@@ -290,7 +290,7 @@ export default function EditarProductoPage({ params }: PageProps) {
                                 placeholder="Ej. 1500"
                                 min="0"
                                 step="0.01"
-                                className="w-full bg-transparent text-foreground border border-border rounded-lg p-2.5 focus:outline-none focus:border-foreground transition-colors"
+                                className="w-full rounded-lg border border-border bg-surface p-2.5 font-sans tabular-nums text-foreground transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                                 required
                             />
                         </div>
@@ -307,7 +307,7 @@ export default function EditarProductoPage({ params }: PageProps) {
                                     .map((url, index) => (
                                         <div
                                             key={`${url}-${index}`}
-                                            className="w-16 h-16 overflow-hidden rounded border border-border bg-zinc-100 dark:bg-zinc-900">
+                                            className="h-16 w-16 overflow-hidden rounded border border-border bg-muted">
                                             {/* eslint-disable-next-line @next/next/no-img-element */}
                                             <img
                                                 src={url}
@@ -324,9 +324,9 @@ export default function EditarProductoPage({ params }: PageProps) {
                             accept="image/*"
                             multiple
                             onChange={(e) => setArchivosImagenes(Array.from(e.target.files ?? []))}
-                            className="w-full text-sm text-foreground file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-foreground file:text-background hover:file:opacity-90 cursor-pointer"
+                            className="w-full cursor-pointer rounded-lg border border-border bg-surface text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet focus-visible:ring-offset-2 focus-visible:ring-offset-background file:mr-4 file:rounded-lg file:border-0 file:bg-primary file:px-4 file:py-2 file:text-sm file:font-semibold file:text-primary-foreground hover:file:bg-violet hover:file:text-violet-foreground"
                         />
-                        <p className="text-[11px] text-muted-foreground">
+                        <p className="text-xs text-muted-foreground">
                             Opcional. Si seleccionas varias imágenes, la primera será la principal y se guardará la
                             galería completa.
                         </p>
@@ -339,7 +339,7 @@ export default function EditarProductoPage({ params }: PageProps) {
                             id="categoria"
                             value={categoriaId}
                             onChange={(e) => setCategoriaId(e.target.value)}
-                            className="w-full bg-background text-foreground border border-border rounded-lg p-2.5 focus:outline-none focus:border-foreground transition-colors cursor-pointer">
+                            className="w-full cursor-pointer rounded-lg border border-border bg-surface p-2.5 text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet focus-visible:ring-offset-2 focus-visible:ring-offset-background">
                             <option value="">Selecciona una categoría...</option>
                             {categoriasDisponibles.map((categoria) => (
                                 <option key={categoria.id} value={categoria.id}>
@@ -362,9 +362,9 @@ export default function EditarProductoPage({ params }: PageProps) {
                                         onClick={() => toggleTalle(talle)}
                                         className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors cursor-pointer ${
                                             isSelected
-                                                ? 'bg-foreground text-background hover:opacity-90 border border-transparent'
-                                                : 'bg-transparent text-foreground border border-border hover:border-foreground'
-                                        }`}>
+                                                ? 'border border-transparent bg-primary text-primary-foreground hover:bg-violet hover:text-violet-foreground'
+                                                : 'border border-border bg-surface text-foreground hover:border-violet hover:bg-muted'
+                                        } focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:transition-none`}>
                                         {talle}
                                     </button>
                                 );
@@ -375,7 +375,7 @@ export default function EditarProductoPage({ params }: PageProps) {
                                 {tallesDisponibles.map((talle) => (
                                     <div key={talle} className="flex flex-col gap-1.5">
                                         <label htmlFor={`stock-${talle}`} className="text-sm font-bold">
-                                            Stock {talle} <span className="text-red-500">*</span>
+                                            Stock {talle} <span className="text-danger">*</span>
                                         </label>
                                         <input
                                             id={`stock-${talle}`}
@@ -384,7 +384,7 @@ export default function EditarProductoPage({ params }: PageProps) {
                                             onChange={(e) => actualizarStockTalle(talle, Number.parseInt(e.target.value || '0', 10))}
                                             min="0"
                                             step="1"
-                                            className="w-full rounded-lg border border-border bg-transparent p-2.5 text-foreground transition-colors focus:border-foreground focus:outline-none"
+                                            className="w-full rounded-lg border border-border bg-surface p-2.5 font-sans tabular-nums text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                                             required
                                         />
                                     </div>
@@ -399,7 +399,7 @@ export default function EditarProductoPage({ params }: PageProps) {
                     <button
                         type="submit"
                         disabled={guardando}
-                        className="w-full sm:w-auto bg-foreground text-background px-6 py-3 rounded-lg font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-50 cursor-pointer">
+                        className="w-full cursor-pointer rounded-lg bg-primary px-6 py-3 text-sm font-bold text-primary-foreground transition-colors hover:bg-violet hover:text-violet-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-wait disabled:opacity-50 motion-reduce:transition-none sm:w-auto">
                         {guardando ? 'Guardando cambios...' : 'Guardar Cambios'}
                     </button>
                 </div>

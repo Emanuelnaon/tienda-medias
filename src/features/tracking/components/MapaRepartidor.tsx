@@ -55,7 +55,7 @@ export function MapaRepartidor({ pedidoId, token, posicionInicial = null }: Mapa
                     Ubicación del repartidor
                 </h2>
                 {estaDesactualizada && (
-                    <span className="rounded-full border border-amber-300 bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-800">
+                    <span className="rounded-full bg-warning px-2.5 py-1 text-xs font-medium text-warning-foreground">
                         Posición desactualizada
                     </span>
                 )}
@@ -78,7 +78,11 @@ export function MapaRepartidor({ pedidoId, token, posicionInicial = null }: Mapa
                     style={{ width: '100%', height: '100%' }}
                 >
                     <Marker longitude={posicion.lng} latitude={posicion.lat} anchor="center">
-                        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg ring-2 ring-white">
+                        <span
+                            role="img"
+                            aria-label="Ubicación actual del repartidor"
+                            className="flex h-11 w-11 items-center justify-center rounded-full bg-emerald text-emerald-foreground shadow-lg ring-2 ring-background"
+                        >
                             <Navigation className="h-4 w-4" aria-hidden="true" />
                         </span>
                     </Marker>

@@ -38,6 +38,11 @@ export function DrawerCarrito({ isOpen, onClose }: DrawerCarritoProps) {
 
             {/* Bottom Sheet / Side Drawer */}
             <div
+                role="dialog"
+                aria-modal={isOpen ? true : undefined}
+                aria-labelledby="titulo-drawer-carrito"
+                aria-hidden={!isOpen}
+                inert={!isOpen}
                 className={`fixed z-99999 bg-background text-foreground transition-transform duration-300 ease-in-out motion-reduce:transition-none flex flex-col
                     bottom-0 left-0 right-0 w-full rounded-t-2xl max-h-[85vh]
                     md:top-0 md:bottom-0 md:left-auto md:right-0 md:w-96 md:rounded-none md:max-h-screen
@@ -45,7 +50,7 @@ export function DrawerCarrito({ isOpen, onClose }: DrawerCarritoProps) {
                 `}>
                 {/* Header */}
                 <div className="flex items-center justify-between p-4 border-b border-border bg-background">
-                    <h2 className="text-lg font-bold flex items-center gap-2">Resumen del Pedido 🛒</h2>
+                    <h2 id="titulo-drawer-carrito" className="text-lg font-bold flex items-center gap-2">Resumen del Pedido 🛒</h2>
                     <button
                         onClick={onClose}
                         className="min-h-10 min-w-10 p-2 bg-transparent text-foreground border border-border hover:border-foreground rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background"
