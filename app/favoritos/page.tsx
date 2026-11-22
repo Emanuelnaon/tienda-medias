@@ -13,8 +13,10 @@ export default function FavoritosPage() {
     return (
         <div className="container mx-auto px-4 py-8 min-h-screen">
             <header className="mb-8">
-                <h1 className="text-3xl font-extrabold text-foreground flex items-center gap-3">
-                    <Heart className="text-red-500 fill-red-500" />
+                <h1 className="flex items-center gap-3 text-3xl font-extrabold text-foreground">
+                    <span className="inline-flex rounded-full bg-danger p-2 text-danger-foreground">
+                        <Heart aria-hidden="true" className="h-5 w-5 fill-current" />
+                    </span>
                     Mis Favoritos
                 </h1>
                 <p className="text-muted-foreground mt-2">
@@ -22,10 +24,10 @@ export default function FavoritosPage() {
                 </p>
             </header>
 
-            {favoritos.length === 0? (
+            {favoritos.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-20 text-center">
-                    <div className="bg-muted rounded-full p-6 mb-4">
-                        <Heart className="w-16 h-16 text-muted-foreground/20" />
+                    <div className="mb-4 rounded-full bg-muted p-6">
+                        <Heart aria-hidden="true" className="h-16 w-16 text-muted-foreground/40" />
                     </div>
                     <h2 className="text-2xl font-bold text-foreground">Tu lista de favoritos está vacía</h2>
                     <p className="text-muted-foreground mb-6">
@@ -33,7 +35,7 @@ export default function FavoritosPage() {
                     </p>
                     <Link 
                         href="/catalogo" 
-                        className="inline-flex items-center gap-2 bg-foreground text-background px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-all"
+                        className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-foreground px-6 py-3 font-semibold text-background transition-colors hover:bg-foreground/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet motion-reduce:transition-none"
                     >
                         <ShoppingBag className="w-5 h-5" />
                         Explorar catálogo

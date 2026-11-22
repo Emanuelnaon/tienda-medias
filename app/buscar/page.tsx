@@ -51,17 +51,17 @@ function BuscarCodigoResolver() {
 
     if (cargando) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-[60vh] bg-background text-foreground px-4 text-center">
-                <div className="w-12 h-12 border-4 border-foreground border-t-transparent rounded-full animate-spin mb-4" />
-                <h1 className="text-xl font-bold">Buscando producto...</h1>
-                <p className="text-muted-foreground mt-2">Estamos localizando el código corto &ldquo;{codigo}&rdquo;</p>
+                <div aria-busy="true" className="flex min-h-[60vh] flex-col items-center justify-center bg-background px-4 text-center text-foreground">
+                    <div aria-hidden="true" className="mb-4 h-12 w-12 animate-spin rounded-full border-4 border-foreground border-t-transparent motion-reduce:animate-none" />
+                    <h1 className="text-xl font-bold">Buscando producto...</h1>
+                    <p className="text-muted-foreground mt-2">Estamos localizando el código corto &ldquo;{codigo}&rdquo;</p>
             </div>
         );
     }
 
     if (noEncontrado) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-[60vh] bg-background text-foreground px-4 text-center">
+            <div className="flex min-h-[60vh] flex-col items-center justify-center bg-background px-4 text-center text-foreground">
                 <span className="text-6xl mb-6">🔍</span>
                 <h1 className="text-3xl font-bold mb-4">Código no encontrado 😢</h1>
                 <p className="text-muted-foreground mb-8 max-w-md">
@@ -69,7 +69,7 @@ function BuscarCodigoResolver() {
                 </p>
                 <Link
                     href="/"
-                    className="px-6 py-3 bg-foreground text-background font-semibold rounded-lg hover:opacity-90 transition-all shadow-md"
+                    className="min-h-11 rounded-lg bg-foreground px-6 py-3 font-semibold text-background shadow-md transition-colors hover:bg-foreground/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet motion-reduce:transition-none"
                 >
                     Volver al Catálogo
                 </Link>
@@ -83,8 +83,8 @@ function BuscarCodigoResolver() {
 export default function BuscarPage() {
     return (
         <Suspense fallback={
-            <div className="flex flex-col items-center justify-center min-h-[60vh] bg-background text-foreground px-4 text-center">
-                <div className="w-12 h-12 border-4 border-foreground border-t-transparent rounded-full animate-spin mb-4" />
+            <div aria-busy="true" className="flex min-h-[60vh] flex-col items-center justify-center bg-background px-4 text-center text-foreground">
+                <div aria-hidden="true" className="mb-4 h-12 w-12 animate-spin rounded-full border-4 border-foreground border-t-transparent motion-reduce:animate-none" />
                 <h1 className="text-xl font-bold">Cargando buscador...</h1>
             </div>
         }>
