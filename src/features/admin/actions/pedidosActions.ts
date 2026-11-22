@@ -1,7 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import type { Database, Json } from '@/src/types/supabase';
+import type { Database } from '@/src/types/supabase';
 import { verificarAdministrador, obtenerTenantIdAdmin } from '@/src/lib/auth/admin';
 import {
     esEstadoPedido,
@@ -108,9 +108,13 @@ export async function listarPedidosPendientes(
  * Confirmar Acreditación del Pedido
  * Ejecuta la RPC transaccional en PostgreSQL.
  */
-export async function confirmarPedido(pedidoId: string): Promise<Json> {
+export type ResultadoConfirmarPedido =
+    | { readonly success: true }
+    | { readonly success: false; readonly mensaje: string };
+
+export async function confirmarPedido(pedidoId: string): Promise<ResultadoConfirmarPedido> {
     if (!pedidoId || typeof pedidoId !== 'string') {
-        throw new Error('El ID del pedido es requerido y debe ser válido.');
+        return { success: false, mensaje: 'No se pudo identificar el pedido.' };
     }
 
     try {
@@ -121,7 +125,13 @@ export async function confirmarPedido(pedidoId: string): Promise<Json> {
         });
 
         if (error) {
-            throw new Error(`Error en base de datos: ${error.message}`);
+            const isStockError = /stock insuficiente|no se encontr[oó] variante/i.test(error.message);
+            return {
+                success: false,
+                mensaje: isStockError
+                    ? 'No se pudo confirmar: stock insuficiente. Revisá las cantidades disponibles.'
+                    : 'No se pudo confirmar el pedido. Intentá actualizar la lista y volver a probar.',
+            };
         }
 
         if (
@@ -134,7 +144,7 @@ export async function confirmarPedido(pedidoId: string): Promise<Json> {
                 && typeof data.mensaje === 'string'
                 ? data.mensaje
                 : 'La acreditación no se completó.';
-            throw new Error(mensaje);
+            return { success: false, mensaje };
         }
 
         revalidatePath('/admin/pedidos');
@@ -142,11 +152,14 @@ export async function confirmarPedido(pedidoId: string): Promise<Json> {
         revalidatePath('/admin/crm');
         revalidatePath('/catalogo');
 
-        return data;
+        return { success: true };
     } catch (error) {
         const mensajeError = error instanceof Error ? error.message : 'Error desconocido al confirmar el pedido.';
         console.error('Error en confirmarPedido:', mensajeError);
-        throw new Error(mensajeError);
+        return {
+            success: false,
+            mensaje: 'No se pudo confirmar el pedido. Intentá actualizar la lista y volver a probar.',
+        };
     }
 }
 

@@ -63,7 +63,12 @@ export function TablaPedidos({ pedidos, estadoActivo, ordenActivo }: TablaPedido
         setPedidoGuardandoId(pedido.id);
         try {
             if (nuevoEstado === 'confirmado') {
-                await confirmarPedido(pedido.id);
+                const resultado = await confirmarPedido(pedido.id);
+                if (!resultado.success) {
+                    toast.error(resultado.mensaje);
+                    startTransition(() => router.refresh());
+                    return;
+                }
                 toast.success(`Pedido de "${nombreCliente}" acreditado con éxito.`);
             } else {
                 const resultado = await actionCambiarEstadoPedido(pedido.id, nuevoEstado);

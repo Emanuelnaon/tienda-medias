@@ -129,7 +129,11 @@ export default function PedidoDetallePage({ params, searchParams }: PageProps) {
     const handleConfirmar = async () => {
         setConfirmando(true);
         try {
-            await confirmarPedido(id);
+            const resultado = await confirmarPedido(id);
+            if (!resultado.success) {
+                toast.error(resultado.mensaje);
+                return;
+            }
             toast.success('Pedido acreditado con éxito.');
             router.push('/admin/pedidos');
         } catch (error: unknown) {

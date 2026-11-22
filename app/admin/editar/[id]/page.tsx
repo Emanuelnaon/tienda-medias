@@ -7,6 +7,7 @@ import type { Database } from '@/src/types/supabase';
 import toast from 'react-hot-toast';
 import imageCompression from 'browser-image-compression';
 import Link from 'next/link';
+import { guardarProductoConVariantes } from '@/src/features/admin/actions/productosActions';
 
 type CategoriaResumen = Pick<
     Database['public']['Tables']['categorias']['Row'],
@@ -14,6 +15,10 @@ type CategoriaResumen = Pick<
 >;
 type Producto = Database['public']['Tables']['productos']['Row'] & {
     categorias?: CategoriaResumen | null;
+    producto_variantes?: Array<Pick<
+        Database['public']['Tables']['producto_variantes']['Row'],
+        'talle' | 'stock'
+    >>;
 };
 
 interface PageProps {
@@ -29,7 +34,7 @@ export default function EditarProductoPage({ params }: PageProps) {
     const [codigoCorto, setCodigoCorto] = useState('');
     const [descripcion, setDescripcion] = useState('');
     const [precio, setPrecio] = useState('');
-    const [stock, setStock] = useState('');
+    const [stockPorTalle, setStockPorTalle] = useState<Record<string, number>>({});
     const [categoria, setCategoria] = useState('');
     const [archivosImagenes, setArchivosImagenes] = useState<File[]>([]);
     const [imagenUrlExistente, setImagenUrlExistente] = useState('');
@@ -52,7 +57,11 @@ export default function EditarProductoPage({ params }: PageProps) {
     useEffect(() => {
         const cargarProducto = async () => {
             try {
-                const { data, error } = await supabase.from('productos').select('*, categorias:categorias(id,nombre,slug)').eq('id', id).single();
+                const { data, error } = await supabase
+                    .from('productos')
+                    .select('*, categorias:categorias(id,nombre,slug), producto_variantes(talle,stock)')
+                    .eq('id', id)
+                    .single();
 
                 if (error || !data) {
                     throw new Error('No se pudo cargar el producto');
@@ -63,17 +72,29 @@ export default function EditarProductoPage({ params }: PageProps) {
                 setCodigoCorto(prod.codigo_corto || '');
                 setDescripcion(prod.descripcion || '');
                 setPrecio(String(prod.precio));
-                setStock(String(prod.stock));
                 setCategoria(prod.categorias?.nombre || '');
                 setImagenUrlExistente(prod.imagen_url || '');
                 setGaleriaExistente(Array.isArray(prod.galeria_imagenes) ? prod.galeria_imagenes.filter(Boolean) : []);
 
                 // Sanitización al cargar: Si el producto tiene 'Único' junto a otros talles, forzamos 'Único'
                 const rawTalles = prod.talles_disponibles || [];
+                const variantes = prod.producto_variantes ?? [];
+                const stockInicial = Object.fromEntries(
+                    variantes.map((variante) => [variante.talle, variante.stock]),
+                );
                 if (rawTalles.includes('Único') && rawTalles.length > 1) {
                     setTallesDisponibles(['Único']);
+                    setStockPorTalle({ Único: stockInicial['Único'] ?? prod.stock });
                 } else {
                     setTallesDisponibles(rawTalles);
+                    setStockPorTalle(
+                        Object.fromEntries(
+                            rawTalles.map((talle) => [
+                                talle,
+                                stockInicial[talle] ?? (rawTalles.length === 1 ? prod.stock : 0),
+                            ]),
+                        ),
+                    );
                 }
             } catch (error) {
                 console.error(error);
@@ -101,13 +122,36 @@ export default function EditarProductoPage({ params }: PageProps) {
 
             return [...sinUnico, talleSeleccionado];
         });
+
+        setStockPorTalle((prev) => ({
+            ...prev,
+            [talleSeleccionado]: prev[talleSeleccionado] ?? 0,
+        }));
+    };
+
+    const actualizarStockTalle = (talle: string, nuevoStock: number) => {
+        setStockPorTalle((prev) => ({ ...prev, [talle]: nuevoStock }));
     };
 
     const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        if (!nombre || !precio || !stock) {
-            toast.error('Por favor, completa los campos obligatorios (Nombre, Precio y Stock).');
+        if (!nombre || !precio) {
+            toast.error('Por favor, completa los campos obligatorios (Nombre y Precio).');
+            return;
+        }
+
+        if (tallesDisponibles.length === 0) {
+            toast.error('Debes seleccionar al menos un talle.');
+            return;
+        }
+
+        const tallesSinStockValido = tallesDisponibles.filter((talle) => {
+            const stockTalle = stockPorTalle[talle];
+            return !Number.isInteger(stockTalle) || stockTalle < 0;
+        });
+        if (tallesSinStockValido.length > 0) {
+            toast.error(`Asigna stock válido para: ${tallesSinStockValido.join(', ')}`);
             return;
         }
 
@@ -158,24 +202,21 @@ export default function EditarProductoPage({ params }: PageProps) {
                 categoriaId = catData?.id ?? null;
             }
 
-            const { error } = await supabase
-                .from('productos')
-                .update({
-                    nombre,
-                    codigo_corto: codigoCorto || null,
-                    descripcion: descripcion || null,
-                    precio: Number.parseFloat(precio),
-                    stock: Number.parseInt(stock, 10),
-                    imagen_url: finalImageUrl,
-                    galeria_imagenes: galeriaFinal.length > 0 ? galeriaFinal : null,
-                    talles_disponibles: tallesDisponibles.length > 0 ? tallesDisponibles : null,
-                    categoria_id: categoriaId,
-                })
-                .eq('id', id);
-
-            if (error) {
-                throw new Error(error.message);
-            }
+            await guardarProductoConVariantes({
+                id,
+                nombre,
+                codigoCorto: codigoCorto || null,
+                descripcion: descripcion || null,
+                precio: Number.parseFloat(precio),
+                imagenUrl: finalImageUrl || null,
+                galeriaImagenes: galeriaFinal.length > 0 ? galeriaFinal : null,
+                categoriaId,
+                tallesDisponibles,
+                variantes: tallesDisponibles.map((talle) => ({
+                    talle,
+                    stock: stockPorTalle[talle] ?? 0,
+                })),
+            });
 
             toast.success('Producto actualizado con éxito');
             router.push('/admin');
@@ -271,23 +312,6 @@ export default function EditarProductoPage({ params }: PageProps) {
                             />
                         </div>
 
-                        {/* Campo: Stock */}
-                        <div className="flex flex-col gap-1.5">
-                            <label htmlFor="stock" className="text-sm font-bold">
-                                Stock <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                                id="stock"
-                                type="number"
-                                value={stock}
-                                onChange={(e) => setStock(e.target.value)}
-                                placeholder="Ej. 50"
-                                min="0"
-                                step="1"
-                                className="w-full bg-transparent text-foreground border border-border rounded-lg p-2.5 focus:outline-none focus:border-foreground transition-colors"
-                                required
-                            />
-                        </div>
                     </div>
 
                     {/* Campo: Imágenes */}
@@ -363,6 +387,27 @@ export default function EditarProductoPage({ params }: PageProps) {
                                 );
                             })}
                         </div>
+                        {tallesDisponibles.length > 0 && (
+                            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                                {tallesDisponibles.map((talle) => (
+                                    <div key={talle} className="flex flex-col gap-1.5">
+                                        <label htmlFor={`stock-${talle}`} className="text-sm font-bold">
+                                            Stock {talle} <span className="text-red-500">*</span>
+                                        </label>
+                                        <input
+                                            id={`stock-${talle}`}
+                                            type="number"
+                                            value={stockPorTalle[talle] ?? 0}
+                                            onChange={(e) => actualizarStockTalle(talle, Number.parseInt(e.target.value || '0', 10))}
+                                            min="0"
+                                            step="1"
+                                            className="w-full rounded-lg border border-border bg-transparent p-2.5 text-foreground transition-colors focus:border-foreground focus:outline-none"
+                                            required
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </fieldset>
                 </div>
 
